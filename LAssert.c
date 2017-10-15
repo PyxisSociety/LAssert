@@ -35,7 +35,7 @@ void test_case(void (*f)(void), char * test_name){
 void _require_failed(char * statement){
     printf(GREEN "\t%llu test(s) passed\n",nb_tests(1));
     if(statement)
-	printf(RED "Failed statement :\n\t%s\n" NORMAL, statement);
+	printf(RED "\tFailed statement :\n\t\t%s\n" NORMAL, statement);
     else
 	puts(RED "A test failed but statement could not be read (NULL PTR)");
     exit(-1);
@@ -48,7 +48,7 @@ void _require_succeed(void){
 void _require_not_null_failed(char * ptr){
     printf(GREEN "\t%llu test(s) passed\n",nb_tests(1));
     if(ptr)
-	printf(YELLOW "Failed to allocate a pointer :\n\t%s\n" NORMAL,ptr);
+	printf(YELLOW "\tFailed to allocate a pointer :\n\t\t%s\n" NORMAL,ptr);
     else
 	puts(YELLOW "Failed to allocate a pointer :\n\t" RED "Couldn't read pointer's name" NORMAL);
     exit(-1);

@@ -4,11 +4,19 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#if defined(unix) || defined(__unix) || defined(__unix__) || defined(__APPLE__) || defined(__MACH__)
 #define NORMAL "\x1B[0m"
 #define RED "\x1B[31m"
 #define GREEN "\x1B[32m"
 #define YELLOW "\x1B[33m"
 #define BLUE "\x1B[34m"
+#else
+#define NORMAL ""
+#define RED ""
+#define GREEN ""
+#define YELLOW ""
+#define BLUE ""
+#endif
 
 /**
  * @brief Function to launch your tests
