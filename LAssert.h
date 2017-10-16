@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #if defined(unix) || defined(__unix) || defined(__unix__) || defined(__APPLE__) || defined(__MACH__)
 #define NORMAL "\x1B[0m"
@@ -18,12 +19,22 @@
 #define BLUE ""
 #endif
 
-/**
- * @brief Function to launch your tests
- * @param f : function to be launch, the test
- * @param test_name : name of the test
- */
-void test_case(void (*f)(void), char * test_name);
+#define BEGIN_SECTION(NAME)					\
+    void _test_##NAME##_session(char * name){			\
+	char name_of_test[1024];				\
+	printf(BLUE "BEGIN OF SESSION %s\n" NORMAL, name);
+
+#define END_SECTION						\
+    _start_test(name_of_test);					\
+    printf(BLUE "\nEND OF SESSION %s\n" NORMAL, name);		\
+    }
+
+#define TEST_CASE(NAME_OF_TEST)				\
+    _start_test(name_of_test);				\
+    strcpy(name_of_test,#NAME_OF_TEST);			\
+    printf(NORMAL "\nBegin of test %s\n",name_of_test);
+
+#define RUN_SECTION(NAME) _test_##NAME##_session(#NAME)
 
 /**
  * @brief Equivalente of assert.h's assert for this library
@@ -49,5 +60,7 @@ void test_case(void (*f)(void), char * test_name);
 void _require_failed(char * statement);
 void _require_succeed(void);
 void _require_not_null_failed(char * ptr);
+void _test_case(void (*f)(void), char * test_func, char * test_name);
+int _start_test(char * s);
 
 #endif

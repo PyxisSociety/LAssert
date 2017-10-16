@@ -7,26 +7,99 @@ void pointer_alloc_failed(void);
 
 int not_in(char * s,char c);
 
-int main(int argc, char *argv[])
-{
+BEGIN_SECTION(succeed)
+
+TEST_CASE(test1){
+    int i;
+
+    for(i = 0; i < 4; ++i)
+	require(i + 1);
+}
+
+TEST_CASE(test2){
+    int i;
+
+    for(i = 0; i < 4; ++i)
+	require(i + 1);
+}
+
+TEST_CASE(test3){
+    int i;
+
+    for(i = 0; i < 4; ++i)
+	require(i + 1);
+}
+
+END_SECTION
+
+BEGIN_SECTION(failed)
+
+    TEST_CASE(test1){
+    int i;
+
+    for(i = 0; i < 4; ++i)
+	require(i + 1);
+}
+
+TEST_CASE(test2){
+    int i;
+
+    for(i = 0; i < 4; ++i)
+	require(i + 1);
+}
+
+TEST_CASE(test3){
+    int i;
+
+    for(i = 4;; --i)
+	require(i);
+}
+    
+END_SECTION
+
+
+BEGIN_SECTION(pointer_alloc_failed)
+
+    TEST_CASE(test1){
+    int i;
+
+    for(i = 0; i < 4; ++i)
+	require(i + 1);
+}
+
+TEST_CASE(test2){
+    int i;
+
+    for(i = 0; i < 4; ++i)
+	require(i + 1);
+}
+
+TEST_CASE(test3){
+    int i;
+
+    for(i = 0; i < 4; ++i)
+	require(i + 1);
+    require_not_null(1);
+    require_not_null(NULL);
+}
+END_SECTION
+
+int main(int argc, char *argv[]){
     if(argc != 2)
 	puts("Not the good number of arguments.");
     else{
 	if(strlen(argv[1]) != 2 || argv[1][0] != '-' || not_in("spf",argv[1][1]))
 	    fprintf(stderr,"bad argument : %s\n",argv[1]);
-	else{
-	    test_case(succeed,NULL);
-	    test_case(succeed,NULL);
-	    
+	else{	    
 	    switch(argv[1][1]){
 	    case 's':
-		test_case(succeed,NULL);
+	        RUN_SECTION(succeed);
 		break;
 	    case 'p':
-		test_case(pointer_alloc_failed,NULL);
+	        RUN_SECTION(pointer_alloc_failed);
 		break;
 	    case 'f':
-		test_case(failed,NULL);
+	        RUN_SECTION(failed);
 		break;
 	    }
 	}
@@ -48,27 +121,4 @@ int not_in(char * s,char c){
 	
 
     return res;
-}
-
-void succeed(void){
-    int i;
-
-    for(i = 0; i < 4; ++i)
-	require(i + 1);
-}
-
-void failed(void){
-    int i;
-
-    for(i = 4;; --i)
-	require(i);
-}
-
-void pointer_alloc_failed(void){
-    int i;
-
-    for(i = 0; i < 4; ++i)
-	require(i + 1);
-    require_not_null(1);
-    require_not_null(NULL);
 }

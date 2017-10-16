@@ -11,26 +11,6 @@ static unsigned long long nb_tests(int i){
     return count;
 }
 
-void test_case(void (*f)(void), char * test_name){
-    static unsigned long long count = 1;
-    
-    if(f){
-	printf(NORMAL "Test %llu :",count);
-	if(test_name)
-	    printf(" %s",test_name);
-	putchar('\n');
-	
-	nb_tests(-1);
-	f();
-	
-	printf(GREEN "\t%llu test(s) passed\n" NORMAL, nb_tests(1));
-    }else
-	printf(BLUE "Test %llu : Nothing to be tested\n", count);
-
-    putchar('\n');
-    ++count;
-}
-
 /* --------- FUNCTIONS NOT TO BE CALLED DIRECTLY BY USER --------- */
 void _require_failed(char * statement){
     printf(GREEN "\t%llu test(s) passed\n",nb_tests(1));
@@ -52,4 +32,38 @@ void _require_not_null_failed(char * ptr){
     else
 	puts(YELLOW "Failed to allocate a pointer :\n\t" RED "Couldn't read pointer's name" NORMAL);
     exit(-1);
+}
+
+void _test_case(void (*f)(void), char * test_func, char * test_name){
+    static unsigned long long count = 1;
+    
+    if(f){
+	printf(NORMAL "Test %llu :",count);
+	if(test_name)
+	    printf(" %s",test_name);
+	if(test_func)
+	    printf(" on %s",test_func);
+	putchar('\n');
+	
+	nb_tests(-1);
+	f();
+	
+	printf(GREEN "\t%llu test(s) passed\n" NORMAL, nb_tests(1));
+    }else
+	printf(BLUE "Test %llu : Nothing to be tested\n", count);
+
+    putchar('\n');
+    ++count;
+}
+
+int _start_test(char * s){
+    static int started = 0;
+
+    if(started){
+	printf(GREEN "\t%llu test(s) passed\n" NORMAL, nb_tests(1));
+	if(s)
+	    printf(NORMAL "End of test %s\n",s);
+    }else
+	started = 1;
+    nb_tests(-1);
 }
