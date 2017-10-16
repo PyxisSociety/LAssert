@@ -13,12 +13,10 @@ static unsigned long long nb_tests(int i){
 
 /* --------- FUNCTIONS NOT TO BE CALLED DIRECTLY BY USER --------- */
 void _require_failed(char * statement){
-    printf(GREEN "\t%llu test(s) passed\n",nb_tests(1));
     if(statement)
 	printf(RED "\tFailed statement :\n\t\t%s\n" NORMAL, statement);
     else
 	puts(RED "A test failed but statement could not be read (NULL PTR)");
-    exit(-1);
 }
 
 void _require_succeed(void){
@@ -26,12 +24,10 @@ void _require_succeed(void){
 }
 
 void _require_not_null_failed(char * ptr){
-    printf(GREEN "\t%llu test(s) passed\n",nb_tests(1));
     if(ptr)
 	printf(YELLOW "\tFailed to allocate a pointer :\n\t\t%s\n" NORMAL,ptr);
     else
 	puts(YELLOW "Failed to allocate a pointer :\n\t" RED "Couldn't read pointer's name" NORMAL);
-    exit(-1);
 }
 
 void _test_case(void (*f)(void), char * test_func, char * test_name){
@@ -56,14 +52,26 @@ void _test_case(void (*f)(void), char * test_func, char * test_name){
     ++count;
 }
 
-int _start_test(char * s){
+int _start_test(char * s,int option){
     static int started = 0;
 
-    if(started){
-	printf(GREEN "\t%llu test(s) passed\n" NORMAL, nb_tests(1));
-	if(s)
-	    printf(NORMAL "End of test %s\n",s);
+    if(option){
+	if(started){
+	    printf(GREEN "\t%llu test(s) passed\n" NORMAL, nb_tests(1));
+	    if(s)
+		printf(NORMAL "End of test %s\n",s);
+	}else
+	    started = 1;
+	nb_tests(-1);
     }else
-	started = 1;
-    nb_tests(-1);
+	started = 0;
 }
+
+int _start_running(int option){
+    static int i = 0;
+    int res = i;
+    i = option;
+
+    return res;
+}
+	
