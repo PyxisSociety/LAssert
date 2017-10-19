@@ -25,10 +25,6 @@
 #define MAGENTA ""
 #endif
 
-#if defined(__GNUC__) && !defined(LASSERT_MANUAL_MAIN)
-/* -----------------------------------------------------------
- *            GNU and auto main
- */
 unsigned long long nb_tests(int i){
     static unsigned long long count = 0;
 
@@ -221,47 +217,6 @@ int _next_range(int * tab, int * begin, int * end, int * step, size_t size){
     
     return id >= 0;
 }
-
-#define TEST_SECTION(name)						\
-    void _test_##name##_lassert( char * name_of_test,int *, char[512]);	\
-    void _call_test_##name##_lassert(void)				\
-	__attribute__((constructor));					\
-    void _call_test_##name##_lassert(void){				\
-	char s[512] = {0};						\
-	char log[512];							\
-	int id = -1;							\
-	printf("%s------------------------------"			\
-	       "------------------------------\n"			\
-	       "BEGIN OF SECTION %s %s\n",BLUE,#name,NORMAL);		\
-	_succeeded_test_case(0,1);					\
-	_not_null_failed_test_case(0,1);				\
-	_start_test(NULL,0,0);						\
-	_failed_test_case(0,1);						\
-									\
-	_test_##name##_lassert(s,&id,log);				\
-									\
-	if(id == 1)							\
-	    _failed_test_case(1,0);					\
-	else if(!id)							\
-	    _succeeded_test_case(1,0);					\
-	else if(id == 2)						\
-	    _not_null_failed_test_case(1,0);				\
-	_start_test(#name,1,1);						\
-	printf("\n%sEND OF SECTION %s %s\n", BLUE, #name, NORMAL);	\
-	if(_failed_test_case(0,0))					\
-	    printf("%sFailed : %d test_case(s)%s\n",RED,_failed_test_case(0,0),NORMAL); \
-	if(_succeeded_test_case(0,0))					\
-	    printf("%sSucceeded : %d test_case(s)%s\n",GREEN,_succeeded_test_case(0,0),NORMAL);	\
-	if(_not_null_failed_test_case(0,0))				\
-	    printf("%sStopped due to NULL pointer : %d test_case(s)%s\n",YELLOW,_not_null_failed_test_case(0,0),NORMAL); \
-	if(!_succeeded_test_case(0,0) && !_failed_test_case(0,0))	\
-	    printf("%sEMPTY TEST SECTION%s\n",CYAN, NORMAL);		\
-	printf("%s------------------------------"			\
-	       "------------------------------%s\n\n",			\
-	       BLUE,NORMAL);						\
-    }									\
-    void _test_##name##_lassert(char * name_of_test, int * _id_flag, char _log_lassert[512])
-    
 #define TEST_CASE(NAME_OF_TEST)						\
     if(*_id_flag == 1)							\
 	_failed_test_case(1,0);						\
@@ -354,6 +309,50 @@ int _next_range(int * tab, int * begin, int * end, int * step, size_t size){
 	}					\
     }
 
+#if defined(__GNUC__) && !defined(LASSERT_MANUAL_MAIN)
+/* ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ *            GNU and auto main
+ */
+#define TEST_SECTION(name)						\
+    void _test_##name##_lassert( char * name_of_test,int *, char[512]);	\
+    void _call_test_##name##_lassert(void)				\
+	__attribute__((constructor));					\
+    void _call_test_##name##_lassert(void){				\
+	char s[512] = {0};						\
+	char log[512];							\
+	int id = -1;							\
+	printf("%s------------------------------"			\
+	       "------------------------------\n"			\
+	       "BEGIN OF SECTION %s %s\n",BLUE,#name,NORMAL);		\
+	_succeeded_test_case(0,1);					\
+	_not_null_failed_test_case(0,1);				\
+	_start_test(NULL,0,0);						\
+	_failed_test_case(0,1);						\
+									\
+	_test_##name##_lassert(s,&id,log);				\
+									\
+	if(id == 1)							\
+	    _failed_test_case(1,0);					\
+	else if(!id)							\
+	    _succeeded_test_case(1,0);					\
+	else if(id == 2)						\
+	    _not_null_failed_test_case(1,0);				\
+	_start_test(#name,1,1);						\
+	printf("\n%sEND OF SECTION %s %s\n", BLUE, #name, NORMAL);	\
+	if(_failed_test_case(0,0))					\
+	    printf("%sFailed : %d test_case(s)%s\n",RED,_failed_test_case(0,0),NORMAL); \
+	if(_succeeded_test_case(0,0))					\
+	    printf("%sSucceeded : %d test_case(s)%s\n",GREEN,_succeeded_test_case(0,0),NORMAL);	\
+	if(_not_null_failed_test_case(0,0))				\
+	    printf("%sStopped due to NULL pointer : %d test_case(s)%s\n",YELLOW,_not_null_failed_test_case(0,0),NORMAL); \
+	if(!_succeeded_test_case(0,0) && !_failed_test_case(0,0))	\
+	    printf("%sEMPTY TEST SECTION%s\n",CYAN, NORMAL);		\
+	printf("%s------------------------------"			\
+	       "------------------------------%s\n\n",			\
+	       BLUE,NORMAL);						\
+    }									\
+    void _test_##name##_lassert(char * name_of_test, int * _id_flag, char _log_lassert[512])
+
 int main(){
     return 0;
 }
@@ -363,106 +362,45 @@ int main(){
  *            none GNU or manual main
  */
 
-unsigned long long nb_tests(int i){
-    static unsigned long long count = 0;
-
-    if(!i)
-	++count;
-    else if(i < 0)
-	count = 0;
-
-    return count;
-}
-
-/* --------- FUNCTIONS NOT TO BE CALLED DIRECTLY BY USER --------- */
-void _REQUIRE_failed(char * statement){
-    if(statement)
-	printf("\t%sFailed statement :\n\t\t%s%s\n" RED, statement,NORMAL);
-    else
-	printf("%sA test failed but statement could not be read (NULL PTR)\n%s",RED,NORMAL);
-}
-
-void _REQUIRE_succeed(void){
-    nb_tests(0);
-}
-
-void _REQUIRE_not_null_failed(char * ptr){
-    if(ptr)
-	printf("\t%sFailed to allocate a pointer :\n\t\t%s%s\n",YELLOW,ptr,NORMAL);
-    else
-	printf("%sFailed to allocate a pointer :\n\t%sCouldn't read pointer's name%s\n",YELLOW,RED,NORMAL);
-}
-
-int _start_test(char * s,int option){
-    static int started = 0;
-
-    if(option){
-	if(started){
-	    printf("\t%s%llu test(s) passed%s\n",GREEN, nb_tests(1),NORMAL);
-	    if(s)
-		printf("%sEnd of test %s%s\n",MAGENTA,s,NORMAL);
-	}else
-	    started = 1;
-	nb_tests(-1);
-    }else
-	started = 0;
-}
-
-int _start_running(int option){
-    static int i = 0;
-    int res = i;
-    i = option;
-
-    return res;
-}
-
-#define BEGIN_SECTION(NAME)						\
-    void _test_##NAME##_session(char * _name_of_function){		\
-	char name_of_test[1024];					\
-	printf("%s----------------------------------------"		\
-	       "--------------------\n"					\
-	       "BEGIN OF SECTION %s%s\n"				\
-	       BLUE, _name_of_function,NORMAL);				\
-	char _start_running = 0;					\
-	_start_test(NULL,0);
+#define TEST_SECTION(name)						\
+    void _call_test_##name##_lassert(void){				\
+	char name_of_test[512] = {0};					\
+	char name_of_section[512] = {0};				\
+	char _log_lassert[512];						\
+	int _id_flag[1] = {-1};						\
+	strcpy(name_of_section,#name);					\
+	printf("%s------------------------------"			\
+	       "------------------------------\n"			\
+	       "BEGIN OF SECTION %s %s\n",BLUE,#name,NORMAL);		\
+	_succeeded_test_case(0,1);					\
+	_not_null_failed_test_case(0,1);				\
+	_failed_test_case(0,1);						\
+	_start_test(NULL,0,0);
 
 #define END_SECTION							\
-    _start_test(name_of_test,1);					\
-    printf("\n%sEND OF SECTION %s\n-------------------------"	\
-	   "-----------------------------------%s\n\n"			\
-	   BLUE, _name_of_function,NORMAL);					\
+    if(*_id_flag == 1)							\
+	_failed_test_case(1,0);						\
+    else if(!*_id_flag)							\
+	_succeeded_test_case(1,0);					\
+    else if(*_id_flag == 2)						\
+	_not_null_failed_test_case(1,0);				\
+    _start_test(name_of_section,1,1);					\
+    printf("\n%sEND OF SECTION %s %s\n", BLUE, name_of_section, NORMAL); \
+    if(_failed_test_case(0,0))						\
+	printf("%sFailed : %d test_case(s)%s\n",RED,_failed_test_case(0,0),NORMAL); \
+    if(_succeeded_test_case(0,0))					\
+	printf("%sSucceeded : %d test_case(s)%s\n",GREEN,_succeeded_test_case(0,0),NORMAL); \
+    if(_not_null_failed_test_case(0,0))					\
+	printf("%sStopped due to NULL pointer : %d test_case(s)%s\n",YELLOW,_not_null_failed_test_case(0,0),NORMAL); \
+    if(!_succeeded_test_case(0,0) && !_failed_test_case(0,0))		\
+	printf("%sEMPTY TEST SECTION%s\n",CYAN, NORMAL);		\
+    printf("%s------------------------------"				\
+	   "------------------------------%s\n\n",			\
+	   BLUE,NORMAL);						\
     }
 
-#define TEST_CASE(NAME_OF_TEST)				\
-    _start_test(name_of_test,1);			\
-    strcpy(name_of_test,#NAME_OF_TEST);			\
-    printf("\n%sBegin of test %s%s\n",MAGENTA,name_of_test,NORMAL);	\
-    _start_running = 1;					\
-    while(_start_running--)
+#define RUN_SECTION(name) _call_test_##name##_lassert()
 
-#define RUN_SECTION(NAME) _test_##NAME##_session(#NAME)
-
-/**
- * @brief Equivalente of assert.h's assert for this library
- * @param bool : expression that has to be true
- */
-#define REQUIRE(bool) {						\
-	if(!(bool)){						\
-	    _REQUIRE_failed(#bool);				\
-	    break;						\
-	}else							\
-	    _REQUIRE_succeed();					\
-    }
-
-/**
- * @brief Test if a pointer is not NULL (not considered an error but stop the tests)
- * @param ptr : pointer to be tested
- */
-#define REQUIRE_NOT_NULL(ptr){					\
-	if(!ptr){						\
-	    _REQUIRE_not_null_failed(#ptr);			\
-	    break;						\
-	}							\
-    }
 #endif
+
 #endif
