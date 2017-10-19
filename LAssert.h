@@ -91,7 +91,8 @@ int _start_running(int option){
 	_in_case(1);
 	old = option;
     }else{
-	--old;
+	if(old)
+	    --old;
 	if(!old)
 	    _in_case(0);
     }
@@ -106,6 +107,14 @@ int _failed_test_case(int option, int reset){
     return count;
 }
 int _succeeded_test_case(int option, int reset){
+    static int count = 0;
+    if(reset)
+	count = option;
+    else
+	count += option;
+    return count;
+}
+int _not_null_failed_test_case(int option, int reset){
     static int count = 0;
     if(reset)
 	count = option;
@@ -128,7 +137,7 @@ void _REQUIRE_not_null_failed(char * statement, int display){
 	printf("\n%sFailed to allocate outside a test case :\n\t%s %s\n",YELLOW, statement,NORMAL);
     _failed_test_case(1,0);
 }
-void _generate_tab(int * tab, unsigned size, char * attributes, ... ){
+void _generate_tab(int * _id_flag,int * tab, unsigned size, char * attributes, ... ){
     va_list vl;
     unsigned number_of_parameter = 1;
     int begin, end;
@@ -142,8 +151,9 @@ void _generate_tab(int * tab, unsigned size, char * attributes, ... ){
 	}
 
 	if(number_of_parameter&1){
-	    printf("%sBad parameter in a RAND_CASE :\n\tParameter should be (name of test, name of variable, number of values, number of times, ranges...)\n\tranges is a collection of integer (an even quantity)%s\n",RED,NORMAL);
+	    printf("\t%sBad parameter in a RAND_CASE :\n\t\t%s\n\t\tSize of list should be even%s\n",RED,attributes,NORMAL);
 	    while(_start_running(0));
+	    *_id_flag = 1;
 	}else{
 	    va_start(vl,attributes);
 	    for(id = 0; id < number_of_parameter/2; ++id){
@@ -156,6 +166,60 @@ void _generate_tab(int * tab, unsigned size, char * attributes, ... ){
 		tab[id] = rand()%(end - begin) + begin;
 	}
     }
+}
+void _generate_range(int * _id_flag,int * tab,int * begin, int * end,int * step, unsigned size, char * attributes, ...){
+    va_list vl;
+    unsigned number_of_parameter = 1;
+    size_t id = 0;
+    size_t j;
+    
+    if(begin && end && step && _id_flag && tab){
+	while(attributes[id]){
+	    if(attributes[id] == ',')
+		++number_of_parameter;
+	    ++id;
+	}
+
+	if(number_of_parameter%3){
+	    printf("\t%sBad parameter in a RANGE_CASE :\n\t\t%s\n\t\tSize of list should be a multiple of 3%s\n",RED,attributes,NORMAL);
+	    *_id_flag = 1;
+	}else{
+	    va_start(vl,attributes);
+	    for(id = 0; id < number_of_parameter/3; ++id){
+		begin[id] = va_arg(vl,int);
+		tab[id] = begin[id];
+		end[id] = va_arg(vl,int);
+		step[id] = va_arg(vl,int);
+	    }
+	    va_end(vl);
+	    j = id - 1;
+	    for(;id < size; ++id){
+		begin[id] = begin[j];
+		tab[id] = begin[id];
+		end[id] = end[j];
+		step[id] = step[j];
+	    }
+	    tab[size - 1] -= step[size - 1];
+	}
+    }
+}
+int _next_range(int * tab, int * begin, int * end, int * step, size_t size){
+    int rest     = 1;
+    long long id = (long long)(size - 1);
+
+    do{
+	tab[id] += step[id];
+	if(tab[id] >= end[id]){
+	    tab[id] = begin[id];
+	    --id;
+	}else
+	    rest = 0;
+    }while(rest && id >= 0);
+
+    if(id < 0)
+	_in_case(0);
+    
+    return id >= 0;
 }
 
 #define TEST_SECTION(name)						\
@@ -170,6 +234,7 @@ void _generate_tab(int * tab, unsigned size, char * attributes, ... ){
 	       "------------------------------\n"			\
 	       "BEGIN OF SECTION %s %s\n",BLUE,#name,NORMAL);		\
 	_succeeded_test_case(0,1);					\
+	_not_null_failed_test_case(0,1);				\
 	_start_test(NULL,0,0);						\
 	_failed_test_case(0,1);						\
 									\
@@ -179,14 +244,18 @@ void _generate_tab(int * tab, unsigned size, char * attributes, ... ){
 	    _failed_test_case(1,0);					\
 	else if(!id)							\
 	    _succeeded_test_case(1,0);					\
+	else if(id == 2)						\
+	    _not_null_failed_test_case(1,0);				\
 	_start_test(#name,1,1);						\
-	if(!_succeeded_test_case(0,0) && !_failed_test_case(0,0))	\
-	    printf("\n%sEMPTY TEST SECTION%s\n",CYAN, NORMAL);		\
 	printf("\n%sEND OF SECTION %s %s\n", BLUE, #name, NORMAL);	\
 	if(_failed_test_case(0,0))					\
 	    printf("%sFailed : %d test_case(s)%s\n",RED,_failed_test_case(0,0),NORMAL); \
 	if(_succeeded_test_case(0,0))					\
 	    printf("%sSucceeded : %d test_case(s)%s\n",GREEN,_succeeded_test_case(0,0),NORMAL);	\
+	if(_not_null_failed_test_case(0,0))				\
+	    printf("%sStopped due to NULL pointer : %d test_case(s)%s\n",YELLOW,_not_null_failed_test_case(0,0),NORMAL); \
+	if(!_succeeded_test_case(0,0) && !_failed_test_case(0,0))	\
+	    printf("%sEMPTY TEST SECTION%s\n",CYAN, NORMAL);		\
 	printf("%s------------------------------"			\
 	       "------------------------------%s\n\n",			\
 	       BLUE,NORMAL);						\
@@ -198,6 +267,8 @@ void _generate_tab(int * tab, unsigned size, char * attributes, ... ){
 	_failed_test_case(1,0);						\
     else if(!*_id_flag)							\
 	_succeeded_test_case(1,0);					\
+    else if(*_id_flag == 2)						\
+	_not_null_failed_test_case(1,0);				\
     _start_test(name_of_test,1,1);					\
     strcpy(name_of_test,#NAME_OF_TEST);					\
     printf("\n%sBegin of test_case %s %s\n",MAGENTA,name_of_test,NORMAL); \
@@ -212,13 +283,34 @@ void _generate_tab(int * tab, unsigned size, char * attributes, ... ){
 	_failed_test_case(1,0);						\
     else if(!*_id_flag)							\
 	_succeeded_test_case(1,0);					\
+    else if(*_id_flag == 2)						\
+	_not_null_failed_test_case(1,0);				\
     _start_test(name_of_test,1,1);					\
     strcpy(name_of_test,#NAME_OF_TEST);					\
     printf("\n%sBegin of test_case %s %s\n",MAGENTA,name_of_test,NORMAL); \
     _start_running(nb_of_values);					\
-    _in_case(1);							\
+    _in_case(!*_id_flag);						\
     *_id_flag = 0;							\
-    while(_generate_tab(var_name,nb_of_values,#ranges,ranges),_start_running(0))
+    while(_generate_tab(_id_flag,var_name,nb_of_values,#ranges,ranges),_start_running(0) && !*_id_flag)
+
+#define RANGE_CASE(NAME_OF_TEST,var_name,nb_of_values,ranges...) \
+    int var_name[nb_of_values] = {0};					\
+    int var_name##_begin[nb_of_values] = {0};				\
+    int var_name##_end[nb_of_values] = {0};				\
+    int var_name##_step[nb_of_values] = {0};				\
+    if(*_id_flag == 1)							\
+	_failed_test_case(1,0);						\
+    else if(!*_id_flag)							\
+	_succeeded_test_case(1,0);					\
+    else if(*_id_flag == 2)						\
+	_not_null_failed_test_case(1,0);				\
+    _start_test(name_of_test,1,1);					\
+    strcpy(name_of_test,#NAME_OF_TEST);					\
+    printf("\n%sBegin of test_case %s %s\n",MAGENTA,name_of_test,NORMAL); \
+    *_id_flag = 0;							\
+    _generate_range(_id_flag,var_name,var_name##_begin,var_name##_end,var_name##_step,nb_of_values,#ranges,ranges); \
+    _in_case(1);							\
+    while(_next_range(var_name,var_name##_begin,var_name##_end,var_name##_step,nb_of_values) && !*_id_flag)
 
 #define REQUIRE(bool){				\
 	_start_test(NULL,1,0);			\
@@ -249,6 +341,7 @@ void _generate_tab(int * tab, unsigned size, char * attributes, ... ){
 	if(!ptr){					\
 	    _REQUIRE_CASE_not_null_failed(#ptr);	\
 	    _in_case(0);				\
+	    *_id_flag = 2;				\
 	    break;					\
 	}						\
     }
