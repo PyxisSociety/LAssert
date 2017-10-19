@@ -20,3 +20,28 @@ TEST_SECTION(tralala){
 	REQUIRE_CASE(j);
     }
 }
+
+TEST_SECTION(un_bon_gros_test){
+    TEST_CASE(on_l_appel_baudhuit){
+	unsigned * j = malloc(sizeof(*j));
+
+	REQUIRE_CASE_NOT_NULL(j);
+
+	printf("j == %d\n",*j);
+
+	free(j);
+    }
+}
+
+TEST_SECTION(un_test_vide){
+}
+
+TEST_SECTION(random_test){
+    RAND_CASE(first_random,tab,5,5,1,10,10,100){
+	puts("BEEEEGIN\n");
+	for(unsigned i = 0;i < 5; ++i){
+	    printf("%d\n",tab[i]);
+	    REQUIRE_CASE(tab[i]);
+	}
+    }
+}
