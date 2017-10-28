@@ -1,4 +1,4 @@
 temps d'execution d'un test_case
 temps d'execution d'une section
-      -> faire en nano secondes ET compatible windows
-Ne plus afficher les tests cases seulement réussi
+      -> tester sous windows
+solution non recursive pour avoir REQUIRE hors d'un test case et dans un test case
