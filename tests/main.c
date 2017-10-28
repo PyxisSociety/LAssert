@@ -1,4 +1,4 @@
-#define LASSERT_MANUAL_MAIN
+//#define LASSERT_MANUAL_MAIN
 
 #define TIME_TEST
 
@@ -13,8 +13,8 @@ TEST_SECTION(tralala){
     TEST_CASE(tralalatsointsoin){
 	unsigned i = 1;
 
-	REQUIRE_CASE(i == 1);
-	REQUIRE_CASE(i == 0);
+	REQUIRE(i == 1);
+	REQUIRE(i == 0);
     }
 
     REQUIRE( 1 );
@@ -22,14 +22,14 @@ TEST_SECTION(tralala){
     TEST_CASE(tralalapastsointsoin){
 	unsigned j = 3;
 
-	REQUIRE_CASE(j);
-	REQUIRE_CASE(j);
-	REQUIRE_CASE(j);
-	REQUIRE_CASE(j);
+	REQUIRE(j);
+	REQUIRE(j);
+	REQUIRE(j);
+	REQUIRE(j);
     }
 
     TEST_CASE(plop){
-	REQUIRE_CASE_NOT_NULL( NULL );
+	REQUIRE_NOT_NULL( NULL );
     }
 }
 
@@ -37,7 +37,7 @@ TEST_SECTION(un_bon_gros_test){
     TEST_CASE(on_l_appel_baudhuit){
 	unsigned * j = malloc(sizeof(*j));
 
-	REQUIRE_CASE_NOT_NULL(j);
+	REQUIRE_NOT_NULL(j);
 
 	printf("j == %d\n",*j);
 
@@ -53,7 +53,7 @@ TEST_SECTION(random_test){
 	puts("BEEEEGIN");
 	for(unsigned i = 0;i < 3; ++i){
 	    printf("%d\n",tab[i]);
-	    REQUIRE_CASE(tab[i]);
+	    REQUIRE(tab[i]);
 	}
 	putchar('\n');
     }
@@ -63,7 +63,7 @@ TEST_SECTION(random_test){
 
     RAND_CASE(fail_on_0, tab3, 4, 4, 0, 3){
 	for(unsigned i = 0; i < 4; ++i)
-	    REQUIRE_CASE(tab3[i]);
+	    REQUIRE(tab3[i]);
     }
 }
 
@@ -84,11 +84,11 @@ TEST_SECTION(copy_test){
     TEST_CASE(should_succeed){
 	COPY(unsigned,i);
 	i = 2;
-	REQUIRE_CASE(i);
+	REQUIRE(i);
     }
 
     TEST_CASE(should_failed){
-	REQUIRE_CASE(i);
+	REQUIRE(i);
     }
 }
 
@@ -96,7 +96,7 @@ TEST_SECTION(equal_test){
     EQ( .3,.300000001);
 
     TEST_CASE(should_failed){
-	EQ_CASE(.7,.6);
+	EQ(.7,.6);
     }
 }
 
