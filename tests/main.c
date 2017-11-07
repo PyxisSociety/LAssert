@@ -1,6 +1,6 @@
 //#define LASSERT_MANUAL_MAIN
 
-#define TIME_TEST
+//#define TIME_TEST
 
 #ifdef TIME_TEST
 #define LASSERT_EXEC_TIME
@@ -87,6 +87,8 @@ TEST_SECTION(copy_test){
 	REQUIRE(i);
     }
 
+    puts("Display twice if problem not solved");
+    
     TEST_CASE(should_failed){
 	REQUIRE(i);
     }

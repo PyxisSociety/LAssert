@@ -39,7 +39,7 @@
 #  define INTERVAL_TIME_LASSERT(start,end) (long double)(end.QuadPart - start.QuadPart)/_frequency_lassert.QuadPart
 #endif
 
-unsigned long long nb_tests(int i){
+unsigned long long _nb_tests_lassert(int i){
     static unsigned long long count = 0;
 
     if(!i)
@@ -63,7 +63,7 @@ void _REQUIRE_CASE_failed(char * statement){
 	printf("%sA test failed but statement could not be read (NULL PTR)%s\n",RED,NORMAL);
 }
 void _REQUIRE_CASE_succeed(void){
-    nb_tests(0);
+    _nb_tests_lassert(0);
 }
 void _REQUIRE_CASE_not_null_failed(char * ptr){
     if(ptr)
@@ -71,7 +71,7 @@ void _REQUIRE_CASE_not_null_failed(char * ptr){
     else
 	printf("%sFailed to allocate a pointer :\n\t%sCouldn't read pointer's name%s\n",YELLOW,RED,NORMAL);
 }
-int _start_test(char * s,int option,int set_start){
+int _start_test_lassert(char * s,int option,int set_start){
     static int started = 0;
     static char * statement;
 
@@ -82,30 +82,30 @@ int _start_test(char * s,int option,int set_start){
 	    started = set_start;
 	    statement = s;
 	}
-	nb_tests(-1);
+	_nb_tests_lassert(-1);
     }else
 	started = 0;
 
     return started;
 }
-int _in_case(int option){
+int _in_case_lassert(int option){
     static int is_in = 0;
     int i = is_in;
     if(option != -1)
 	is_in = option;
     return i;
 }
-int _start_running(int option){
+int _start_running_lassert(int option){
     static int old = 0;
     int res = old;
     if(option){
-	_in_case(1);
+	_in_case_lassert(1);
 	old = option;
     }else{
 	if(old)
 	    --old;
 	if(!res)
-	    _in_case(0);
+	    _in_case_lassert(0);
     }
     return res;
 }
@@ -146,7 +146,7 @@ void _REQUIRE_not_null_failed(char * statement){
 	printf("\n%sFailed to allocate outside a test case :\n\t%s %s\n",YELLOW, statement,NORMAL);
     _failed_test_case(1,0);
 }
-void _generate_tab(char * name_of_case,int * _id_flag,int * begin,int * end, unsigned size, char * attributes, ... ){
+void _generate_tab_lassert(char * name_of_case,int * _id_flag,int * begin,int * end, unsigned size, char * attributes, ... ){
     va_list vl;
     unsigned number_of_parameter = 1;
     size_t id = 0,j;
@@ -161,9 +161,9 @@ void _generate_tab(char * name_of_case,int * _id_flag,int * begin,int * end, uns
 
 	if(number_of_parameter&1){
 	    printf("\n%s%s test_case :%s\n",MAGENTA,name_of_case,NORMAL);
-	    printf("\t%s%llu test(s) passed%s\n",GREEN, nb_tests(1),NORMAL);
+	    printf("\t%s%llu test(s) passed%s\n",GREEN, _nb_tests_lassert(1),NORMAL);
 	    printf("\t%sBad parameter in a RAND_CASE :\n\t\t%s\n\t\tSize of list should be even%s\n",RED,attributes,NORMAL);
-	    while(_start_running(0));
+	    while(_start_running_lassert(0));
 	    *_id_flag = 1;
 	}else{
 	    va_start(vl,attributes);
@@ -179,7 +179,7 @@ void _generate_tab(char * name_of_case,int * _id_flag,int * begin,int * end, uns
 	}
     }
 }
-void _next_rand_tab(int * tab, int * begin, int * end, int size){
+void _next_rand_tab_lassert(int * tab, int * begin, int * end, int size){
     for(unsigned i = 0; i < size; ++i){
 	if(end[i] != begin[i])
 	    tab[i] = rand()%(end[i] - begin[i]) + begin[i];
@@ -187,7 +187,7 @@ void _next_rand_tab(int * tab, int * begin, int * end, int size){
 	    tab[i] = end[i];
     }
 }
-void _generate_range(char * name_of_case,int * _id_flag,int * tab,int * begin, int * end,int * step, unsigned size, char * attributes, ...){
+void _generate_range_lassert(char * name_of_case,int * _id_flag,int * tab,int * begin, int * end,int * step, unsigned size, char * attributes, ...){
     va_list vl;
     unsigned number_of_parameter = 1;
     size_t id = 0;
@@ -202,7 +202,7 @@ void _generate_range(char * name_of_case,int * _id_flag,int * tab,int * begin, i
 
 	if(number_of_parameter%3){
 	    printf("\n%s%s test_case :%s\n",MAGENTA,name_of_case,NORMAL);
-	    printf("\t%s%llu test(s) passed%s\n",GREEN, nb_tests(1),NORMAL);
+	    printf("\t%s%llu test(s) passed%s\n",GREEN, _nb_tests_lassert(1),NORMAL);
 	    printf("\t%sBad parameter in a RANGE_CASE :\n\t\t%s\n\t\tSize of list should be a multiple of 3%s\n",RED,attributes,NORMAL);
 	    *_id_flag = 1;
 	}else{
@@ -225,7 +225,7 @@ void _generate_range(char * name_of_case,int * _id_flag,int * tab,int * begin, i
 	}
     }
 }
-int _next_range(int * tab, int * begin, int * end, int * step, size_t size){
+int _next_range_lassert(int * tab, int * begin, int * end, int * step, size_t size){
     int rest     = 1;
     long long id = (long long)(size - 1);
 
@@ -239,7 +239,7 @@ int _next_range(int * tab, int * begin, int * end, int * step, size_t size){
     }while(rest && id >= 0);
 
     if(id < 0)
-	_in_case(0);
+	_in_case_lassert(0);
     
     return id >= 0;
 }
@@ -262,23 +262,23 @@ int using_time_asked(void){
 #define EPSILON_LASSERT 1e-6
     
 #define COPY(type,var) type var = var
-    
-#define TEST_CASE(NAME_OF_TEST)				\
-    if(*_old_flag < __LINE__){				\
-	_tab_lassert = NULL;				\
-	if(*_id_flag == 1)				\
-	    _failed_test_case(1,0);			\
-	else if(!*_id_flag)				\
-	    _succeeded_test_case(1,0);			\
-	else if(*_id_flag == 2)				\
-	    _not_null_failed_test_case(1,0);		\
-	_start_test(name_of_test,1,1);			\
-	strcpy(name_of_test,#NAME_OF_TEST);		\
-	_start_running(1);				\
-	_in_case(1);					\
-	*_id_flag = 0;					\
-    }							\
-    while(*_old_flag < __LINE__ && _start_running(0))
+
+#define TEST_CASE(NAME_OF_TEST)					\
+    if(*_old_flag < __LINE__){					\
+	_tab_lassert = NULL;					\
+	if(*_id_flag == 1)					\
+	    _failed_test_case(1,0);				\
+	else if(!*_id_flag)					\
+	    _succeeded_test_case(1,0);				\
+	else if(*_id_flag == 2)					\
+	    _not_null_failed_test_case(1,0);			\
+	_start_test_lassert(name_of_test,1,1);			\
+	strcpy(name_of_test,#NAME_OF_TEST);			\
+	_start_running_lassert(1);				\
+	_in_case_lassert(1);					\
+	*_id_flag = 0;						\
+    }								\
+    while(*_old_flag < __LINE__ && _start_running_lassert(0))
 
 #define RAND_CASE(NAME_OF_TEST,var_name,nb_of_values,nb_of_time,ranges...) \
     int var_name[nb_of_values] = {0};					\
@@ -291,16 +291,16 @@ int using_time_asked(void){
 	    _succeeded_test_case(1,0);					\
 	else if(*_id_flag == 2)						\
 	    _not_null_failed_test_case(1,0);				\
-	_start_test(name_of_test,1,1);					\
+	_start_test_lassert(name_of_test,1,1);				\
 	_size_of_tab = nb_of_values;					\
 	_tab_lassert = var_name;					\
 	strcpy(name_of_test,#NAME_OF_TEST);				\
-	_start_running(nb_of_values);					\
-	_in_case(!*_id_flag);						\
+	_start_running_lassert(nb_of_values);				\
+	_in_case_lassert(!*_id_flag);					\
 	*_id_flag = 0;							\
-	_generate_tab(#NAME_OF_TEST,_id_flag,var_name##begin,var_name##end,nb_of_values,#ranges,ranges); \
+	_generate_tab_lassert(#NAME_OF_TEST,_id_flag,var_name##begin,var_name##end,nb_of_values,#ranges,ranges); \
     }									\
-    while(*_old_flag < __LINE__ && (_next_rand_tab(var_name,var_name##begin,var_name##end,nb_of_values),_start_running(0)) && !*_id_flag)
+    while(*_old_flag < __LINE__ && (_next_rand_tab_lassert(var_name,var_name##begin,var_name##end,nb_of_values),_start_running_lassert(0)) && !*_id_flag)
 
 #define RANGE_CASE(NAME_OF_TEST,var_name,nb_of_values,ranges...)	\
     int var_name[nb_of_values] = {0};					\
@@ -308,38 +308,38 @@ int using_time_asked(void){
     int var_name##_end[nb_of_values] = {0};				\
     int var_name##_step[nb_of_values] = {0};				\
     if(*_old_flag < __LINE__){						\
-	_size_of_tab = nb_of_values;					\
-	_tab_lassert = var_name;					\
-	if(*_id_flag == 1)						\
-	    _failed_test_case(1,0);					\
-	else if(!*_id_flag)						\
-	    _succeeded_test_case(1,0);					\
-	else if(*_id_flag == 2)						\
-	    _not_null_failed_test_case(1,0);				\
-	_start_test(name_of_test,1,1);					\
-	strcpy(name_of_test,#NAME_OF_TEST);				\
-	*_id_flag = 0;							\
-	_generate_range(#NAME_OF_TEST,_id_flag,var_name,var_name##_begin,var_name##_end,var_name##_step,nb_of_values,#ranges,ranges); \
-	_in_case(1);							\
-    }									\
-    while(*_old_flag < __LINE__ && _next_range(var_name,var_name##_begin,var_name##_end,var_name##_step,nb_of_values) && !*_id_flag)
+			      _size_of_tab = nb_of_values;		\
+			      _tab_lassert = var_name;			\
+			      if(*_id_flag == 1)			\
+				  _failed_test_case(1,0);		\
+			      else if(!*_id_flag)			\
+				  _succeeded_test_case(1,0);		\
+			      else if(*_id_flag == 2)			\
+				  _not_null_failed_test_case(1,0);	\
+			      _start_test_lassert(name_of_test,1,1);	\
+			      strcpy(name_of_test,#NAME_OF_TEST);	\
+			      *_id_flag = 0;				\
+			      _generate_range_lassert(#NAME_OF_TEST,_id_flag,var_name,var_name##_begin,var_name##_end,var_name##_step,nb_of_values,#ranges,ranges); \
+			      _in_case_lassert(1);			\
+			      }						\
+    while(*_old_flag < __LINE__ && _next_range_lassert(var_name,var_name##_begin,var_name##_end,var_name##_step,nb_of_values) && !*_id_flag)
 
 #define REQUIRE(bool){							\
 	if(*_old_flag < __LINE__){					\
-	    if(!_in_case(-1))						\
-		_start_test(NULL,1,0);					\
+	    if(!_in_case_lassert(-1))					\
+		_start_test_lassert(NULL,1,0);				\
 	    if(!(bool)){						\
-		if(_in_case(-1)){					\
+		if(_in_case_lassert(-1)){				\
 		    *_has_to_quit = __LINE__;				\
 		    printf("\n%s%s test_case :%s\n",MAGENTA,name_of_test,NORMAL); \
-		    printf("\t%s%llu test(s) passed%s\n",GREEN, nb_tests(1),NORMAL); \
+		    printf("\t%s%llu test(s) passed%s\n",GREEN, _nb_tests_lassert(1),NORMAL); \
 		    _REQUIRE_CASE_failed(#bool);			\
 		    if(_tab_lassert){					\
 			printf("\t%sFailed on this sequence :\n\t\t",RED); \
 			for(unsigned _id = 0; _id < _size_of_tab; ++_id) \
 			    printf("%d ",_tab_lassert[_id]);		\
 		    }							\
-		    _in_case(0);					\
+		    _in_case_lassert(0);				\
 		    *_id_flag = 1;					\
 		}else							\
 		    _REQUIRE_failed(#bool);				\
@@ -353,23 +353,23 @@ int using_time_asked(void){
  * @param ptr : pointer to be tested
  */
 #define REQUIRE_NOT_NULL(ptr){						\
-	if(*_old_flag < __LINE__){					\
-	    if(!_in_case(-1))						\
-		_start_test(NULL,1,0);					\
-	    if(!(ptr)){							\
-		if(_in_case(-1)){					\
-		    *_has_to_quit = __LINE__;				\
-		    printf("\n%s%s test_case :%s\n",MAGENTA,name_of_test,NORMAL); \
-		    printf("\t%s%llu test(s) passed%s\n",GREEN, nb_tests(1),NORMAL); \
-		    _REQUIRE_CASE_not_null_failed(#ptr);		\
-		    _in_case(0);					\
-		    *_id_flag = 2;					\
-		}else							\
-		    _REQUIRE_not_null_failed(#ptr);			\
-		return;							\
-	    }								\
-	}								\
-    }
+			      if(*_old_flag < __LINE__){		\
+							if(!_in_case_lassert(-1)) \
+							    _start_test_lassert(NULL,1,0); \
+							if(!(ptr)){	\
+								   if(_in_case_lassert_lassert(-1)){ \
+												    *_has_to_quit = __LINE__; \
+												    printf("\n%s%s test_case :%s\n",MAGENTA,name_of_test,NORMAL); \
+												    printf("\t%s%llu test(s) passed%s\n",GREEN, _nb_tests_lassert(1),NORMAL); \
+												    _REQUIRE_CASE_not_null_failed(#ptr); \
+												    _in_case_lassert(0); \
+												    *_id_flag = 2; \
+												    }else \
+								       _REQUIRE_not_null_failed(#ptr); \
+								   return; \
+								   }	\
+							}		\
+			      }
 
 #define EQ(VAL1,VAL2)							\
     if(VAL2 - EPSILON_LASSERT > VAL1 || VAL1 - EPSILON_LASSERT > VAL2){	\
@@ -392,7 +392,7 @@ int using_time_asked(void){
 	       "BEGIN OF SECTION %s %s\n",BLUE,#name,NORMAL);		\
 	_succeeded_test_case(0,1);					\
 	_not_null_failed_test_case(0,1);				\
-	_start_test(NULL,0,0);						\
+	_start_test_lassert(NULL,0,0);					\
 	_failed_test_case(0,1);						\
 									\
 	if(using_time_asked())						\
@@ -411,7 +411,7 @@ int using_time_asked(void){
 	    _succeeded_test_case(1,0);					\
 	else if(id == 2)						\
 	    _not_null_failed_test_case(1,0);				\
-	_start_test(#name,1,1);						\
+	_start_test_lassert(#name,1,1);					\
 	printf("\n%sEND OF SECTION %s %s\n", BLUE, #name, NORMAL);	\
 	if(using_time_asked())						\
 	    printf("%sExecuting section took : %fs%s\n",CYAN,INTERVAL_TIME_LASSERT(start,end),NORMAL); \
@@ -435,9 +435,9 @@ int using_time_asked(void){
 /* -----------------------------
  *            GNU and auto main
  */
-    int main(){
-	return 0;
-    }
+	    int main(){
+		return 0;
+	    }
 #else
 /* -----------------------------------
  *            none GNU or manual main
