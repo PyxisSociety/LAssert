@@ -258,7 +258,7 @@ int _next_range_lassert(int * tab, int * begin, int * end, int * step, size_t si
     return id >= 0;
 }
 double time_used(void){
-#ifdef LASSERT_EXEC_TIME
+#ifdef LASSERT_SECTION_TIME
     TIME_LASSERT(start);
     return (double)start;
 #else
@@ -266,7 +266,7 @@ double time_used(void){
 #endif
 }
 int using_time_asked(void){
-#ifdef LASSERT_EXEC_TIME
+#ifdef LASSERT_SECTION_TIME
     return 1;
 #else
     return 0;

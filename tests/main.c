@@ -1,13 +1,10 @@
 //#define LASSERT_MANUAL_MAIN
 
-//#define TIME_TEST
-
-#ifdef TIME_TEST
-#define LASSERT_EXEC_TIME
-#endif
+#define LASSERT_SECTION_TIME
 
 #include "../LAssert.h"
 
+#ifndef LASSERT_SECTION_TIME
 TEST_SECTION(tralala){
     
     TEST_CASE(tralalatsointsoin){
@@ -101,7 +98,7 @@ TEST_SECTION(equal_test){
 	EQ(.7,.6);
     }
 }
-
+#else
 long long unsigned factorial(unsigned i){
     long long unsigned res = 1;
     for(unsigned j = 2; j < i; ++j)
@@ -114,6 +111,7 @@ TEST_SECTION(time_test){
 	for(unsigned i = 0; i < 100; ++i)
 	    factorial(100000);
 }
+#endif
 
 #ifdef LASSERT_MANUAL_MAIN
 int main(int argc, char ** argv){
