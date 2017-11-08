@@ -4,7 +4,6 @@
 
 #include "../LAssert.h"
 
-#ifndef LASSERT_SECTION_TIME
 TEST_SECTION(tralala){
     
     TEST_CASE(tralalatsointsoin){
@@ -98,7 +97,8 @@ TEST_SECTION(equal_test){
 	EQ(.7,.6);
     }
 }
-#else
+
+#ifdef LASSERT_SECTION_TIME
 long long unsigned factorial(unsigned i){
     long long unsigned res = 1;
     for(unsigned j = 2; j < i; ++j)
@@ -115,7 +115,7 @@ TEST_SECTION(time_test){
 
 #ifdef LASSERT_MANUAL_MAIN
 int main(int argc, char ** argv){
-    #ifdef TIME_TEST
+    #ifdef LASSERT_SECTION_TIME
     if(argc < 2){
 	RUN_SECTION(tralala);
 	RUN_SECTION(un_bon_gros_test);

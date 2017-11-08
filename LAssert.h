@@ -40,14 +40,14 @@
 #endif
 
 char * _get_color_lassert(int i){
-    static char * s[] = {"\x1B[0m","\x1B[31m","\x1B[32m","\x1B[33m","\x1B[34m","\x1B[35m","\x1B[36m"};
+    static char s[7][10] = {"\x1B[0m","\x1B[31m","\x1B[32m","\x1B[33m","\x1B[34m","\x1B[35m","\x1B[36m"};
     static int is_init = 0;
     unsigned j;
     
     if(!is_init){
-	if(!isatty(2))
-	    for(j = 0; j < 7; ++i)
-		s[0] = 0;
+	if(!isatty(1))
+	    for(j = 0; j < 7; ++j)
+		s[j][0] = 0;
 	is_init = 1;
     }
 
@@ -72,18 +72,18 @@ void _init_rand_lassert(void){
 }
 void _REQUIRE_CASE_failed(char * statement){
     if(statement)
-	fprintf(stderr,"\t%sFailed statement case :\n\t\t%s %s\n",RED, statement,NORMAL);
+	printf("\t%sFailed statement case :\n\t\t%s %s\n",RED, statement,NORMAL);
     else
-	fprintf(stderr,"%sA test failed but statement could not be read (NULL PTR)%s\n",RED,NORMAL);
+	printf("%sA test failed but statement could not be read (NULL PTR)%s\n",RED,NORMAL);
 }
 void _REQUIRE_CASE_succeed(void){
     _nb_tests_lassert(0);
 }
 void _REQUIRE_CASE_not_null_failed(char * ptr){
     if(ptr)
-	fprintf(stderr,"\t%sFailed to allocate a pointer :\n\t\t%s %s\n",YELLOW,ptr,NORMAL);
+	printf("\t%sFailed to allocate a pointer :\n\t\t%s %s\n",YELLOW,ptr,NORMAL);
     else
-	fprintf(stderr,"%sFailed to allocate a pointer :\n\t%sCouldn't read pointer's name%s\n",YELLOW,RED,NORMAL);
+	printf("%sFailed to allocate a pointer :\n\t%sCouldn't read pointer's name%s\n",YELLOW,RED,NORMAL);
 }
 int _start_test_lassert(char * s,int option,int set_start){
     static int started = 0;
@@ -112,9 +112,11 @@ int _in_case_lassert(int option){
 int _start_running_lassert(int option){
     static int old = 0;
     int res = old;
-    if(option){
+    if(option > 0){
 	_in_case_lassert(1);
 	old = option;
+    }else if(option){
+	old = 0;
     }else{
 	if(old)
 	    --old;
@@ -152,12 +154,12 @@ void _REQUIRE_succeed(char * statement){
 }
 void _REQUIRE_failed(char * statement){
     if(statement)
-	fprintf(stderr,"\n%sFailed statement outside a test case :\n\t%s %s\n", RED,statement,NORMAL);
+	printf("\n%sFailed statement outside a test case :\n\t%s %s\n", RED,statement,NORMAL);
     _failed_test_case(1,0);
 }
 void _REQUIRE_not_null_failed(char * statement){
     if(statement)
-	fprintf(stderr,"\n%sFailed to allocate outside a test case :\n\t%s %s\n",YELLOW, statement,NORMAL);
+	printf("\n%sFailed to allocate outside a test case :\n\t%s %s\n",YELLOW, statement,NORMAL);
     _failed_test_case(1,0);
 }
 void _generate_tab_lassert(char * name_of_case,int * _id_flag,int * begin,int * end, unsigned size, char * attributes, ... ){
@@ -174,10 +176,10 @@ void _generate_tab_lassert(char * name_of_case,int * _id_flag,int * begin,int * 
 	}
 
 	if(number_of_parameter&1){
-	    fprintf(stderr,"\n%s%s test_case :%s\n",MAGENTA,name_of_case,NORMAL);
-	    fprintf(stderr,"\t%s%llu test(s) passed%s\n",GREEN, _nb_tests_lassert(1),NORMAL);
-	    fprintf(stderr,"\t%sBad parameter in a RAND_CASE :\n\t\t%s\n\t\tSize of list should be even%s\n",RED,attributes,NORMAL);
-	    while(_start_running_lassert(0));
+	    printf("\n%s%s test_case :%s\n",MAGENTA,name_of_case,NORMAL);
+	    printf("\t%s%llu test(s) passed%s\n",GREEN, _nb_tests_lassert(1),NORMAL);
+	    printf("\t%sBad parameter in a RAND_CASE :\n\t\t%s\n\t\tSize of list should be even%s\n",RED,attributes,NORMAL);
+	    _start_running_lassert(-1);
 	    *_id_flag = 1;
 	}else{
 	    va_start(vl,attributes);
@@ -215,9 +217,9 @@ void _generate_range_lassert(char * name_of_case,int * _id_flag,int * tab,int * 
 	}
 
 	if(number_of_parameter%3){
-	    fprintf(stderr,"\n%s%s test_case :%s\n",MAGENTA,name_of_case,NORMAL);
-	    fprintf(stderr,"\t%s%llu test(s) passed%s\n",GREEN, _nb_tests_lassert(1),NORMAL);
-	    fprintf(stderr,"\t%sBad parameter in a RANGE_CASE :\n\t\t%s\n\t\tSize of list should be a multiple of 3%s\n",RED,attributes,NORMAL);
+	    printf("\n%s%s test_case :%s\n",MAGENTA,name_of_case,NORMAL);
+	    printf("\t%s%llu test(s) passed%s\n",GREEN, _nb_tests_lassert(1),NORMAL);
+	    printf("\t%sBad parameter in a RANGE_CASE :\n\t\t%s\n\t\tSize of list should be a multiple of 3%s\n",RED,attributes,NORMAL);
 	    *_id_flag = 1;
 	}else{
 	    va_start(vl,attributes);
@@ -345,13 +347,13 @@ int using_time_asked(void){
 	    if(!(bool)){						\
 		if(_in_case_lassert(-1)){				\
 		    *_has_to_quit = __LINE__;				\
-		    fprintf(stderr,"\n%s%s test_case :%s\n",MAGENTA,name_of_test,NORMAL); \
-		    fprintf(stderr,"\t%s%llu test(s) passed%s\n",GREEN, _nb_tests_lassert(1),NORMAL); \
+		    printf("\n%s%s test_case :%s\n",MAGENTA,name_of_test,NORMAL); \
+		    printf("\t%s%llu test(s) passed%s\n",GREEN, _nb_tests_lassert(1),NORMAL); \
 		    _REQUIRE_CASE_failed(#bool);			\
 		    if(_tab_lassert){					\
-			fprintf(stderr,"\t%sFailed on this sequence :\n\t\t",RED); \
+			printf("\t%sFailed on this sequence :\n\t\t",RED); \
 			for(unsigned _id = 0; _id < _size_of_tab; ++_id) \
-			    fprintf(stderr,"%d ",_tab_lassert[_id]);	\
+			    printf("%d ",_tab_lassert[_id]);	\
 		    }							\
 		    _in_case_lassert(0);				\
 		    *_id_flag = 1;					\
@@ -373,8 +375,8 @@ int using_time_asked(void){
 	    if(!(ptr)){							\
 		if(_in_case_lassert(-1)){				\
 		    *_has_to_quit = __LINE__;				\
-		    fprintf(stderr,"\n%s%s test_case :%s\n",MAGENTA,name_of_test,NORMAL); \
-		    fprintf(stderr,"\t%s%llu test(s) passed%s\n",GREEN, _nb_tests_lassert(1),NORMAL); \
+		    printf("\n%s%s test_case :%s\n",MAGENTA,name_of_test,NORMAL); \
+		    printf("\t%s%llu test(s) passed%s\n",GREEN, _nb_tests_lassert(1),NORMAL); \
 		    _REQUIRE_CASE_not_null_failed(#ptr);		\
 		    _in_case_lassert(0);				\
 		    *_id_flag = 2;					\
@@ -387,10 +389,10 @@ int using_time_asked(void){
 
 #define EQ(VAL1,VAL2)							\
     if(VAL2 - EPSILON_LASSERT > VAL1 || VAL1 - EPSILON_LASSERT > VAL2){	\
-								       REQUIRE(VAL1 == VAL2); \
-								       }else{ \
-									     REQUIRE(1); \
-									     }
+	REQUIRE(VAL1 == VAL2);						\
+    }else{								\
+	REQUIRE(1);							\
+    }
 
 #define TEST_SECTION(name)						\
     void _test_##name##_lassert( char *,int *, char[512], int, int*, int*, int *); \
@@ -401,9 +403,9 @@ int using_time_asked(void){
 	char log[512];							\
 	double start,end;						\
 	int id = -1, i = 1, old = 0;					\
-	fprintf(stderr,"%s------------------------------"		\
-		"------------------------------\n"			\
-		"BEGIN OF SECTION %s %s\n",BLUE,#name,NORMAL);		\
+	printf("%s------------------------------"			\
+	       "------------------------------\n"			\
+	       "BEGIN OF SECTION %s %s\n",BLUE,#name,NORMAL);		\
 	_succeeded_test_case(0,1);					\
 	_not_null_failed_test_case(0,1);				\
 	_start_test_lassert(NULL,0,0);					\
@@ -426,20 +428,20 @@ int using_time_asked(void){
 	else if(id == 2)						\
 	    _not_null_failed_test_case(1,0);				\
 	_start_test_lassert(#name,1,1);					\
-	fprintf(stderr,"\n%sEND OF SECTION %s %s\n", BLUE, #name, NORMAL); \
+	printf("\n%sEND OF SECTION %s %s\n", BLUE, #name, NORMAL);	\
 	if(using_time_asked())						\
-	    fprintf(stderr,"%sExecuting section took : %fs%s\n",CYAN,INTERVAL_TIME_LASSERT(start,end),NORMAL); \
+	    printf("%sExecuting section took : %fs%s\n",CYAN,INTERVAL_TIME_LASSERT(start,end),NORMAL); \
 	if(_failed_test_case(0,0))					\
-	    fprintf(stderr,"%sFailed : %d test_case(s)%s\n",RED,_failed_test_case(0,0),NORMAL); \
+	    printf("%sFailed : %d test_case(s)%s\n",RED,_failed_test_case(0,0),NORMAL); \
 	if(_succeeded_test_case(0,0))					\
-	    fprintf(stderr,"%sSucceeded : %d test_case(s)%s\n",GREEN,_succeeded_test_case(0,0),NORMAL); \
+	    printf("%sSucceeded : %d test_case(s)%s\n",GREEN,_succeeded_test_case(0,0),NORMAL); \
 	if(_not_null_failed_test_case(0,0))				\
-	    fprintf(stderr,"%sStopped due to NULL pointer : %d test_case(s)%s\n",YELLOW,_not_null_failed_test_case(0,0),NORMAL); \
+	    printf("%sStopped due to NULL pointer : %d test_case(s)%s\n",YELLOW,_not_null_failed_test_case(0,0),NORMAL); \
 	if(!_succeeded_test_case(0,0) && !_failed_test_case(0,0))	\
-	    fprintf(stderr,"%sEMPTY TEST SECTION%s\n",CYAN, NORMAL);	\
-	fprintf(stderr,"%s------------------------------"		\
-		"------------------------------%s\n\n",			\
-		BLUE,NORMAL);						\
+	    printf("%sEMPTY TEST SECTION%s\n",CYAN, NORMAL);		\
+	printf("%s------------------------------"			\
+	       "------------------------------%s\n\n",			\
+	       BLUE,NORMAL);						\
     }									\
     void _test_##name##_lassert(char * name_of_test, int * _id_flag, char _log_lassert[512], int _size_of_tab,int * _tab_lassert, int * _has_to_quit, int * _old_flag)
 
@@ -449,9 +451,9 @@ int using_time_asked(void){
 /* -----------------------------
  *            GNU and auto main
  */
-		int main(){
-		    return 0;
-		}
+int main(){
+    return 0;
+}
 #else
 /* -----------------------------------
  *            none GNU or manual main
