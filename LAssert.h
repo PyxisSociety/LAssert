@@ -279,6 +279,8 @@ int using_time_asked(void){
     
 #define COPY(type,var) type var = var
 
+#define ONCE if(*_old_flag < __LINE__ && (_start_running_lassert(1) || 1)) while(_start_running_lassert(0))
+
 #define TEST_CASE(NAME_OF_TEST)					\
     if(*_old_flag < __LINE__){					\
 	_tab_lassert = NULL;					\

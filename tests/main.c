@@ -83,7 +83,12 @@ TEST_SECTION(copy_test){
 	REQUIRE(i);
     }
 
-    puts("Display twice if problem not solved");
+    /* ONCE has to be put if there are test cases AND code not inside a test_case for the last one not to be done more than once */
+    ONCE puts("Display twice if problem not solved");
+
+    ONCE {
+	puts("A block displayed only once");
+    }
     
     TEST_CASE(should_failed){
 	REQUIRE(i);
