@@ -138,4 +138,4 @@ Here is what each macro means in case you did not guess :
   * an unlimited number of ranges that have the form `begin, end, step`
 * **COPY** : copy a variable of a section in a test case so that the modifications brought by the test case will only be effective in it
 * **ONCE** : prevent a code inside a section but outside a test case to be called more than once<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This problem can occure when you mix up test cases and code not inside test cases
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This problem can occure when you mix up test cases and code not inside test cases
