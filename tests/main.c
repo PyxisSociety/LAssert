@@ -1,6 +1,6 @@
 //#define LASSERT_MANUAL_MAIN
 
-#define LASSERT_SECTION_TIME
+//#define LASSERT_SECTION_TIME
 
 #include "../LAssert.h"
 
@@ -35,7 +35,7 @@ TEST_SECTION(un_bon_gros_test){
 
 	REQUIRE_NOT_NULL(j);
 
-	printf("j == %d\n",*j);
+	printf("j == %p\n",(void*)j);
 
 	free(j);
     }
