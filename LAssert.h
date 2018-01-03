@@ -361,7 +361,7 @@ int _va_arg_not_empty_lassert(char * va_arg_str){
 
 #define LOG_MESSAGE_LASSERT(...)					\
     if(_va_arg_not_empty_lassert(#__VA_ARGS__)){			\
-	printf("\n\t%slog message :%s\n",YELLOW,NORMAL);		\
+	printf("\t%slog message :%s\n",YELLOW,NORMAL);			\
 	_log_message_lassert(__VA_ARGS__);				\
 	puts(NORMAL);							\
     }
