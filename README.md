@@ -20,7 +20,7 @@ TEST_SECTION(Section1){
 	REQUIRE(1); /* a succesful require */
 
 	TEST_CASE(Case1){
-		REQUIRE(0); /* an unsuccesful require resulting in an unsuccesful test case */
+		REQUIRE(0, "error message %d", 5); /* an unsuccesful require resulting in an unsuccesful test case */
 		puts("This text will not be printed");
 	}
 
@@ -33,7 +33,7 @@ TEST_SECTION(Section1){
 TEST_SECTION(Section2){
 	int * p = (int*)malloc(sizeof(int));
 
-	REQUIRE_NOT_NULL(p); /* will fail if p is NULL, not the same error log as require if failed */
+	REQUIRE_NOT_NULL(p, "will be shown only if malloc failed"); /* will fail if p is NULL, not the same error log as require if failed */
 
 	*p = 2;
 
@@ -47,7 +47,7 @@ TEST_SECTION(equal_test){
     EQ( .3,.300000001);
 
     TEST_CASE(should_failed){
-	EQ(.7,.6);
+	EQ(.7,.6, "it is not possible");
     }
 }
 
