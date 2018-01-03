@@ -67,6 +67,9 @@ Here is what each macro means in case you did not guess :
 * **REQUIRE_NOT_NULL** : same as **REQUIRE** but with a different log message on fail
 * **RUN_SECTION** : manually run a test section
 * **EQ** : test if two numbers are equals (useful for floating point numbers)
+
+__NOTE :__ As you may have noticed, you can add formatted string like printf parameters to REQUIRE, REQUIRE_NOT_NULL and EQ macros. This formatted string will be shown only when the test will fail.
+_WARNING :_ On contrary to printf first argument, it has to be a string constant, not a variable (even variable constants are not allowed)
 #### Advanced macros
 The code below show all the other macros you can use in LAssert :
 ```c
