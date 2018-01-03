@@ -288,8 +288,18 @@ int _va_arg_not_empty_lassert(char * va_arg_str){
 
     while(va_arg_str[i] && va_arg_str[i] != ',')
 	++i;
+    ++i;
 
-    return va_arg_str[i] && va_arg_str[i + 1];
+    while(va_arg_str[i] == ' ')
+	++i;
+
+    if(va_arg_str[i] == '"' && va_arg_str[i + 1] == '"'){
+	i += 2;
+	while(va_arg_str[i] == ' ')
+	    ++i;
+    }
+
+    return va_arg_str[i] != 0;
 }
 
 #define EPSILON_LASSERT 1e-6
