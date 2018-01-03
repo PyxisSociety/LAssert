@@ -13,7 +13,7 @@ TEST_SECTION(tralala){
 	REQUIRE(i == 0);
     }
 
-    REQUIRE( 1 );
+    REQUIRE( 1 , "Ah que coucou Johnny" );
 
     TEST_CASE(tralalapastsointsoin){
 	unsigned j = 3;
@@ -25,7 +25,7 @@ TEST_SECTION(tralala){
     }
 
     TEST_CASE(plop){
-	REQUIRE_NOT_NULL( NULL );
+	REQUIRE_NOT_NULL( NULL , "oups, null pointer");
     }
 }
 

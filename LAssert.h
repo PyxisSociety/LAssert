@@ -274,6 +274,23 @@ int using_time_asked(void){
     return 0;
 #endif
 }
+void _log_message_lassert(char * useless, ...){
+    va_list vl;
+    char * format;
+
+    va_start(vl, useless);
+    format = va_arg(vl, char *);
+    vprintf(format, vl);
+    va_end(vl);
+}
+int _va_arg_not_empty_lassert(char * va_arg_str){
+    int i = 0;
+
+    while(va_arg_str[i] && va_arg_str[i] != ',')
+	++i;
+
+    return va_arg_str[i] && va_arg_str[i + 1];
+}
 
 #define EPSILON_LASSERT 1e-6
     
@@ -342,7 +359,14 @@ int using_time_asked(void){
     }									\
     while(*_old_flag < __LINE__ && _next_range_lassert(var_name,var_name##_begin,var_name##_end,var_name##_step,nb_of_values) && !*_id_flag)
 
-#define REQUIRE(bool){							\
+#define LOG_MESSAGE_LASSERT(...)					\
+    if(_va_arg_not_empty_lassert(#__VA_ARGS__)){			\
+	printf("\n\t%slog message :%s\n",YELLOW,NORMAL);		\
+	_log_message_lassert(__VA_ARGS__);				\
+	puts(NORMAL);							\
+    }
+
+#define REQUIRE(bool,...){						\
 	if(*_old_flag < __LINE__){					\
 	    if(!_in_case_lassert(-1))					\
 		_start_test_lassert(NULL,1,0);				\
@@ -351,6 +375,7 @@ int using_time_asked(void){
 		    *_has_to_quit = __LINE__;				\
 		    printf("\n%s%s test_case :%s\n",MAGENTA,name_of_test,NORMAL); \
 		    printf("\t%s%llu test(s) passed%s\n",GREEN, _nb_tests_lassert(1),NORMAL); \
+		    LOG_MESSAGE_LASSERT(#bool,""__VA_ARGS__);		\
 		    _REQUIRE_CASE_failed(#bool);			\
 		    if(_tab_lassert){					\
 			printf("\t%sFailed on this sequence :\n\t\t",RED); \
@@ -366,11 +391,7 @@ int using_time_asked(void){
 	}								\
     }
 
-/**
- * @brief Test if a pointer is not NULL (not considered an error but stop the tests)
- * @param ptr : pointer to be tested
- */
-#define REQUIRE_NOT_NULL(ptr){						\
+#define REQUIRE_NOT_NULL(ptr,...){						\
 	if(*_old_flag < __LINE__){					\
 	    if(!_in_case_lassert(-1))					\
 		_start_test_lassert(NULL,1,0);				\
@@ -379,6 +400,7 @@ int using_time_asked(void){
 		    *_has_to_quit = __LINE__;				\
 		    printf("\n%s%s test_case :%s\n",MAGENTA,name_of_test,NORMAL); \
 		    printf("\t%s%llu test(s) passed%s\n",GREEN, _nb_tests_lassert(1),NORMAL); \
+		    LOG_MESSAGE_LASSERT(#ptr,""__VA_ARGS__);		\
 		    _REQUIRE_CASE_not_null_failed(#ptr);		\
 		    _in_case_lassert(0);				\
 		    *_id_flag = 2;					\
@@ -389,9 +411,9 @@ int using_time_asked(void){
 	}								\
     }
 
-#define EQ(VAL1,VAL2)							\
+#define EQ(VAL1,VAL2,...)						\
     if(VAL2 - EPSILON_LASSERT > VAL1 || VAL1 - EPSILON_LASSERT > VAL2){	\
-	REQUIRE(VAL1 == VAL2);						\
+	REQUIRE(VAL1 == VAL2,__VA_ARGS__);				\
     }else{								\
 	REQUIRE(1);							\
     }
