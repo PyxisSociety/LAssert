@@ -375,7 +375,6 @@ int _va_arg_not_empty_lassert(char * va_arg_str){
 		    *_has_to_quit = __LINE__;				\
 		    printf("\n%s%s test_case :%s\n",MAGENTA,name_of_test,NORMAL); \
 		    printf("\t%s%llu test(s) passed%s\n",GREEN, _nb_tests_lassert(1),NORMAL); \
-		    LOG_MESSAGE_LASSERT(#bool,""__VA_ARGS__);		\
 		    _REQUIRE_CASE_failed(#bool);			\
 		    if(_tab_lassert){					\
 			printf("\t%sFailed on this sequence :\n\t\t",RED); \
@@ -386,12 +385,13 @@ int _va_arg_not_empty_lassert(char * va_arg_str){
 		    *_id_flag = 1;					\
 		}else							\
 		    _REQUIRE_failed(#bool);				\
+		LOG_MESSAGE_LASSERT(#bool,""__VA_ARGS__);		\
 		return;							\
 	    }								\
 	}								\
     }
 
-#define REQUIRE_NOT_NULL(ptr,...){						\
+#define REQUIRE_NOT_NULL(ptr,...){					\
 	if(*_old_flag < __LINE__){					\
 	    if(!_in_case_lassert(-1))					\
 		_start_test_lassert(NULL,1,0);				\
@@ -400,12 +400,12 @@ int _va_arg_not_empty_lassert(char * va_arg_str){
 		    *_has_to_quit = __LINE__;				\
 		    printf("\n%s%s test_case :%s\n",MAGENTA,name_of_test,NORMAL); \
 		    printf("\t%s%llu test(s) passed%s\n",GREEN, _nb_tests_lassert(1),NORMAL); \
-		    LOG_MESSAGE_LASSERT(#ptr,""__VA_ARGS__);		\
 		    _REQUIRE_CASE_not_null_failed(#ptr);		\
 		    _in_case_lassert(0);				\
 		    *_id_flag = 2;					\
 		}else							\
 		    _REQUIRE_not_null_failed(#ptr);			\
+		LOG_MESSAGE_LASSERT(#ptr,""__VA_ARGS__);		\
 		return;							\
 	    }								\
 	}								\
