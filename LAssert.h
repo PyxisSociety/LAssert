@@ -85,16 +85,12 @@ void _REQUIRE_CASE_not_null_failed(char * ptr){
     else
 	printf("%sFailed to allocate a pointer :\n\t%sCouldn't read pointer's name%s\n",YELLOW,RED,NORMAL);
 }
-int _start_test_lassert(char * s,int option,int set_start){
+int _start_test_lassert(int option,int set_start){
     static int started = 0;
-    static char * statement;
 
     if(option){
-	if(started){
-	    statement = s;
-	}else{
+	if(!started){
 	    started = set_start;
-	    statement = s;
 	}
 	_nb_tests_lassert(-1);
     }else
@@ -149,7 +145,7 @@ int _not_null_failed_test_case(int option, int reset){
 	count += option;
     return count;
 }
-void _REQUIRE_succeed(char * statement){
+void _REQUIRE_succeed(void){
     _succeeded_test_case(1,0);
 }
 void _REQUIRE_failed(char * statement){
@@ -195,7 +191,7 @@ void _generate_tab_lassert(char * name_of_case,int * _id_flag,int * begin,int * 
 	}
     }
 }
-void _next_rand_tab_lassert(int * tab, int * begin, int * end, int size){
+void _next_rand_tab_lassert(int * tab, int * begin, int * end, unsigned size){
     for(unsigned i = 0; i < size; ++i){
 	if(end[i] != begin[i])
 	    tab[i] = rand()%(end[i] - begin[i]) + begin[i];
@@ -317,7 +313,7 @@ int _va_arg_not_empty_lassert(char * va_arg_str){
 	    _succeeded_test_case(1,0);				\
 	else if(*_id_flag == 2)					\
 	    _not_null_failed_test_case(1,0);			\
-	_start_test_lassert(name_of_test,1,1);			\
+	_start_test_lassert(1,1);				\
 	strcpy(name_of_test,#NAME_OF_TEST);			\
 	_start_running_lassert(1);				\
 	_in_case_lassert(1);					\
@@ -336,7 +332,7 @@ int _va_arg_not_empty_lassert(char * va_arg_str){
 	    _succeeded_test_case(1,0);					\
 	else if(*_id_flag == 2)						\
 	    _not_null_failed_test_case(1,0);				\
-	_start_test_lassert(name_of_test,1,1);				\
+	_start_test_lassert(1,1);					\
 	_size_of_tab = nb_of_values;					\
 	_tab_lassert = var_name;					\
 	strcpy(name_of_test,#NAME_OF_TEST);				\
@@ -361,7 +357,7 @@ int _va_arg_not_empty_lassert(char * va_arg_str){
 	    _succeeded_test_case(1,0);					\
 	else if(*_id_flag == 2)						\
 	    _not_null_failed_test_case(1,0);				\
-	_start_test_lassert(name_of_test,1,1);				\
+	_start_test_lassert(1,1);					\
 	strcpy(name_of_test,#NAME_OF_TEST);				\
 	*_id_flag = 0;							\
 	_generate_range_lassert(#NAME_OF_TEST,_id_flag,var_name,var_name##_begin,var_name##_end,var_name##_step,nb_of_values,#ranges,ranges); \
@@ -379,7 +375,7 @@ int _va_arg_not_empty_lassert(char * va_arg_str){
 #define REQUIRE(bool,...){						\
 	if(*_old_flag < __LINE__){					\
 	    if(!_in_case_lassert(-1))					\
-		_start_test_lassert(NULL,1,0);				\
+		_start_test_lassert(1,0);				\
 	    if(!(bool)){						\
 		if(_in_case_lassert(-1)){				\
 		    *_has_to_quit = __LINE__;				\
@@ -404,7 +400,7 @@ int _va_arg_not_empty_lassert(char * va_arg_str){
 #define REQUIRE_NOT_NULL(ptr,...){					\
 	if(*_old_flag < __LINE__){					\
 	    if(!_in_case_lassert(-1))					\
-		_start_test_lassert(NULL,1,0);				\
+		_start_test_lassert(1,0);				\
 	    if(!(ptr)){							\
 		if(_in_case_lassert(-1)){				\
 		    *_has_to_quit = __LINE__;				\
@@ -442,7 +438,7 @@ int _va_arg_not_empty_lassert(char * va_arg_str){
 	       "BEGIN OF SECTION %s %s\n",BLUE,#name,NORMAL);		\
 	_succeeded_test_case(0,1);					\
 	_not_null_failed_test_case(0,1);				\
-	_start_test_lassert(NULL,0,0);					\
+	_start_test_lassert(0,0);					\
 	_failed_test_case(0,1);						\
 									\
 	if(using_time_asked())						\
@@ -461,7 +457,7 @@ int _va_arg_not_empty_lassert(char * va_arg_str){
 	    _succeeded_test_case(1,0);					\
 	else if(id == 2)						\
 	    _not_null_failed_test_case(1,0);				\
-	_start_test_lassert(#name,1,1);					\
+	_start_test_lassert(1,1);					\
 	printf("\n%sEND OF SECTION %s %s\n", BLUE, #name, NORMAL);	\
 	if(using_time_asked())						\
 	    printf("%sExecuting section took : %fs%s\n",CYAN,INTERVAL_TIME_LASSERT(start,end),NORMAL); \
