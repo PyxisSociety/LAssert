@@ -70,20 +70,20 @@ void _init_rand_lassert(void){
 	srand(time(NULL));
     }
 }
-void _REQUIRE_CASE_failed(char * statement){
+void _REQUIRE_CASE_failed(char * statement, int line){
     if(statement)
-	printf("\t%sFailed statement case :\n\t\t%s %s\n",RED, statement,NORMAL);
+	printf("\t%sFailed statement case line %d :\n\t\t%s %s\n",RED, line, statement,NORMAL);
     else
-	printf("%sA test failed but statement could not be read (NULL PTR)%s\n",RED,NORMAL);
+	printf("%sA test failed line %d but statement could not be read (NULL PTR)%s\n",RED, line, NORMAL);
 }
 void _REQUIRE_CASE_succeed(void){
     _nb_tests_lassert(0);
 }
-void _REQUIRE_CASE_not_null_failed(char * ptr){
+void _REQUIRE_CASE_not_null_failed(char * ptr, int line){
     if(ptr)
-	printf("\t%sFailed to allocate a pointer :\n\t\t%s %s\n",YELLOW,ptr,NORMAL);
+	printf("\t%sFailed to allocate a pointer line %d :\n\t\t%s %s\n",YELLOW, line, ptr,NORMAL);
     else
-	printf("%sFailed to allocate a pointer :\n\t%sCouldn't read pointer's name%s\n",YELLOW,RED,NORMAL);
+	printf("%sFailed to allocate a pointer line %d :\n\t%sCouldn't read pointer's name%s\n",YELLOW, line, RED,NORMAL);
 }
 int _start_test_lassert(int option,int set_start){
     static int started = 0;
@@ -148,14 +148,14 @@ int _not_null_failed_test_case(int option, int reset){
 void _REQUIRE_succeed(void){
     _succeeded_test_case(1,0);
 }
-void _REQUIRE_failed(char * statement){
+void _REQUIRE_failed(char * statement, int line){
     if(statement)
-	printf("\n%sFailed statement outside a test case :\n\t%s %s\n", RED,statement,NORMAL);
+	printf("\n%sFailed statement outside a test case line %d :\n\t%s %s\n", RED, line, statement,NORMAL);
     _failed_test_case(1,0);
 }
-void _REQUIRE_not_null_failed(char * statement){
+void _REQUIRE_not_null_failed(char * statement, int line){
     if(statement)
-	printf("\n%sFailed to allocate outside a test case :\n\t%s %s\n",YELLOW, statement,NORMAL);
+	printf("\n%sFailed to allocate outside a test case line %d :\n\t%s %s\n",YELLOW, line, statement,NORMAL);
     _failed_test_case(1,0);
 }
 void _generate_tab_lassert(char * name_of_case,int * _id_flag,int * begin,int * end, unsigned size, char * attributes, ... ){
@@ -381,7 +381,7 @@ int _va_arg_not_empty_lassert(char * va_arg_str){
 		    *_has_to_quit = __LINE__;				\
 		    printf("\n%s%s test_case :%s\n",MAGENTA,name_of_test,NORMAL); \
 		    printf("\t%s%llu test(s) passed%s\n",GREEN, _nb_tests_lassert(1),NORMAL); \
-		    _REQUIRE_CASE_failed(#bool);			\
+		    _REQUIRE_CASE_failed(#bool, __LINE__);			\
 		    if(_tab_lassert){					\
 			printf("\t%sFailed on this sequence :\n\t\t",RED); \
 			for(unsigned _id = 0; _id < _size_of_tab; ++_id) \
@@ -390,7 +390,7 @@ int _va_arg_not_empty_lassert(char * va_arg_str){
 		    _in_case_lassert(0);				\
 		    *_id_flag = 1;					\
 		}else							\
-		    _REQUIRE_failed(#bool);				\
+		    _REQUIRE_failed(#bool, __LINE__);				\
 		LOG_MESSAGE_LASSERT(#bool,""__VA_ARGS__);		\
 		return;							\
 	    }								\
@@ -406,11 +406,11 @@ int _va_arg_not_empty_lassert(char * va_arg_str){
 		    *_has_to_quit = __LINE__;				\
 		    printf("\n%s%s test_case :%s\n",MAGENTA,name_of_test,NORMAL); \
 		    printf("\t%s%llu test(s) passed%s\n",GREEN, _nb_tests_lassert(1),NORMAL); \
-		    _REQUIRE_CASE_not_null_failed(#ptr);		\
+		    _REQUIRE_CASE_not_null_failed(#ptr, __LINE__);		\
 		    _in_case_lassert(0);				\
 		    *_id_flag = 2;					\
 		}else							\
-		    _REQUIRE_not_null_failed(#ptr);			\
+		    _REQUIRE_not_null_failed(#ptr, __LINE__);			\
 		LOG_MESSAGE_LASSERT(#ptr,""__VA_ARGS__);		\
 		return;							\
 	    }								\
