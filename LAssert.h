@@ -281,9 +281,16 @@ void _log_message_lassert(char * useless, ...){
 }
 int _va_arg_not_empty_lassert(char * va_arg_str){
     int i = 0;
+    unsigned brackets = 0;
 
-    while(va_arg_str[i] && va_arg_str[i] != ',')
+    while(va_arg_str[i] && (va_arg_str[i] != ',' || brackets)){
+	if(va_arg_str[i] == '{' || va_arg_str[i] == '(' || va_arg_str[i] == '['){
+	    ++brackets;
+	}else if(brackets && (va_arg_str[i] == '}' || va_arg_str[i] == ')' || va_arg_str[i] == ']')){
+	    --brackets;
+	}
 	++i;
+    }
     ++i;
 
     while(va_arg_str[i] == ' ')
