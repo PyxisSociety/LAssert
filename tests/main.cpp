@@ -124,6 +124,17 @@ TEST_SECTION(time_test){
 }
 #endif
 
+TEST_SECTION(malloc_disable){
+    LAssert_malloc(1);
+    int * i = (int*)malloc(sizeof(*i));
+    REQUIRE(!i);
+
+    LAssert_malloc(0);
+    i = (int*)malloc(sizeof(*i));
+    REQUIRE_NOT_NULL(i);
+    free(i);
+}
+
 #ifdef LASSERT_MANUAL_MAIN
 int main(int argc, char ** argv){
     #ifdef LASSERT_SECTION_TIME

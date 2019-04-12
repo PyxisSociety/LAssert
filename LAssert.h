@@ -7,16 +7,31 @@
 #include <stdarg.h>
 #include <time.h>
 
-#if (defined(unix) || defined(__unix) || defined(__unix__) || defined(__APPLE__) || defined(__MACH__)) && !defined(LASSERT_NO_COLOR)
+#ifndef LASSERT_LOCK_LIBRARY
+#  define LASSERT_LOCK_LIBRARY "libLAssert_my_malloc.so"
+#endif
+
+#if defined(unix) || defined(__unix) || defined(__unix__) || defined(__APPLE__) || defined(__MACH__)
 #  include <unistd.h>
 #  include <sys/time.h>
-#  define NORMAL _get_color_lassert(0)
-#  define RED _get_color_lassert(1)
-#  define GREEN _get_color_lassert(2)
-#  define YELLOW _get_color_lassert(3)
-#  define BLUE _get_color_lassert(4)
-#  define CYAN _get_color_lassert(6)
-#  define MAGENTA _get_color_lassert(5)
+#  include <dlfcn.h>
+#  ifndef LASSERT_NO_COLOR
+#    define NORMAL _get_color_lassert(0)
+#    define RED _get_color_lassert(1)
+#    define GREEN _get_color_lassert(2)
+#    define YELLOW _get_color_lassert(3)
+#    define BLUE _get_color_lassert(4)
+#    define CYAN _get_color_lassert(6)
+#    define MAGENTA _get_color_lassert(5)
+#  else
+#    define NORMAL ""
+#    define RED ""
+#    define GREEN ""
+#    define YELLOW ""
+#    define BLUE ""
+#    define CYAN ""
+#    define MAGENTA ""
+#  endif
 #  define TIME_LASSERT(start)						\
     long start = 0;							\
     struct timeval _timecheck_lassert;					\
@@ -303,6 +318,33 @@ int _va_arg_not_empty_lassert(const char * va_arg_str){
     }
 
     return va_arg_str[i] >= 10;
+}
+
+
+
+
+/**
+ *
+ */
+void LAssert_malloc(int disable){
+    void * lib = dlopen(LASSERT_LOCK_LIBRARY, RTLD_NOW);
+    int  * lock;
+
+    if(lib){
+        lock = (int*)dlsym(lib, "_lassert_malloc_lock");
+
+        if(lock){
+            *lock = disable;
+        }else{
+            printf("%s--- Failed to load LAssert lock malloc symbole\n" \
+                   "\t%s%s\n", RED, dlerror(), NORMAL);
+        }
+
+        dlclose(lib);
+    }else{
+        printf("%s--- Failed to open LAssert lock library (" LASSERT_LOCK_LIBRARY ")\n" \
+               "\t%s%s\n", RED, dlerror(), NORMAL);
+    }
 }
 
 #define EPSILON_LASSERT 1e-6

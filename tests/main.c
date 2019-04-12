@@ -37,7 +37,7 @@ TEST_SECTION(tralala){
 
 TEST_SECTION(un_bon_gros_test){
     TEST_CASE(on_l_appel_baudhuit){
-	unsigned * j = malloc(sizeof(*j));
+	unsigned * j = (unsigned*)malloc(sizeof(*j));
 
 	REQUIRE_NOT_NULL(j);
 
@@ -123,6 +123,17 @@ TEST_SECTION(time_test){
 	    factorial(100000);
 }
 #endif
+
+TEST_SECTION(malloc_disable){
+    LAssert_malloc(1);
+    int * i = (int*)malloc(sizeof(*i));
+    REQUIRE(!i);
+
+    LAssert_malloc(0);
+    i = (int*)malloc(sizeof(*i));
+    REQUIRE_NOT_NULL(i);
+    free(i);
+}
 
 #ifdef LASSERT_MANUAL_MAIN
 int main(int argc, char ** argv){
