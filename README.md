@@ -147,7 +147,7 @@ Here is what each macro means in case you did not guess :
 
 With those tools, you can render allocation functions to return `NULL` whenever they are called. You have to do three modifications for that:
 * You need to call a function in your code (see example below)
-* You need to link `libLAssert_alloc.so` shared library ([downloadable here]())
+* You need to link `libLAssert_alloc.so` shared library (built using `make` in the main LAssert folder)
 * You need to use `LD_PRELOAD=/path/to/libLAssert_alloc.so /path/to/executable` to run your tests
 
 ```c
