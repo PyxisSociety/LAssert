@@ -3,7 +3,7 @@
 EXEC=ctest.out
 EXECPP=cpptest.out
 CLEAN=*.o *~
-LIB=../libLAssert_my_malloc.so
+LIB=../libLAssert_alloc.so
 PWD=$(shell pwd)
 LDFLAGS=-g -ldl -Wl,-rpath,..
 CFLAGS=-Wall -Wextra
