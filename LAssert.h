@@ -400,7 +400,8 @@ int _va_arg_not_empty_lassert(const char * va_arg_str){
 		    _REQUIRE_failed(#bool, __LINE__);				\
 		LOG_MESSAGE_LASSERT(#bool, ##__VA_ARGS__);		\
 		return;							\
-	    }								\
+	    }else                                                       \
+                _REQUIRE_succeed();                                     \
 	}								\
     }
 
@@ -420,7 +421,8 @@ int _va_arg_not_empty_lassert(const char * va_arg_str){
 		    _REQUIRE_not_null_failed(#ptr, __LINE__);			\
 		LOG_MESSAGE_LASSERT(#ptr, ##__VA_ARGS__);               \
 		return;							\
-	    }								\
+	    }else                                                       \
+                _REQUIRE_succeed();                                     \
 	}								\
     }
 
