@@ -125,11 +125,11 @@ TEST_SECTION(time_test){
 #endif
 
 TEST_SECTION(malloc_disable){
-    LAssert_malloc(1);
+    LAssert_alloc(1);
     int * i = (int*)malloc(sizeof(*i));
     REQUIRE(!i);
 
-    LAssert_malloc(0);
+    LAssert_alloc(0);
     i = (int*)malloc(sizeof(*i));
     REQUIRE_NOT_NULL(i);
     free(i);

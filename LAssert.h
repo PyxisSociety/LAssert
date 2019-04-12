@@ -8,7 +8,7 @@
 #include <time.h>
 
 #ifndef LASSERT_LOCK_LIBRARY
-#  define LASSERT_LOCK_LIBRARY "libLAssert_my_malloc.so"
+#  define LASSERT_LOCK_LIBRARY "libLAssert_alloc.so"
 #endif
 
 #if defined(unix) || defined(__unix) || defined(__unix__) || defined(__APPLE__) || defined(__MACH__)
@@ -324,9 +324,10 @@ int _va_arg_not_empty_lassert(const char * va_arg_str){
 
 
 /**
- *
+ * @brief Lock/unlock allocation functions. Locked functions always return NULL
+ * @param disable: flag to tell whether or not allocation functions should be locked
  */
-void LAssert_malloc(int disable){
+void LAssert_alloc(int disable){
     void * lib = dlopen(LASSERT_LOCK_LIBRARY, RTLD_NOW);
     int  * lock;
 

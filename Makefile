@@ -1,13 +1,13 @@
 #!/bin/makefile
 
-EXEC=libLAssert_my_malloc.so
-CLEAN=*.o *~
+EXEC=libLAssert_alloc.so
+CLEAN=*.o *~ *.so
 
 
 
 all:$(EXEC)
 
-$(EXEC):LAssert_my_malloc.o
+$(EXEC):LAssert_alloc.o
 	gcc $^ -o $@ -shared
 
 %.o:%.c

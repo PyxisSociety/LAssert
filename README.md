@@ -142,3 +142,25 @@ Here is what each macro means in case you did not guess :
 * **COPY** : copy a variable of a section in a test case so that the modifications brought by the test case will only be effective in it
 * **ONCE** : prevent a code inside a section but outside a test case to be called more than once<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This problem can occure when you mix up test cases and code not inside test cases
+
+## Disabling allocation
+
+With those tools, you can render allocation functions to return `NULL` whenever they are called. You have to do three modifications for that:
+* You need to call a function in your code (see example below)
+* You need to link `libLAssert_alloc.so` shared library ([downloadable here]())
+* You need to use `LD_PRELOAD=/path/to/libLAssert_alloc.so /path/to/executable` to run your tests
+
+```c
+#include "LAssert.h"
+
+TEST_SECTION(alloc_disabled){
+    LAssert_alloc(1); // lock allocation
+    int * i = (int*)malloc(sizeof(*i));
+    REQUIRE(!i);
+
+    LAssert_alloc(0); // unlock allocation
+    i = (int*)malloc(sizeof(*i));
+    REQUIRE_NOT_NULL(i);
+    free(i);
+}
+```
