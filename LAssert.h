@@ -302,7 +302,7 @@ int _va_arg_not_empty_lassert(const char * va_arg_str){
 	    ++i;
     }
 
-    return va_arg_str[i] != 0;
+    return va_arg_str[i] >= 10;
 }
 
 #define EPSILON_LASSERT 1e-6
@@ -372,10 +372,10 @@ int _va_arg_not_empty_lassert(const char * va_arg_str){
     }									\
     while(*_old_flag < __LINE__ && _next_range_lassert(var_name,var_name##_begin,var_name##_end,var_name##_step,nb_of_values) && !*_id_flag)
 
-#define LOG_MESSAGE_LASSERT(...)					\
+#define LOG_MESSAGE_LASSERT(ptr, ...)					\
     if(_va_arg_not_empty_lassert(#__VA_ARGS__)){			\
 	printf("\t%slog message :%s\n",YELLOW,NORMAL);			\
-	_log_message_lassert(__VA_ARGS__);				\
+	_log_message_lassert(ptr, "" __VA_ARGS__);                       \
 	puts(NORMAL);							\
     }
 
@@ -398,7 +398,7 @@ int _va_arg_not_empty_lassert(const char * va_arg_str){
 		    *_id_flag = 1;					\
 		}else							\
 		    _REQUIRE_failed(#bool, __LINE__);				\
-		LOG_MESSAGE_LASSERT(#bool,"" ##__VA_ARGS__);		\
+		LOG_MESSAGE_LASSERT(#bool, ##__VA_ARGS__);		\
 		return;							\
 	    }								\
 	}								\
@@ -418,7 +418,7 @@ int _va_arg_not_empty_lassert(const char * va_arg_str){
 		    *_id_flag = 2;					\
 		}else							\
 		    _REQUIRE_not_null_failed(#ptr, __LINE__);			\
-		LOG_MESSAGE_LASSERT(#ptr,"" ##__VA_ARGS__);		\
+		LOG_MESSAGE_LASSERT(#ptr, ##__VA_ARGS__);               \
 		return;							\
 	    }								\
 	}								\
@@ -432,12 +432,11 @@ int _va_arg_not_empty_lassert(const char * va_arg_str){
     }
 
 #define TEST_SECTION(name)						\
-    void _test_##name##_lassert( char *,int *, char[512], int, int*, int*, int *); \
+    void _test_##name##_lassert( char *,int *, int, int*, int*, int *); \
     void _call_test_##name##_lassert(void)				\
 	__attribute__((constructor));					\
     void _call_test_##name##_lassert(void){				\
 	char s[512] = {0};						\
-	char log[512];							\
 	double start,end;						\
 	int id = -1, i = 1, old = 0;					\
 	printf("%s------------------------------"			\
@@ -452,7 +451,7 @@ int _va_arg_not_empty_lassert(const char * va_arg_str){
 	    start = time_used();					\
 	while(i){							\
 	    i = 0;							\
-	    _test_##name##_lassert(s,&id,log,0,0,&i, &old);		\
+	    _test_##name##_lassert(s,&id,0,0,&i, &old);                 \
 	    old = i;							\
 	}								\
 	if(using_time_asked())						\
@@ -480,7 +479,7 @@ int _va_arg_not_empty_lassert(const char * va_arg_str){
 	       "------------------------------%s\n\n",			\
 	       BLUE,NORMAL);						\
     }									\
-    void _test_##name##_lassert(char * name_of_test, int * _id_flag, char _log_lassert[512], int _size_of_tab,int * _tab_lassert, int * _has_to_quit, int * _old_flag)
+    void _test_##name##_lassert(char * name_of_test, int * _id_flag, int _size_of_tab,int * _tab_lassert, int * _has_to_quit, int * _old_flag)
 
 
     

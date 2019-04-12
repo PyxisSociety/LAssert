@@ -37,7 +37,7 @@ TEST_SECTION(tralala){
 
 TEST_SECTION(un_bon_gros_test){
     TEST_CASE(on_l_appel_baudhuit){
-	unsigned * j = malloc(sizeof(*j));
+	unsigned * j = (unsigned*)malloc(sizeof(*j));
 
 	REQUIRE_NOT_NULL(j);
 

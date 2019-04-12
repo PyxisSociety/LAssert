@@ -1,21 +1,31 @@
 #!/bin/makefile
 
-SRCTMP=$(wildcard ../*.c)
-OFILESTMP=$(SRCTMP:../.o=.c)
-SRC=$(wildcard *.c)
-OFILES=$(SRC:.o=.c) $(OFILESTMP)
-EXEC=a.out
-LDFLAGS=-g 
-CFLAGS=-Wall -Wextra -pedantic -ansi
-CC=gcc
+EXEC=ctest
+EXECPP=cpptest
 CLEAN=*.o *~
+
+
+
 all:$(EXEC)
-$(EXEC):$(OFILES)
-	$(CC) $^ -o $@ $(LDFLAGS)
-../%.o:../%.c
-	$(CC) -c $< -o $@ $(CFLAGS)
-%.o:%.c
-	$(CC) -c $< $(CFLAGS)
+
+$(EXEC):main.c.o
+	gcc $^ -o $@ -g
+
+main.c.o:main.c
+	gcc -o $@ -c $< -Wall -Wextra
+
+
+
+cpp:$(EXECPP)
+
+$(EXECPP):main.cpp.o
+	g++ $^ -o $@ -g
+
+main.cpp.o:main.cpp
+	g++ -o $@ -c $< -Wall -Wextra
+
+
+
 clean:
 	rm $(CLEAN)
 clear: clean
