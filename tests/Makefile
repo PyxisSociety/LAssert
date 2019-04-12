@@ -1,7 +1,7 @@
 #!/bin/makefile
 
-EXEC=ctest
-EXECPP=cpptest
+EXEC=ctest.out
+EXECPP=cpptest.out
 CLEAN=*.o *~
 
 
