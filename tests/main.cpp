@@ -124,6 +124,7 @@ TEST_SECTION(time_test){
 }
 #endif
 
+#ifdef LASSERT_CUSTOM_ALLOC
 TEST_SECTION(malloc_disable){
     LAssert_alloc(1);
     int * i = (int*)malloc(sizeof(*i));
@@ -134,6 +135,7 @@ TEST_SECTION(malloc_disable){
     REQUIRE_NOT_NULL(i);
     free(i);
 }
+#endif
 
 #ifdef LASSERT_MANUAL_MAIN
 int main(int argc, char ** argv){
