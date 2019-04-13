@@ -7,6 +7,9 @@ Coloration of text only works on Unix like OS.
 To enable automatic main, you will need GNU C.
 
 ## How to use it
+
+To compile it, you need to use `-ldl` linking option to link dl library.
+
 #### Simple macros
 The code below show all the simple macros you can use in LAssert :
 ```c
@@ -147,7 +150,7 @@ Here is what each macro means in case you did not guess :
 
 With those tools, you can render allocation functions to return `NULL` whenever they are called. You have to do three modifications for that:
 * You need to call a function in your code (see example below)
-* You need to link `libLAssert_alloc.so` shared library (built using `make` in the main LAssert folder)
+* You need to link `libLAssert_alloc.so` shared library (built using `make` in the main LAssert folder) and using `-Wl,-rpath,/path/to/libLAssert_alloc.so`
 * You need to use `LD_PRELOAD=/path/to/libLAssert_alloc.so /path/to/executable` to run your tests
 
 ```c
