@@ -150,10 +150,11 @@ Here is what each macro means in case you did not guess :
 
 With those tools, you can render allocation functions to return `NULL` whenever they are called. You have to do three modifications for that:
 * You need to call a function in your code (see example below)
-* You need to link `libLAssert_alloc.so` shared library (built using `make` in the main LAssert folder) and using `-Wl,-rpath,/path/to/libLAssert_alloc.so`
-* You need to use `LD_PRELOAD=/path/to/libLAssert_alloc.so /path/to/executable` to run your tests
+* You need to define the macro `LASSERT_CUSTOM_ALLOC` before including `LAssert.h`
+* You need to link `libLAssert_alloc.so` shared library (built using `make` in the main LAssert folder) and using `-Wl,-rpath,/path/to/folder/containing/libLAssert_alloc.so -L/same/path -lLAssert_alloc`
 
 ```c
+#define LASSERT_CUSTOM_ALLOC
 #include "LAssert.h"
 
 TEST_SECTION(alloc_disabled){
@@ -167,3 +168,6 @@ TEST_SECTION(alloc_disabled){
     free(i);
 }
 ```
+
+If `LASSERT_CUSTOM_ALLOC` is not defined, you do not need all this set up.
+

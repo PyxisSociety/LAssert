@@ -14,7 +14,9 @@
 #if defined(unix) || defined(__unix) || defined(__unix__) || defined(__APPLE__) || defined(__MACH__)
 #  include <unistd.h>
 #  include <sys/time.h>
-#  include <dlfcn.h>
+#  ifdef LASSERT_CUSTOM_ALLOC
+#    include <dlfcn.h>
+#  endif
 #  ifndef LASSERT_NO_COLOR
 #    define NORMAL _get_color_lassert(0)
 #    define RED _get_color_lassert(1)
@@ -327,6 +329,7 @@ int _va_arg_not_empty_lassert(const char * va_arg_str){
  * @brief Lock/unlock allocation functions. Locked functions always return NULL
  * @param disable: flag to tell whether or not allocation functions should be locked
  */
+#ifdef LASSERT_CUSTOM_ALLOC
 void LAssert_alloc(int disable){
     void * lib = dlopen(LASSERT_LOCK_LIBRARY, RTLD_NOW);
     int  * lock;
@@ -347,6 +350,7 @@ void LAssert_alloc(int disable){
                "\t%s%s\n", RED, dlerror(), NORMAL);
     }
 }
+#endif
 
 #define EPSILON_LASSERT 1e-6
     
