@@ -13,7 +13,13 @@ ADDCFLAG?=
 
 
 
-all:$(EXEC)
+all:
+	@make c --no-print-directory
+	@rm -rf *.c.o
+	@make alloc --no-print-directory
+	@make cpp --no-print-directory
+
+c:$(EXEC)
 
 $(EXEC):main.c.o
 	gcc $^ -o $@ $(LDFLAGS)
