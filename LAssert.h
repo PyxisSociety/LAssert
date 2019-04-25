@@ -565,7 +565,7 @@ int main(){
 /* -----------------------------------
  *            none GNU or manual main
  */
-#  define __attribute__(x)
+#  define LASSERT_AUTOCALL_HANDLER(fname, params)
 #  define RUN_SECTION(name) _call_test_##name##_lassert()
 #endif
 
@@ -607,7 +607,13 @@ int main(){
 
 
 
-
+#ifndef LASSERT_MANUAL_MAIN
+#  ifdef LASSERT_UNIX
+void LASSERT_PARAMETERS_INIT(int argc, char** argv) __attribute__((constructor));
+#  else
+/* TODO sub function taking void but calling LASSERT_PARAMETERS_INIT */
+#  endif
+#endif
 void LASSERT_PARAMETERS_INIT(int argc, char ** argv){
     int help = 0;
     int i = 1;
