@@ -49,7 +49,7 @@ TEST_SECTION(un_bon_gros_test){
 
 TEST_SECTION(un_test_vide){
 }
-
+/*
 TEST_SECTION(random_test){
     RAND_CASE(first_random,tab,3,3,1,10,10,100){
 	puts("BEEEEGIN");
@@ -79,7 +79,7 @@ TEST_SECTION(range_test){
     RANGE_CASE(should_failed,tab2,3,1){
     }
 }
-
+*/
 TEST_SECTION(copy_test){
     unsigned i = 0;
 
@@ -137,7 +137,7 @@ TEST_SECTION(malloc_disable){
 }
 #endif
 
-#ifdef LASSERT_MANUAL_MAIN
+//#ifdef LASSERT_MANUAL_MAIN
 int main(int argc, char ** argv){
     #ifdef LASSERT_SECTION_TIME
     if(argc < 2){
@@ -167,4 +167,4 @@ int main(int argc, char ** argv){
     
     return 0;
 }
-#endif
+//#endif

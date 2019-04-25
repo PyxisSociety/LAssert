@@ -20,24 +20,37 @@
 #define LASSERT_MAGENTA _get_color_lassert(5)
 
 #if defined(unix) || defined(__unix) || defined(__unix__) || defined(__APPLE__) || defined(__MACH__)
+#  define LASSERT_UNIX
 #  include <unistd.h>
 #  include <sys/time.h>
 #  ifdef LASSERT_CUSTOM_ALLOC
 #    include <dlfcn.h>
 #  endif
+#  define TIME_TYPE_LASSERT double
+#  define NULL_TIME_LASSERT 0
 #  define TIME_LASSERT(start)						\
     long start = 0;							\
     struct timeval _timecheck_lassert;					\
     gettimeofday(&_timecheck_lassert, NULL);				\
     start = (long)_timecheck_lassert.tv_sec * 1000 + (long)_timecheck_lassert.tv_usec / 1000
 #  define INTERVAL_TIME_LASSERT(start,end) (double)((end) - (start)) / 1000
+#  define strcpy strncpy
+#  define COPY(type,var) type var = var
 #else
+#  define LASSERT_WINDOWS
 #  include <windows.h>
+#  include <io.h>
+#  include <sys/timeb.h>
+#  define TIME_TYPE_LASSERT LARGE_INTEGER
+#  define NULL_TIME_LASSERT {0}
 #  define TIME_LASSERT(start)				\
     LARGE_INTEGER _frequency_lassert, start;		\
     QueryPerformanceFrequency(&_frequency_lassert);	\
     QueryPerformanceFrequency(&start)
-#  define INTERVAL_TIME_LASSERT(start,end) (long double)(end.QuadPart - start.QuadPart)/_frequency_lassert.QuadPart
+#  define INTERVAL_TIME_LASSERT(start,end) (double)(end.QuadPart - start.QuadPart)/(double)_frequency_lassert.QuadPart
+#  define isatty(a) _isatty(a)
+#  define strcpy strcpy_s
+#  define COPY(type,var) type var = ::var
 #endif
 
 enum LASSERT_OUTPUT_OPTION{
@@ -293,15 +306,15 @@ int _next_range_lassert(int * tab, int * begin, int * end, int * step, size_t si
 int using_time_asked(void){
     return LASSERT_parameters.timer == LASSERT_section_time;
 }
-double time_used(void){
-    if(using_time_asked){
+TIME_TYPE_LASSERT time_used(void){
+    if(using_time_asked()){
         TIME_LASSERT(start);
-        return (double)start;
+        return (TIME_TYPE_LASSERT)start;
     }else{
-        return 0;
+        return NULL_TIME_LASSERT;
     }
 }
-int _start_test_lassert(int option,int set_start, const char * name, double start, double end){
+int _start_test_lassert(int option,int set_start, const char * name, TIME_TYPE_LASSERT start, TIME_TYPE_LASSERT end){
     static int started = 0;
 
     if(option){
@@ -309,11 +322,13 @@ int _start_test_lassert(int option,int set_start, const char * name, double star
 	    started = set_start;
 	}
 	_nb_tests_lassert(-1);
-
+	
         if(name){
             printf("\n%sEND OF SECTION %s %s\n", LASSERT_BLUE, name, LASSERT_NORMAL);
-            if(using_time_asked())
-                printf("%sExecuting section took : %fs%s\n",LASSERT_CYAN,INTERVAL_TIME_LASSERT(start,end),LASSERT_NORMAL);
+			if (using_time_asked()) {
+				TIME_LASSERT(s);
+				printf("%sExecuting section took : %fs%s\n", LASSERT_CYAN, INTERVAL_TIME_LASSERT(start, end), LASSERT_NORMAL);
+			}
             if(_failed_test_case(0,0))
                 printf("%sFailed : %d test_case(s)%s\n",LASSERT_RED,_failed_test_case(0,0),LASSERT_NORMAL);
             if(_succeeded_test_case(0,0))
@@ -398,8 +413,6 @@ void LAssert_alloc(int disable){
 #endif
 
 #define EPSILON_LASSERT 1e-6
-    
-#define COPY(type,var) type var = var
 
 #define ONCE if(*_old_flag < __LINE__ && (_start_running_lassert(1) || 1)) while(_start_running_lassert(0))
 
@@ -412,15 +425,15 @@ void LAssert_alloc(int disable){
 	    _succeeded_test_case(1,0);				\
 	else if(*_id_flag == 2)					\
 	    _not_null_failed_test_case(1,0);			\
-	_start_test_lassert(1,1, NULL, 0, 0);                   \
-	strcpy(name_of_test,#NAME_OF_TEST);			\
+	_start_test_lassert(1,1, NULL, NULL_TIME_LASSERT, NULL_TIME_LASSERT);                   \
+	strcpy(name_of_test, 512, #NAME_OF_TEST);			\
 	_start_running_lassert(1);				\
 	_in_case_lassert(1);					\
 	*_id_flag = 0;						\
     }								\
     while(*_old_flag < __LINE__ && _start_running_lassert(0))
 
-#define RAND_CASE(NAME_OF_TEST,var_name,nb_of_values,nb_of_time,ranges...) \
+#define RAND_CASE(NAME_OF_TEST,var_name,nb_of_values,nb_of_time,...) \
     int var_name[nb_of_values] = {0};					\
     int var_name##begin[nb_of_values] = {0};				\
     int var_name##end[nb_of_values] = {0};				\
@@ -431,18 +444,18 @@ void LAssert_alloc(int disable){
 	    _succeeded_test_case(1,0);					\
 	else if(*_id_flag == 2)						\
 	    _not_null_failed_test_case(1,0);				\
-	_start_test_lassert(1,1, NULL, 0, 0);                           \
+	_start_test_lassert(1,1, NULL, NULL_TIME_LASSERT, NULL_TIME_LASSERT);                           \
 	_size_of_tab = nb_of_values;					\
 	_tab_lassert = var_name;					\
-	strcpy(name_of_test,#NAME_OF_TEST);				\
+	strcpy(name_of_test, 512, #NAME_OF_TEST);				\
 	_start_running_lassert(nb_of_values);				\
 	_in_case_lassert(!*_id_flag);					\
 	*_id_flag = 0;							\
-	_generate_tab_lassert(#NAME_OF_TEST,_id_flag,var_name##begin,var_name##end,nb_of_values,#ranges,ranges); \
+	_generate_tab_lassert(#NAME_OF_TEST,_id_flag,var_name##begin,var_name##end,nb_of_values,#__VA_ARGS__,__VA_ARGS__); \
     }									\
     while(*_old_flag < __LINE__ && (_next_rand_tab_lassert(var_name,var_name##begin,var_name##end,nb_of_values),_start_running_lassert(0)) && !*_id_flag)
 
-#define RANGE_CASE(NAME_OF_TEST,var_name,nb_of_values,ranges...)	\
+#define RANGE_CASE(NAME_OF_TEST,var_name,nb_of_values,...)	\
     int var_name[nb_of_values] = {0};					\
     int var_name##_begin[nb_of_values] = {0};				\
     int var_name##_end[nb_of_values] = {0};				\
@@ -456,10 +469,10 @@ void LAssert_alloc(int disable){
 	    _succeeded_test_case(1,0);					\
 	else if(*_id_flag == 2)						\
 	    _not_null_failed_test_case(1,0);				\
-	_start_test_lassert(1,1, NULL, 0, 0);                           \
-	strcpy(name_of_test,#NAME_OF_TEST);				\
+	_start_test_lassert(1,1, NULL, NULL_TIME_LASSERT, NULL_TIME_LASSERT);                           \
+	strcpy(name_of_test, 512, #NAME_OF_TEST);				\
 	*_id_flag = 0;							\
-	_generate_range_lassert(#NAME_OF_TEST,_id_flag,var_name,var_name##_begin,var_name##_end,var_name##_step,nb_of_values,#ranges,ranges); \
+	_generate_range_lassert(#NAME_OF_TEST,_id_flag,var_name,var_name##_begin,var_name##_end,var_name##_step,nb_of_values,#__VA_ARGS__,__VA_ARGS__); \
 	_in_case_lassert(1);						\
     }									\
     while(*_old_flag < __LINE__ && _next_range_lassert(var_name,var_name##_begin,var_name##_end,var_name##_step,nb_of_values) && !*_id_flag)
@@ -474,7 +487,7 @@ void LAssert_alloc(int disable){
 #define REQUIRE(bool,...){						\
 	if(*_old_flag < __LINE__){					\
 	    if(!_in_case_lassert(-1))					\
-		_start_test_lassert(1,0, NULL, 0, 0);                   \
+		_start_test_lassert(1,0, NULL, NULL_TIME_LASSERT, NULL_TIME_LASSERT);                   \
 	    if(!(bool)){						\
 		if(_in_case_lassert(-1)){				\
 		    *_has_to_quit = __LINE__;				\
@@ -498,7 +511,7 @@ void LAssert_alloc(int disable){
 #define REQUIRE_NOT_NULL(ptr,...){					\
 	if(*_old_flag < __LINE__){					\
 	    if(!_in_case_lassert(-1))					\
-		_start_test_lassert(1,0, NULL, 0, 0);                   \
+		_start_test_lassert(1,0, NULL, NULL_TIME_LASSERT, NULL_TIME_LASSERT);                   \
 	    if(!(ptr)){							\
 		if(_in_case_lassert(-1)){				\
 		    *_has_to_quit = __LINE__;				\
@@ -527,11 +540,11 @@ void LAssert_alloc(int disable){
 	__attribute__((constructor));					\
     void _call_test_##name##_lassert(void){				\
 	char s[512] = {0};						\
-	double start,end;						\
+	TIME_TYPE_LASSERT start = NULL_TIME_LASSERT, end = NULL_TIME_LASSERT;						\
 	int id = -1, i = 1, old = 0;					\
 	_succeeded_test_case(0,1);					\
 	_not_null_failed_test_case(0,1);				\
-	_start_test_lassert(0,0, #name, 0, 0);                          \
+	_start_test_lassert(0,0, #name, NULL_TIME_LASSERT, NULL_TIME_LASSERT);                          \
 	_failed_test_case(0,1);						\
 									\
 	if(using_time_asked())						\
