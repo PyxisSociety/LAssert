@@ -534,11 +534,48 @@ void LAssert_alloc(int disable){
 	REQUIRE(1);							\
     }
 
+
+    
+#if !defined(LASSERT_MANUAL_MAIN)
+/* -----------------------------
+ *            GNU and auto main
+ */
+int main(){
+    return 0;
+}
+#  ifdef LASSERT_WINDOWS
+#    ifdef __cplusplus
+#      define LASSERT_AUTOCALL_HANDLER(fname) ; \
+          struct fname##_t_ { fname##_t_(void) { fname(); } }; static fname##_t_ fname##_;
+#    else
+#      pragma section(".CRT$XCU", read)
+#      define LASSERT_AUTOCALL_SUB_HANDLER(fname, p) ; \
+          __declspec(allocate(".CRT$XCU")) void (*fname##_)(void) = fname; \
+          __pragma(comment(linker, "/include:" p #fname "_"))
+#      ifdef _WIN64
+#        define LASSERT_AUTOCALL_HANDLER(fname) LASSERT_AUTOCALL_SUB_HANDLER(fname, "")
+#      else
+#        define LASSERT_AUTOCALL_HANDLER(fname) LASSERT_AUTOCALL_SUB_HANDLER(fname, "_")
+#      endif
+#    endif
+#  else
+#    define LASSERT_AUTOCALL_HANDLER(fname, params) __attribute__((constructor));
+#  endif
+#else
+/* -----------------------------------
+ *            none GNU or manual main
+ */
+#  define __attribute__(x)
+#  define RUN_SECTION(name) _call_test_##name##_lassert()
+#endif
+
+
+
 #define TEST_SECTION(name)						\
     void _test_##name##_lassert( char *,int *, int, int*, int*, int *); \
-    void _call_test_##name##_lassert(void)				\
-	__attribute__((constructor));					\
-    void _call_test_##name##_lassert(void){				\
+    static void _call_test_##name##_lassert(void)				\
+	LASSERT_AUTOCALL_HANDLER(_call_test_##name##_lassert)					\
+    static void _call_test_##name##_lassert(void){				\
 	char s[512] = {0};						\
 	TIME_TYPE_LASSERT start = NULL_TIME_LASSERT, end = NULL_TIME_LASSERT;						\
 	int id = -1, i = 1, old = 0;					\
@@ -568,21 +605,8 @@ void LAssert_alloc(int disable){
     void _test_##name##_lassert(char * name_of_test, int * _id_flag, int _size_of_tab,int * _tab_lassert, int * _has_to_quit, int * _old_flag)
 
 
-    
-#if defined(__GNUC__) && !defined(LASSERT_MANUAL_MAIN)
-/* -----------------------------
- *            GNU and auto main
- */
-int main(){
-    return 0;
-}
-#else
-/* -----------------------------------
- *            none GNU or manual main
- */
-#  define __attribute__(x)
-#  define RUN_SECTION(name) _call_test_##name##_lassert()
-#endif
+
+
 
 void LASSERT_PARAMETERS_INIT(int argc, char ** argv){
     int help = 0;
