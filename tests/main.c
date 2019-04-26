@@ -137,7 +137,7 @@ TEST_SECTION(malloc_disable){
 }
 #endif
 
-//#ifdef LASSERT_MANUAL_MAIN
+#ifdef LASSERT_MANUAL_MAIN
 int main(int argc, char ** argv){
     #ifdef LASSERT_SECTION_TIME
     if(argc < 2){
@@ -167,4 +167,4 @@ int main(int argc, char ** argv){
     
     return 0;
 }
-//#endif
+#endif
