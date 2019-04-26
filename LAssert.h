@@ -41,13 +41,11 @@
 #  include <windows.h>
 #  include <io.h>
 #  include <sys/timeb.h>
-#  define TIME_TYPE_LASSERT LARGE_INTEGER
+#  define TIME_TYPE_LASSERT ULONGLONG
 #  define NULL_TIME_LASSERT {0}
-#  define TIME_LASSERT(start)				\
-    LARGE_INTEGER _frequency_lassert, start;		\
-    QueryPerformanceFrequency(&_frequency_lassert);	\
-    QueryPerformanceFrequency(&start)
-#  define INTERVAL_TIME_LASSERT(start,end) (double)(end.QuadPart - start.QuadPart)/(double)_frequency_lassert.QuadPart
+#  define TIME_LASSERT(start) TIME_TYPE_LASSERT start = GetTickCount64()
+#  define INTERVAL_TIME_LASSERT(start,end) \
+	((end >= start) ? (double)(end - start) : (double)((TIME_TYPE_LASSERT)-1 - start + end)) / 1000
 #  define isatty(a) _isatty(a)
 #  define strcpy strcpy_s
 #  define COPY(type,var) type var = ::var
@@ -611,7 +609,43 @@ int main(){
 #  ifdef LASSERT_UNIX
 void LASSERT_PARAMETERS_INIT(int argc, char** argv) __attribute__((constructor));
 #  else
-/* TODO sub function taking void but calling LASSERT_PARAMETERS_INIT */
+void LASSERT_PARAMETERS_INIT(int argc, char** argv);
+static void LASSERT_PARAMETERS_SUB_INIT(void) LASSERT_AUTOCALL_HANDLER(LASSERT_PARAMETERS_SUB_INIT)
+static void LASSERT_PARAMETERS_SUB_INIT(void) {
+	int argc;
+	LPWSTR * tmpArgv;
+	char ** argv = NULL;
+	int i;
+	size_t dummy;
+	size_t size;
+
+	LPWSTR commandLine = GetCommandLineW();
+	tmpArgv = CommandLineToArgvW(commandLine, &argc);
+
+	argv = (char**)malloc((argc + 1) * sizeof(char *));
+
+	if(argv){
+		for(i = 0; i < argc; ++i){
+			size = wcslen(tmpArgv[i]) + 1;
+			argv[i] = (char*)malloc(size * sizeof(char));
+			if(argv[i]){
+				wcstombs_s(&dummy, argv[i], size * sizeof(char), tmpArgv[i], (size - 1) * sizeof(char));
+			}
+		}
+		argv[argc] = NULL;
+	}
+
+	LASSERT_PARAMETERS_INIT(argc, argv);
+
+	if(argv){
+		for(i = 0; i < argc; ++i){
+			if(argv[i]){
+				free(argv[i]);
+			}
+		}
+		free(argv);
+	}
+}
 #  endif
 #endif
 void LASSERT_PARAMETERS_INIT(int argc, char ** argv){
