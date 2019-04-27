@@ -2,19 +2,35 @@
 Unary test library in C for Linux
 
 ## Notes
-Coloration of text only works on Unix like OS.
-  
-To enable automatic main, you will need GNU C.
+
+Some functionalities are not available on windows:
+* text color in console output
+* making allocation functions return always `NULL`
 
 ## How to use it
 
-To compile it, you need to use `-ldl` linking option to link dl library.
+#### Configuration
+Some functionalities can be (de)activated by macros only (that need to be put before including LAssert) such as:
+* **LASSERT_MANUAL_MAIN**: providing a self define main
+* **LASSERT_CUSTOM_ALLOC**: enabling (de)activation of allocation functions (making them work normally or always return `NULL`)
+  
+The resulting program can have predefined parameters described bellow. If you used **LASSERT_MANUAL_MAIN**, you can still have this behavior by calling `LASSERT_PARAMETERS_INIT(argc, argv)`. Using `-h` option will show you all available parameters but will prevent the program from running the tests.
+  
+
+Default options are: -nt -c -out=consol
+Some other functionalities can be (de)activated by macros _and_ parameters such as:
+* __-\[n]t__ or __LASSERT_SECTION_TIME__: (de)activate timer functionality for sections
+* __-\[n]c__ or __LASSERT_NO_COLOR__: (de)activate color in input (only available for UNIX systems and in consol output)
+* __-out=\[option]__ or : set the output format. \[option] can be one of the following:
+  - **consol** (default behavior): standard output console with information about all test cases in all section
+  - **small** or __LASSERT_MINIMIZED_OUTPUT__: smaller output giving only information about sections and not details about their test cases
+  - **mini** or __LASSERT_SMALL_OUTPUT__: (stands for minimized) no details at all, it just give the percentage of succeeded test case in every sections (as a summarized result)
+  
+__NOTE:__ For now, only consol output option is working, others will give the same output.
 
 #### Simple macros
 The code below show all the simple macros you can use in LAssert :
 ```c
-//#define LASSERT_MANUAL_MAIN /* this macro enable manual main */
-//#define LASSERT_SECTION_TIME /* this macro enable time display of each TEST_SECTION */
 #include "LAssert.h"
 
 #include <stdio.h>
@@ -64,15 +80,17 @@ int main(){
 #endif
 ```
 Here is what each macro means in case you did not guess :
-* **TEST_SECTION** : define a section of test which can contain test cases
-* **TEST_CASE** : define a test case
-* **REQUIRE** : end the test case or test section in which it was called on fail
-* **REQUIRE_NOT_NULL** : same as **REQUIRE** but with a different log message on fail
-* **RUN_SECTION** : manually run a test section
-* **EQ** : test if two numbers are equals (useful for floating point numbers)
+* **TEST_SECTION**: define a section of test which can contain test cases
+* **TEST_CASE**: define a test case
+* **REQUIRE**: end the test case or test section in which it was called on fail
+* **REQUIRE_NOT_NULL**: same as **REQUIRE** but with a different log message on fail
+* **RUN_SECTION**: manually run a test section
+* **EQ**: test if two numbers are equals (useful for floating point numbers)
 
-__NOTE :__ As you may have noticed, you can add formatted string like printf parameters to REQUIRE, REQUIRE_NOT_NULL and EQ macros. This formatted string will be shown only when the test will fail.
-_WARNING :_ On contrary to printf first argument, it has to be a string constant, not a variable (even variable constants are not allowed)
+__NOTE:__ As you may have noticed, you can add formatted string like printf parameters to REQUIRE, REQUIRE_NOT_NULL and EQ macros. This formatted string will be shown only when the test will fail.
+  
+_WARNING:_ On contrary to printf first argument, it has to be a string constant, not a variable (even variable constants are not allowed)
+
 #### Advanced macros
 The code below show all the other macros you can use in LAssert :
 ```c
@@ -146,12 +164,12 @@ Here is what each macro means in case you did not guess :
 * **ONCE** : prevent a code inside a section but outside a test case to be called more than once<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This problem can occure when you mix up test cases and code not inside test cases
 
-## Disabling allocation
+#### Disabling allocation
 
 With those tools, you can render allocation functions to return `NULL` whenever they are called. You have to do three modifications for that:
 * You need to call a function in your code (see example below)
 * You need to define the macro `LASSERT_CUSTOM_ALLOC` before including `LAssert.h`
-* You need to link `libLAssert_alloc.so` shared library (built using `make` in the main LAssert folder) and using `-Wl,-rpath,/path/to/folder/containing/libLAssert_alloc.so -L/same/path -lLAssert_alloc`
+* You need to link `libLAssert_alloc.so` shared library (built using `make` in the main LAssert folder) and using `-Wl,-rpath,/path/to/folder/containing/libLAssert_alloc.so -L/same/path -lLAssert_alloc -ldl`
 
 ```c
 #define LASSERT_CUSTOM_ALLOC
@@ -168,6 +186,6 @@ TEST_SECTION(alloc_disabled){
     free(i);
 }
 ```
-
-If `LASSERT_CUSTOM_ALLOC` is not defined, you do not need all this set up.
-
+__NOTES:__
+* If `LASSERT_CUSTOM_ALLOC` is not defined, you do not need all this set up.
+* You can use your own dynamic library to override allocation functions by defining the macro __LASSERT_LOCK_LIBRARY__ with a constant string containing the name of your library.
