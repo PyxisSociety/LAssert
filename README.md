@@ -31,11 +31,13 @@ Some other functionalities can be (de)activated by macros _and_ parameters such 
   - **consol** (default behavior): standard output console with information about all test cases in all section
   - **small** or __LASSERT_MINIMIZED_OUTPUT__: smaller output giving only information about sections and not details about their test cases
   - **mini** or __LASSERT_SMALL_OUTPUT__: (stands for minimized) no details at all, it just give the percentage of succeeded test case in every sections (as a summarized result)
+  - **xml** or __LASSERT_XML_OUTPUT__: XML JUnit is rendered in standard output
   
 __NOTES:__
 * In auto main mode, the program will return the number of section on failure.
 * In manual main mode, each call to `RUN_SECTION` returns 1 if the section failed due to an error, 2 if it failed due to a `NULL` pointer (call of `REQUIRE_NOT_NULL`) or 0 if all went well.
 * In manual main and minimized output mode, you need to call `LASSERT_PRINT_OUTPUT()` to show the result. If you call this function in another mode, it will simply do nothing so you should call it either way.
+* In XML output mode, all user call to write things in standard and error outputs are locked. Forcedly unlocking will make this option unusable. 
 
 ### <a id="markkdown-header-Simple-macros"></a>Simple macros
 The code below show all the simple macros you can use in LAssert :
