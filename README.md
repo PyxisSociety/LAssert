@@ -10,12 +10,12 @@ Some functionalities are not available on windows:
 ## How to use it
 
 Here is a small tutorial devided in few steps:
-* [Configuration of this tool](#markkdown-header-Configuration)
+* [Configuration of this tool](#markkdown-header-Configuration) and some remarks
 * [Simple macros](#markkdown-header-Simple-macros) you can use
 * [Advanced macros](#markkdown-header-Advanced-macros) you can use
 * [Disabling allocation functions](#markkdown-header-Disabling-allocation) to make them return `NULL`
 
-### <a id="markkdown-header-Configuration"></a>Configuration
+### <a id="markkdown-header-Configuration"></a>Configuration and remarks
 Some functionalities can be (de)activated by macros only (that need to be put before including LAssert) such as:
 * **LASSERT_MANUAL_MAIN**: providing a self define main
 * **LASSERT_CUSTOM_ALLOC**: enabling (de)activation of allocation functions (making them work normally or always return `NULL`)
@@ -32,7 +32,10 @@ Some other functionalities can be (de)activated by macros _and_ parameters such 
   - **small** or __LASSERT_MINIMIZED_OUTPUT__: smaller output giving only information about sections and not details about their test cases
   - **mini** or __LASSERT_SMALL_OUTPUT__: (stands for minimized) no details at all, it just give the percentage of succeeded test case in every sections (as a summarized result)
   
-__NOTE:__ For now, only consol output option is working, others will give the same output.
+__NOTES:__
+* In auto main mode, the program will return the number of section on failure.
+* In manual main mode, each call to `RUN_SECTION` returns 1 if the section failed due to an error, 2 if it failed due to a `NULL` pointer (call of `REQUIRE_NOT_NULL`) or 0 if all went well.
+* For now, only consol output option is working, others will give the same output.
 
 ### <a id="markkdown-header-Simple-macros"></a>Simple macros
 The code below show all the simple macros you can use in LAssert :
