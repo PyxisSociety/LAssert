@@ -40,7 +40,6 @@
 #  define LASSERT_WINDOWS
 #  include <windows.h>
 #  include <io.h>
-#  include <sys/timeb.h>
 #  define TIME_TYPE_LASSERT ULONGLONG
 #  define NULL_TIME_LASSERT {0}
 #  define TIME_LASSERT(start) TIME_TYPE_LASSERT start = GetTickCount64()
@@ -388,24 +387,63 @@ int _va_arg_not_empty_lassert(const char * va_arg_str){
  * @param disable: flag to tell whether or not allocation functions should be locked
  */
 #ifdef LASSERT_CUSTOM_ALLOC
+#  ifdef LASSERT_WINDOWS
+#    define LASSERT_LIB_TYPE HMODULE
+#    define dlopen(a, b) LoadLibrary(a)
+#    define print_error(str) \
+		failed = 0; \
+		FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, \
+			NULL, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPSTR)& err, 0, NULL); \
+		if(!err){ \
+			failed = 1; \
+			printf("%s" str "\n\t<unknown>%s\n", LASSERT_RED, LASSERT_NORMAL); \
+		}else{ \
+			printf("%s" str "\n\t%s%s\n", LASSERT_RED, err, LASSERT_NORMAL); \
+		} \
+		if(!failed){ \
+			LocalFree(err); \
+			err = NULL; \
+		}
+#    define dlclose FreeLibrary
+#    define DECLARE_RESOURCE(name) \
+		HGLOBAL name; \
+		char * err = NULL; \
+		char failed; \
+		HRSRC name##_src
+#    define HANDLE_RESOURCE(lib, name, value) \
+		name##_src = FindResource(lib, "_lassert_malloc_lock", "int"); \
+		if(!name##_src){ \
+			print_error("--- Failed to find LAssert lock alloc symbole"); \
+		}else{ \
+			name = LoadResource(lib, name##_src); \
+			if(!name){ \
+				print_error("--- Failed to load LAssert lock alloc symbole"); \
+			}else{ \
+				*(int*)name = value; \
+			} \
+		}
+#  else
+#    define LASSERT_LIB_TYPE void *
+#    define DECLARE_RESOURCE(name) int * name
+#    define print_error(str) printf("%s" str "\n\t%s%s\n", LASSERT_RED, dlerror(), LASSERT_NORMAL)
+#    define HANDLE_RESOURCE(lib, name, value) \
+		name = (int*)dlsym(lib, "_lassert_malloc_lock"); \
+		if(name){ \
+			*name = value; \
+		}else{ \
+			print_error("--- Failed to load LAssert lock alloc symbole"); \
+		}
+#  endif
 void LAssert_alloc(int disable){
-    void * lib = dlopen(LASSERT_LOCK_LIBRARY, RTLD_NOW);
-    int  * lock;
+	LASSERT_LIB_TYPE lib = dlopen(LASSERT_LOCK_LIBRARY, RTLD_NOW);
+	DECLARE_RESOURCE(lock);
 
     if(lib){
-        lock = (int*)dlsym(lib, "_lassert_malloc_lock");
-
-        if(lock){
-            *lock = disable;
-        }else{
-            printf("%s--- Failed to load LAssert lock malloc symbole\n" \
-                   "\t%s%s\n", LASSERT_RED, dlerror(), LASSERT_NORMAL);
-        }
+		HANDLE_RESOURCE(lib, lock, disable);
 
         dlclose(lib);
     }else{
-        printf("%s--- Failed to open LAssert lock library (" LASSERT_LOCK_LIBRARY ")\n" \
-               "\t%s%s\n", LASSERT_RED, dlerror(), LASSERT_NORMAL);
+		print_error("--- Failed to open LAssert lock library (" LASSERT_LOCK_LIBRARY ")");
     }
 }
 #endif
