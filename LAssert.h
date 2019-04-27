@@ -433,6 +433,7 @@ void LASSERT_PRINT_OUTPUT(void){
     }
 }
 void LASSERT_activate_output(void){
+#   ifdef LASSERT_LINUX
     int i;
     for(i = 0; i < 2; ++i){
         LASSERT_data.fdTmpFile[i] = mkstemp("XXXXXX");
@@ -443,8 +444,10 @@ void LASSERT_activate_output(void){
     
     dup2(STDOUT_FILENO, LASSERT_data.fdTmpFile[0]);
     dup2(STDERR_FILENO, LASSERT_data.fdTmpFile[1]);
+#   endif
 }
 void LASSERT_deactivate_output(void){
+#   ifdef LASSERT_LINUX
     int i;
     for(i = 0; i < 2; ++i){
         if(LASSERT_data.fdTmpFile[i] == -1){
@@ -458,6 +461,7 @@ void LASSERT_deactivate_output(void){
     for(i = 0; i < 2; ++i){
         close(LASSERT_data.fdTmpFile[i]);
     }
+#   endif
 }
 void LASSERT_XML_PRINT(const char * s, ...){
     va_list vl;
@@ -667,7 +671,7 @@ void LAssert_alloc(int disable){
                     LASSERT_XML_PRINT("\t\t\t<failure>\n" __VA_ARGS__); \
                     LASSERT_XML_PRINT("\t\t\t</failure>");              \
                 }else{                                                  \
-                    LOG_MESSAGE_LASSERT(#bool, ##__VA_ARGS__);		\
+                    LOG_MESSAGE_LASSERT(#ptr, ##__VA_ARGS__);		\
                 }                                                       \
 		return;							\
 	    }else                                                       \
