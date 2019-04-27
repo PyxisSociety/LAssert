@@ -34,7 +34,7 @@
     gettimeofday(&_timecheck_lassert, NULL);				\
     start = (long)_timecheck_lassert.tv_sec * 1000 + (long)_timecheck_lassert.tv_usec / 1000
 #  define INTERVAL_TIME_LASSERT(start,end) (double)((end) - (start)) / 1000
-#  define strcpy strncpy
+#  define strcpy(a, b, c) strncpy(a, c, b)
 #  define COPY(type,var) type var = var
 #else
 #  define LASSERT_WINDOWS
@@ -573,9 +573,6 @@ void LAssert_alloc(int disable){
 
     
 #if !defined(LASSERT_MANUAL_MAIN)
-/* -----------------------------
- *            GNU and auto main
- */
 int main(){
     return 0;
 }
@@ -595,13 +592,10 @@ int main(){
 #      endif
 #    endif
 #  else
-#    define LASSERT_AUTOCALL_HANDLER(fname, params) __attribute__((constructor));
+#    define LASSERT_AUTOCALL_HANDLER(fname) __attribute__((constructor));
 #  endif
 #else
-/* -----------------------------------
- *            none GNU or manual main
- */
-#  define LASSERT_AUTOCALL_HANDLER(fname, params)
+#  define LASSERT_AUTOCALL_HANDLER(fname)
 #  define RUN_SECTION(name) _call_test_##name##_lassert()
 #endif
 
