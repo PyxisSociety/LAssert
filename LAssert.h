@@ -54,6 +54,8 @@
 #  endif
 #endif
 
+#define EPSILON_LASSERT 1e-6
+
 
 
 /*-------------------------------------------
@@ -112,6 +114,11 @@ struct{
 
 
 
+
+#define LASSERT_PRINT(...)                                      \
+    if(LASSERT_parameters.output == LASSERT_normal_output)      \
+        printf(__VA_ARGS__)
+
 char * _get_color_lassert(int i){
     static char s[7][10] = {"\x1B[0m","\x1B[31m","\x1B[32m","\x1B[33m","\x1B[34m","\x1B[35m","\x1B[36m"};
     static int is_init = 0;
@@ -144,23 +151,23 @@ void _init_rand_lassert(void){
     }
 }
 void _REQUIRE_CASE_failed(const char * statement, int line, const char * name_of_test){
-    printf("\n%s%s test_case :%s\n",LASSERT_MAGENTA,name_of_test,LASSERT_NORMAL);
-    printf("\t%s%llu test(s) passed%s\n",LASSERT_GREEN, _nb_tests_lassert(1),LASSERT_NORMAL);
+    LASSERT_PRINT("\n%s%s test_case :%s\n",LASSERT_MAGENTA,name_of_test,LASSERT_NORMAL);
+    LASSERT_PRINT("\t%s%llu test(s) passed%s\n",LASSERT_GREEN, _nb_tests_lassert(1),LASSERT_NORMAL);
     if(statement)
-	printf("\t%sFailed statement case line %d :\n\t\t%s %s\n",LASSERT_RED, line, statement,LASSERT_NORMAL);
+	LASSERT_PRINT("\t%sFailed statement case line %d :\n\t\t%s %s\n",LASSERT_RED, line, statement,LASSERT_NORMAL);
     else
-	printf("%sA test failed line %d but statement could not be read (NULL PTR)%s\n",LASSERT_RED, line, LASSERT_NORMAL);
+	LASSERT_PRINT("%sA test failed line %d but statement could not be read (NULL PTR)%s\n",LASSERT_RED, line, LASSERT_NORMAL);
 }
 void _REQUIRE_CASE_succeed(void){
     _nb_tests_lassert(0);
 }
 void _REQUIRE_CASE_not_null_failed(const char * ptr, int line, const char * name_of_test){
-    printf("\n%s%s test_case :%s\n",LASSERT_MAGENTA,name_of_test,LASSERT_NORMAL);
-    printf("\t%s%llu test(s) passed%s\n",LASSERT_GREEN, _nb_tests_lassert(1),LASSERT_NORMAL);
+    LASSERT_PRINT("\n%s%s test_case :%s\n",LASSERT_MAGENTA,name_of_test,LASSERT_NORMAL);
+    LASSERT_PRINT("\t%s%llu test(s) passed%s\n",LASSERT_GREEN, _nb_tests_lassert(1),LASSERT_NORMAL);
     if(ptr)
-	printf("\t%sFailed to allocate a pointer line %d :\n\t\t%s %s\n",LASSERT_YELLOW, line, ptr,LASSERT_NORMAL);
+	LASSERT_PRINT("\t%sFailed to allocate a pointer line %d :\n\t\t%s %s\n",LASSERT_YELLOW, line, ptr,LASSERT_NORMAL);
     else
-	printf("%sFailed to allocate a pointer line %d :\n\t%sCouldn't read pointer's name%s\n",LASSERT_YELLOW, line, LASSERT_RED,LASSERT_NORMAL);
+	LASSERT_PRINT("%sFailed to allocate a pointer line %d :\n\t%sCouldn't read pointer's name%s\n",LASSERT_YELLOW, line, LASSERT_RED,LASSERT_NORMAL);
 }
 int _in_case_lassert(int option){
     static int is_in = 0;
@@ -214,12 +221,12 @@ void _REQUIRE_succeed(void){
 }
 void _REQUIRE_failed(const char * statement, int line){
     if(statement)
-	printf("\n%sFailed statement outside a test case line %d :\n\t%s %s\n", LASSERT_RED, line, statement,LASSERT_NORMAL);
+	LASSERT_PRINT("\n%sFailed statement outside a test case line %d :\n\t%s %s\n", LASSERT_RED, line, statement,LASSERT_NORMAL);
     _failed_test_case(1,0);
 }
 void _REQUIRE_not_null_failed(const char * statement, int line){
     if(statement)
-	printf("\n%sFailed to allocate outside a test case line %d :\n\t%s %s\n",LASSERT_YELLOW, line, statement,LASSERT_NORMAL);
+	LASSERT_PRINT("\n%sFailed to allocate outside a test case line %d :\n\t%s %s\n",LASSERT_YELLOW, line, statement,LASSERT_NORMAL);
     _failed_test_case(1,0);
 }
 void _generate_tab_lassert(const char * name_of_case,int * _id_flag,int * begin,int * end, unsigned size, const char * attributes, ... ){
@@ -236,9 +243,9 @@ void _generate_tab_lassert(const char * name_of_case,int * _id_flag,int * begin,
 	}
 
 	if(number_of_parameter&1){
-	    printf("\n%s%s test_case :%s\n",LASSERT_MAGENTA,name_of_case,LASSERT_NORMAL);
-	    printf("\t%s%llu test(s) passed%s\n",LASSERT_GREEN, _nb_tests_lassert(1),LASSERT_NORMAL);
-	    printf("\t%sBad parameter in a RAND_CASE :\n\t\t%s\n\t\tSize of list should be even%s\n",LASSERT_RED,attributes,LASSERT_NORMAL);
+	    LASSERT_PRINT("\n%s%s test_case :%s\n",LASSERT_MAGENTA,name_of_case,LASSERT_NORMAL);
+	    LASSERT_PRINT("\t%s%llu test(s) passed%s\n",LASSERT_GREEN, _nb_tests_lassert(1),LASSERT_NORMAL);
+	    LASSERT_PRINT("\t%sBad parameter in a RAND_CASE :\n\t\t%s\n\t\tSize of list should be even%s\n",LASSERT_RED,attributes,LASSERT_NORMAL);
 	    _start_running_lassert(-1);
 	    *_id_flag = 1;
 	}else{
@@ -277,9 +284,9 @@ void _generate_range_lassert(const char * name_of_case,int * _id_flag,int * tab,
 	}
 
 	if(number_of_parameter%3){
-	    printf("\n%s%s test_case :%s\n",LASSERT_MAGENTA,name_of_case,LASSERT_NORMAL);
-	    printf("\t%s%llu test(s) passed%s\n",LASSERT_GREEN, _nb_tests_lassert(1),LASSERT_NORMAL);
-	    printf("\t%sBad parameter in a RANGE_CASE :\n\t\t%s\n\t\tSize of list should be a multiple of 3%s\n",LASSERT_RED,attributes,LASSERT_NORMAL);
+	    LASSERT_PRINT("\n%s%s test_case :%s\n",LASSERT_MAGENTA,name_of_case,LASSERT_NORMAL);
+	    LASSERT_PRINT("\t%s%llu test(s) passed%s\n",LASSERT_GREEN, _nb_tests_lassert(1),LASSERT_NORMAL);
+	    LASSERT_PRINT("\t%sBad parameter in a RANGE_CASE :\n\t\t%s\n\t\tSize of list should be a multiple of 3%s\n",LASSERT_RED,attributes,LASSERT_NORMAL);
 	    *_id_flag = 1;
 	}else{
 	    va_start(vl,attributes);
@@ -340,24 +347,24 @@ int _start_test_lassert(int option,int set_start, const char * name, TIME_TYPE_L
 	_nb_tests_lassert(-1);
 	
         if(name){
-            printf("\n%sEND OF SECTION %s %s\n", LASSERT_BLUE, name, LASSERT_NORMAL);
+            LASSERT_PRINT("\n%sEND OF SECTION %s %s\n", LASSERT_BLUE, name, LASSERT_NORMAL);
             if (using_time_asked()) {
                 TIME_LASSERT(s);
-                printf("%sExecuting section took : %fs%s\n", LASSERT_CYAN, INTERVAL_TIME_LASSERT(start, end), LASSERT_NORMAL);
+                LASSERT_PRINT("%sExecuting section took : %fs%s\n", LASSERT_CYAN, INTERVAL_TIME_LASSERT(start, end), LASSERT_NORMAL);
             }
             if(_failed_test_case(0,0))
-                printf("%sFailed : %d test_case(s)%s\n",LASSERT_RED,_failed_test_case(0,0),LASSERT_NORMAL);
+                LASSERT_PRINT("%sFailed : %d test_case(s)%s\n",LASSERT_RED,_failed_test_case(0,0),LASSERT_NORMAL);
             if(_succeeded_test_case(0,0))
-                printf("%sSucceeded : %d test_case(s)%s\n",LASSERT_GREEN,_succeeded_test_case(0,0),LASSERT_NORMAL);
+                LASSERT_PRINT("%sSucceeded : %d test_case(s)%s\n",LASSERT_GREEN,_succeeded_test_case(0,0),LASSERT_NORMAL);
             if(_not_null_failed_test_case(0,0))
-                printf("%sStopped due to NULL pointer : %d test_case(s)%s\n",LASSERT_YELLOW,_not_null_failed_test_case(0,0),LASSERT_NORMAL);
+                LASSERT_PRINT("%sStopped due to NULL pointer : %d test_case(s)%s\n",LASSERT_YELLOW,_not_null_failed_test_case(0,0),LASSERT_NORMAL);
             if(!_succeeded_test_case(0,0) && !_failed_test_case(0,0))
-                printf("%sEMPTY TEST SECTION%s\n",LASSERT_CYAN, LASSERT_NORMAL);
-            printf("%s------------------------------------------------------------%s\n\n",LASSERT_BLUE,LASSERT_NORMAL);
+                LASSERT_PRINT("%sEMPTY TEST SECTION%s\n",LASSERT_CYAN, LASSERT_NORMAL);
+            LASSERT_PRINT("%s------------------------------------------------------------%s\n\n",LASSERT_BLUE,LASSERT_NORMAL);
         }
     }else{
 	started = 0;
-	printf("%s------------------------------------------------------------\n"
+	LASSERT_PRINT("%s------------------------------------------------------------\n"
 	       "BEGIN OF SECTION %s %s\n",LASSERT_BLUE, name, LASSERT_NORMAL);
     }
 
@@ -367,10 +374,12 @@ void _log_message_lassert(const char * useless, ...){
     va_list vl;
     char * format;
 
-    va_start(vl, useless);
-    format = va_arg(vl, char *);
-    vprintf(format, vl);
-    va_end(vl);
+    if(LASSERT_parameters.output == LASSERT_normal_output){
+        va_start(vl, useless);
+        format = va_arg(vl, char *);
+        vprintf(format, vl);
+        va_end(vl);
+    }
 }
 int _va_arg_not_empty_lassert(const char * va_arg_str){
     int i = 0;
@@ -397,6 +406,26 @@ int _va_arg_not_empty_lassert(const char * va_arg_str){
 
     return va_arg_str[i] >= 10;
 }
+char * get_color_result_lassert(double result){
+        if(result >= 100){
+            return LASSERT_GREEN;
+        }
+        if(result >= 50){
+            return LASSERT_YELLOW;
+        }
+        return LASSERT_RED;
+}
+void LASSERT_PRINT_OUTPUT(void){
+    double result;
+    
+    if(LASSERT_parameters.output == LASSERT_minimized_output){
+        printf("Percentage of test section succeeded: ");
+        
+        result = (double)LASSERT_data.failed / (double)(LASSERT_data.failed + LASSERT_data.passed) * 100;
+        
+        printf("%s%f%%%s\n", get_color_result_lassert(result), result, LASSERT_NORMAL);
+    }
+}
 
 
 
@@ -415,9 +444,9 @@ int _va_arg_not_empty_lassert(const char * va_arg_str){
                   NULL, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPSTR)& err, 0, NULL); \
     if(!err){                                                           \
         failed = 1;                                                     \
-        printf("%s" str "\n\t<unknown>%s\n", LASSERT_RED, LASSERT_NORMAL); \
+        LASSERT_PRINT("%s" str "\n\t<unknown>%s\n", LASSERT_RED, LASSERT_NORMAL); \
     }else{                                                              \
-        printf("%s" str "\n\t%s%s\n", LASSERT_RED, err, LASSERT_NORMAL); \
+        LASSERT_PRINT("%s" str "\n\t%s%s\n", LASSERT_RED, err, LASSERT_NORMAL); \
     }                                                                   \
     if(!failed){                                                        \
         LocalFree(err);                                                 \
@@ -444,7 +473,7 @@ int _va_arg_not_empty_lassert(const char * va_arg_str){
 #  else
 #    define LASSERT_LIB_TYPE void *
 #    define DECLARE_RESOURCE(name) int * name
-#    define print_error(str) printf("%s" str "\n\t%s%s\n", LASSERT_RED, dlerror(), LASSERT_NORMAL)
+#    define print_error(str) LASSERT_PRINT("%s" str "\n\t%s%s\n", LASSERT_RED, dlerror(), LASSERT_NORMAL)
 #    define HANDLE_RESOURCE(lib, name, value)                           \
     name = (int*)dlsym(lib, "_lassert_malloc_lock");                    \
     if(name){                                                           \
@@ -465,8 +494,6 @@ void LAssert_alloc(int disable){
     }
 }
 #endif
-
-#define EPSILON_LASSERT 1e-6
 
 #define ONCE if(*_old_flag < __LINE__ && (_start_running_lassert(1) || 1)) while(_start_running_lassert(0))
 
@@ -533,7 +560,7 @@ void LAssert_alloc(int disable){
 
 #define LOG_MESSAGE_LASSERT(ptr, ...)					\
     if(_va_arg_not_empty_lassert(#__VA_ARGS__)){			\
-	printf("\t%slog message :%s\n",LASSERT_YELLOW,LASSERT_NORMAL);  \
+	LASSERT_PRINT("\t%slog message :%s\n",LASSERT_YELLOW,LASSERT_NORMAL);  \
 	_log_message_lassert(ptr, "" __VA_ARGS__);                      \
 	puts(LASSERT_NORMAL);                                           \
     }
@@ -547,9 +574,9 @@ void LAssert_alloc(int disable){
 		    *_has_to_quit = __LINE__;				\
 		    _REQUIRE_CASE_failed(#bool, __LINE__, name_of_test); \
 		    if(_tab_lassert){					\
-			printf("\t%sFailed on this sequence :\n\t\t",LASSERT_RED); \
+			LASSERT_PRINT("\t%sFailed on this sequence :\n\t\t",LASSERT_RED); \
 			for(long _id = 0; _id < _size_of_tab; ++_id)    \
-			    printf("%d ",_tab_lassert[_id]);            \
+			    LASSERT_PRINT("%d ",_tab_lassert[_id]);            \
 		    }							\
 		    _in_case_lassert(0);				\
 		    *_id_flag = 1;					\
@@ -592,6 +619,7 @@ void LAssert_alloc(int disable){
     
 #if !defined(LASSERT_MANUAL_MAIN)
 int main(){
+    LASSERT_PRINT_OUTPUT();
     return LASSERT_data.failed;
 }
 #  ifdef LASSERT_WINDOWS
@@ -627,6 +655,8 @@ int main(){
 	char s[512] = {0};						\
 	TIME_TYPE_LASSERT start = NULL_TIME_LASSERT, end = NULL_TIME_LASSERT; \
 	int id = -1, i = 1, old = 0;					\
+        int failed, succeeded;                                          \
+        double result;                                                  \
 	_succeeded_test_case(0,1);					\
 	_not_null_failed_test_case(0,1);				\
 	_start_test_lassert(0,0, #name, NULL_TIME_LASSERT, NULL_TIME_LASSERT); \
@@ -648,6 +678,22 @@ int main(){
 	    _succeeded_test_case(1,0);					\
 	else if(id == 2)						\
 	    _not_null_failed_test_case(1,0);				\
+                                                                        \
+        if(LASSERT_parameters.output == LASSERT_small_output){          \
+            failed = _not_null_failed_test_case(0, 0) + _failed_test_case(0, 0); \
+            succeeded = _succeeded_test_case(0, 0);                     \
+            if(failed + succeeded){                                     \
+                result = (double)succeeded / (double)(failed + succeeded) * 100; \
+                printf("%sPercentage of test cases succeeded in section " \
+                       #name ": %s%f%%%s\n\n\n",                        \
+                       LASSERT_BLUE, get_color_result_lassert(result),  \
+                       result, LASSERT_NORMAL);                         \
+            }else{                                                      \
+                printf("%sSection " #name " empty%s\n\n\n",             \
+                       LASSERT_BLUE, LASSERT_NORMAL);                   \
+            }                                                           \
+        }                                                               \
+                                                                        \
 	_start_test_lassert(1,1, #name, start, end);                    \
         id = 0;                                                         \
         if(_failed_test_case(0, 0))                                     \
@@ -658,6 +704,7 @@ int main(){
             ++LASSERT_data.failed;                                      \
         else                                                            \
             ++LASSERT_data.passed;                                      \
+                                                                        \
         return id;                                                      \
     }									\
     void _test_##name##_lassert(char * name_of_test, int * _id_flag, int _size_of_tab,int * _tab_lassert, int * _has_to_quit, int * _old_flag)
@@ -712,7 +759,7 @@ void LASSERT_PARAMETERS_INIT(int argc, char ** argv){
     int help = 0;
     int i = 1;
     const char out[] = "-out=";
-    const int SIZE = sizeof(out);
+    const size_t SIZE = sizeof(out) - 1;
 
     for(; i < argc; ++i){
         if(!strcmp("-t", argv[i])){
@@ -753,7 +800,7 @@ void LASSERT_PARAMETERS_INIT(int argc, char ** argv){
              "\t\tmini: (stands for minimized) no details at all, it just give the percentage of succeeded test case in every sections (as a summarized result)\n"
              "Default options are: -nt -c -out=consol"
             );
-        exit(0);
+        exit(1);
     }
 }
 

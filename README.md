@@ -35,7 +35,7 @@ Some other functionalities can be (de)activated by macros _and_ parameters such 
 __NOTES:__
 * In auto main mode, the program will return the number of section on failure.
 * In manual main mode, each call to `RUN_SECTION` returns 1 if the section failed due to an error, 2 if it failed due to a `NULL` pointer (call of `REQUIRE_NOT_NULL`) or 0 if all went well.
-* For now, only consol output option is working, others will give the same output.
+* In manual main and minimized output mode, you need to call `LASSERT_PRINT_OUTPUT()` to show the result. If you call this function in another mode, it will simply do nothing so you should call it either way.
 
 ### <a id="markkdown-header-Simple-macros"></a>Simple macros
 The code below show all the simple macros you can use in LAssert :
