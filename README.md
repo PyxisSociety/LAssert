@@ -15,7 +15,7 @@ Here is a small tutorial devided in few steps:
 * [Advanced macros](#markkdown-header-Advanced-macros) you can use
 * [Disabling allocation functions](#markkdown-header-Disabling-allocation) to make them return `NULL`
 
-#### <a id="markkdown-header-Configuration"></a>Configuration
+### <a id="markkdown-header-Configuration"></a>Configuration
 Some functionalities can be (de)activated by macros only (that need to be put before including LAssert) such as:
 * **LASSERT_MANUAL_MAIN**: providing a self define main
 * **LASSERT_CUSTOM_ALLOC**: enabling (de)activation of allocation functions (making them work normally or always return `NULL`)
@@ -34,7 +34,7 @@ Some other functionalities can be (de)activated by macros _and_ parameters such 
   
 __NOTE:__ For now, only consol output option is working, others will give the same output.
 
-#### <a id="markkdown-header-Simple-macros"></a>Simple macros
+### <a id="markkdown-header-Simple-macros"></a>Simple macros
 The code below show all the simple macros you can use in LAssert :
 ```c
 #include "LAssert.h"
@@ -97,7 +97,7 @@ __NOTE:__ As you may have noticed, you can add formatted string like printf para
   
 _WARNING:_ On contrary to printf first argument, it has to be a string constant, not a variable (even variable constants are not allowed)
 
-#### <a id="markkdown-header-Advanced-macros"></a>Advanced macros
+### <a id="markkdown-header-Advanced-macros"></a>Advanced macros
 The code below show all the other macros you can use in LAssert :
 ```c
 #include "LAssert.h"
@@ -170,7 +170,7 @@ Here is what each macro means in case you did not guess :
 * **ONCE** : prevent a code inside a section but outside a test case to be called more than once<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This problem can occure when you mix up test cases and code not inside test cases
 
-#### <a id="markkdown-header-Disabling-allocation"></a>Disabling allocation
+### <a id="markkdown-header-Disabling-allocation"></a>Disabling allocation
 
 With those tools, you can render allocation functions to return `NULL` whenever they are called. You have to do three modifications for that:
 * You need to call a function in your code (see example below)
