@@ -49,7 +49,7 @@ TEST_SECTION(un_bon_gros_test){
 
 TEST_SECTION(un_test_vide){
 }
-/*
+
 TEST_SECTION(random_test){
     RAND_CASE(first_random,tab,3,3,1,10,10,100){
 	puts("BEEEEGIN");
@@ -79,7 +79,7 @@ TEST_SECTION(range_test){
     RANGE_CASE(should_failed,tab2,3,1){
     }
 }
-*/
+
 TEST_SECTION(copy_test){
     unsigned i = 0;
 
@@ -109,7 +109,6 @@ TEST_SECTION(equal_test){
     }
 }
 
-#ifdef LASSERT_SECTION_TIME
 long long unsigned factorial(unsigned i){
     long long unsigned res = 1;
     for(unsigned j = 2; j < i; ++j)
@@ -122,7 +121,6 @@ TEST_SECTION(time_test){
 	for(unsigned i = 0; i < 100; ++i)
 	    factorial(100000);
 }
-#endif
 
 #ifdef LASSERT_CUSTOM_ALLOC
 TEST_SECTION(malloc_disable){

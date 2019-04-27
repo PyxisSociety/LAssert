@@ -47,9 +47,18 @@
 	((end >= start) ? (double)(end - start) : (double)((TIME_TYPE_LASSERT)-1 - start + end)) / 1000
 #  define isatty(a) _isatty(a)
 #  define strcpy strcpy_s
-#  define COPY(type,var) type var = ::var
+#  ifdef __cplusplus
+#    define COPY(type, var) type var = ::var
+#  else
+#    define COPY(type, var)
+#  endif
 #endif
 
+
+
+/*-------------------------------------------
+ * Global datas
+ */
 enum LASSERT_OUTPUT_OPTION{
     LASSERT_normal_output,
     LASSERT_small_output,
@@ -92,6 +101,16 @@ struct{
     LASSERT_no_section_time
 #endif
 };
+
+struct{
+    int failed;
+    int passed;
+} LASSERT_data = {0, 0};
+/*-------------------------------------------*/
+
+
+
+
 
 char * _get_color_lassert(int i){
     static char s[7][10] = {"\x1B[0m","\x1B[31m","\x1B[32m","\x1B[33m","\x1B[34m","\x1B[35m","\x1B[36m"};
@@ -322,10 +341,10 @@ int _start_test_lassert(int option,int set_start, const char * name, TIME_TYPE_L
 	
         if(name){
             printf("\n%sEND OF SECTION %s %s\n", LASSERT_BLUE, name, LASSERT_NORMAL);
-			if (using_time_asked()) {
-				TIME_LASSERT(s);
-				printf("%sExecuting section took : %fs%s\n", LASSERT_CYAN, INTERVAL_TIME_LASSERT(start, end), LASSERT_NORMAL);
-			}
+            if (using_time_asked()) {
+                TIME_LASSERT(s);
+                printf("%sExecuting section took : %fs%s\n", LASSERT_CYAN, INTERVAL_TIME_LASSERT(start, end), LASSERT_NORMAL);
+            }
             if(_failed_test_case(0,0))
                 printf("%sFailed : %d test_case(s)%s\n",LASSERT_RED,_failed_test_case(0,0),LASSERT_NORMAL);
             if(_succeeded_test_case(0,0))
@@ -390,60 +409,59 @@ int _va_arg_not_empty_lassert(const char * va_arg_str){
 #  ifdef LASSERT_WINDOWS
 #    define LASSERT_LIB_TYPE HMODULE
 #    define dlopen(a, b) LoadLibrary(a)
-#    define print_error(str) \
-		failed = 0; \
-		FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, \
-			NULL, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPSTR)& err, 0, NULL); \
-		if(!err){ \
-			failed = 1; \
-			printf("%s" str "\n\t<unknown>%s\n", LASSERT_RED, LASSERT_NORMAL); \
-		}else{ \
-			printf("%s" str "\n\t%s%s\n", LASSERT_RED, err, LASSERT_NORMAL); \
-		} \
-		if(!failed){ \
-			LocalFree(err); \
-			err = NULL; \
-		}
+#    define print_error(str)                                            \
+    failed = 0;                                                         \
+    FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, \
+                  NULL, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPSTR)& err, 0, NULL); \
+    if(!err){                                                           \
+        failed = 1;                                                     \
+        printf("%s" str "\n\t<unknown>%s\n", LASSERT_RED, LASSERT_NORMAL); \
+    }else{                                                              \
+        printf("%s" str "\n\t%s%s\n", LASSERT_RED, err, LASSERT_NORMAL); \
+    }                                                                   \
+    if(!failed){                                                        \
+        LocalFree(err);                                                 \
+        err = NULL;                                                     \
+    }
 #    define dlclose FreeLibrary
-#    define DECLARE_RESOURCE(name) \
-		HGLOBAL name; \
-		char * err = NULL; \
-		char failed; \
-		HRSRC name##_src
-#    define HANDLE_RESOURCE(lib, name, value) \
-		name##_src = FindResource(lib, "_lassert_malloc_lock", "int"); \
-		if(!name##_src){ \
-			print_error("--- Failed to find LAssert lock alloc symbole"); \
-		}else{ \
-			name = LoadResource(lib, name##_src); \
-			if(!name){ \
-				print_error("--- Failed to load LAssert lock alloc symbole"); \
-			}else{ \
-				*(int*)name = value; \
-			} \
-		}
+#    define DECLARE_RESOURCE(name)              \
+    HGLOBAL name;                               \
+    char * err = NULL;                          \
+    char failed;                                \
+    HRSRC name##_src
+#    define HANDLE_RESOURCE(lib, name, value)                           \
+    name##_src = FindResource(lib, "_lassert_malloc_lock", "int");      \
+    if(!name##_src){                                                    \
+        print_error("--- Failed to find LAssert lock alloc symbole");   \
+    }else{                                                              \
+        name = LoadResource(lib, name##_src);                           \
+        if(!name){                                                      \
+            print_error("--- Failed to load LAssert lock alloc symbole"); \
+        }else{                                                          \
+            *(int*)name = value;                                        \
+        }                                                               \
+    }
 #  else
 #    define LASSERT_LIB_TYPE void *
 #    define DECLARE_RESOURCE(name) int * name
 #    define print_error(str) printf("%s" str "\n\t%s%s\n", LASSERT_RED, dlerror(), LASSERT_NORMAL)
-#    define HANDLE_RESOURCE(lib, name, value) \
-		name = (int*)dlsym(lib, "_lassert_malloc_lock"); \
-		if(name){ \
-			*name = value; \
-		}else{ \
-			print_error("--- Failed to load LAssert lock alloc symbole"); \
-		}
+#    define HANDLE_RESOURCE(lib, name, value)                           \
+    name = (int*)dlsym(lib, "_lassert_malloc_lock");                    \
+    if(name){                                                           \
+        *name = value;                                                  \
+    }else{                                                              \
+        print_error("--- Failed to load LAssert lock alloc symbole");   \
+    }
 #  endif
 void LAssert_alloc(int disable){
-	LASSERT_LIB_TYPE lib = dlopen(LASSERT_LOCK_LIBRARY, RTLD_NOW);
-	DECLARE_RESOURCE(lock);
+    LASSERT_LIB_TYPE lib = dlopen(LASSERT_LOCK_LIBRARY, RTLD_NOW);
+    DECLARE_RESOURCE(lock);
 
     if(lib){
-		HANDLE_RESOURCE(lib, lock, disable);
-
+        HANDLE_RESOURCE(lib, lock, disable);
         dlclose(lib);
     }else{
-		print_error("--- Failed to open LAssert lock library (" LASSERT_LOCK_LIBRARY ")");
+        print_error("--- Failed to open LAssert lock library (" LASSERT_LOCK_LIBRARY ")");
     }
 }
 #endif
@@ -461,8 +479,8 @@ void LAssert_alloc(int disable){
 	    _succeeded_test_case(1,0);				\
 	else if(*_id_flag == 2)					\
 	    _not_null_failed_test_case(1,0);			\
-	_start_test_lassert(1,1, NULL, NULL_TIME_LASSERT, NULL_TIME_LASSERT);                   \
-	strcpy(name_of_test, 512, #NAME_OF_TEST);			\
+	_start_test_lassert(1,1, NULL, NULL_TIME_LASSERT, NULL_TIME_LASSERT); \
+	strcpy(name_of_test, 512, #NAME_OF_TEST);                       \
 	_start_running_lassert(1);				\
 	_in_case_lassert(1);					\
 	*_id_flag = 0;						\
@@ -480,10 +498,10 @@ void LAssert_alloc(int disable){
 	    _succeeded_test_case(1,0);					\
 	else if(*_id_flag == 2)						\
 	    _not_null_failed_test_case(1,0);				\
-	_start_test_lassert(1,1, NULL, NULL_TIME_LASSERT, NULL_TIME_LASSERT);                           \
+	_start_test_lassert(1,1, NULL, NULL_TIME_LASSERT, NULL_TIME_LASSERT); \
 	_size_of_tab = nb_of_values;					\
 	_tab_lassert = var_name;					\
-	strcpy(name_of_test, 512, #NAME_OF_TEST);				\
+	strcpy(name_of_test, 512, #NAME_OF_TEST);                       \
 	_start_running_lassert(nb_of_values);				\
 	_in_case_lassert(!*_id_flag);					\
 	*_id_flag = 0;							\
@@ -491,7 +509,7 @@ void LAssert_alloc(int disable){
     }									\
     while(*_old_flag < __LINE__ && (_next_rand_tab_lassert(var_name,var_name##begin,var_name##end,nb_of_values),_start_running_lassert(0)) && !*_id_flag)
 
-#define RANGE_CASE(NAME_OF_TEST,var_name,nb_of_values,...)	\
+#define RANGE_CASE(NAME_OF_TEST,var_name,nb_of_values,...)              \
     int var_name[nb_of_values] = {0};					\
     int var_name##_begin[nb_of_values] = {0};				\
     int var_name##_end[nb_of_values] = {0};				\
@@ -505,8 +523,8 @@ void LAssert_alloc(int disable){
 	    _succeeded_test_case(1,0);					\
 	else if(*_id_flag == 2)						\
 	    _not_null_failed_test_case(1,0);				\
-	_start_test_lassert(1,1, NULL, NULL_TIME_LASSERT, NULL_TIME_LASSERT);                           \
-	strcpy(name_of_test, 512, #NAME_OF_TEST);				\
+	_start_test_lassert(1,1, NULL, NULL_TIME_LASSERT, NULL_TIME_LASSERT); \
+	strcpy(name_of_test, 512, #NAME_OF_TEST);                       \
 	*_id_flag = 0;							\
 	_generate_range_lassert(#NAME_OF_TEST,_id_flag,var_name,var_name##_begin,var_name##_end,var_name##_step,nb_of_values,#__VA_ARGS__,__VA_ARGS__); \
 	_in_case_lassert(1);						\
@@ -515,7 +533,7 @@ void LAssert_alloc(int disable){
 
 #define LOG_MESSAGE_LASSERT(ptr, ...)					\
     if(_va_arg_not_empty_lassert(#__VA_ARGS__)){			\
-	printf("\t%slog message :%s\n",LASSERT_YELLOW,LASSERT_NORMAL);          \
+	printf("\t%slog message :%s\n",LASSERT_YELLOW,LASSERT_NORMAL);  \
 	_log_message_lassert(ptr, "" __VA_ARGS__);                      \
 	puts(LASSERT_NORMAL);                                           \
     }
@@ -523,15 +541,15 @@ void LAssert_alloc(int disable){
 #define REQUIRE(bool,...){						\
 	if(*_old_flag < __LINE__){					\
 	    if(!_in_case_lassert(-1))					\
-		_start_test_lassert(1,0, NULL, NULL_TIME_LASSERT, NULL_TIME_LASSERT);                   \
+		_start_test_lassert(1,0, NULL, NULL_TIME_LASSERT, NULL_TIME_LASSERT); \
 	    if(!(bool)){						\
 		if(_in_case_lassert(-1)){				\
 		    *_has_to_quit = __LINE__;				\
 		    _REQUIRE_CASE_failed(#bool, __LINE__, name_of_test); \
 		    if(_tab_lassert){					\
 			printf("\t%sFailed on this sequence :\n\t\t",LASSERT_RED); \
-			for(long _id = 0; _id < _size_of_tab; ++_id) \
-			    printf("%d ",_tab_lassert[_id]);	\
+			for(long _id = 0; _id < _size_of_tab; ++_id)    \
+			    printf("%d ",_tab_lassert[_id]);            \
 		    }							\
 		    _in_case_lassert(0);				\
 		    *_id_flag = 1;					\
@@ -547,7 +565,7 @@ void LAssert_alloc(int disable){
 #define REQUIRE_NOT_NULL(ptr,...){					\
 	if(*_old_flag < __LINE__){					\
 	    if(!_in_case_lassert(-1))					\
-		_start_test_lassert(1,0, NULL, NULL_TIME_LASSERT, NULL_TIME_LASSERT);                   \
+		_start_test_lassert(1,0, NULL, NULL_TIME_LASSERT, NULL_TIME_LASSERT); \
 	    if(!(ptr)){							\
 		if(_in_case_lassert(-1)){				\
 		    *_has_to_quit = __LINE__;				\
@@ -574,7 +592,7 @@ void LAssert_alloc(int disable){
     
 #if !defined(LASSERT_MANUAL_MAIN)
 int main(){
-    return 0;
+    return LASSERT_data.failed;
 }
 #  ifdef LASSERT_WINDOWS
 #    ifdef __cplusplus
@@ -603,15 +621,15 @@ int main(){
 
 #define TEST_SECTION(name)						\
     void _test_##name##_lassert( char *,int *, int, int*, int*, int *); \
-    static void _call_test_##name##_lassert(void)				\
-	LASSERT_AUTOCALL_HANDLER(_call_test_##name##_lassert)					\
-    static void _call_test_##name##_lassert(void){				\
+    static int _call_test_##name##_lassert(void)                        \
+	LASSERT_AUTOCALL_HANDLER(_call_test_##name##_lassert)           \
+    static int _call_test_##name##_lassert(void){                       \
 	char s[512] = {0};						\
-	TIME_TYPE_LASSERT start = NULL_TIME_LASSERT, end = NULL_TIME_LASSERT;						\
+	TIME_TYPE_LASSERT start = NULL_TIME_LASSERT, end = NULL_TIME_LASSERT; \
 	int id = -1, i = 1, old = 0;					\
 	_succeeded_test_case(0,1);					\
 	_not_null_failed_test_case(0,1);				\
-	_start_test_lassert(0,0, #name, NULL_TIME_LASSERT, NULL_TIME_LASSERT);                          \
+	_start_test_lassert(0,0, #name, NULL_TIME_LASSERT, NULL_TIME_LASSERT); \
 	_failed_test_case(0,1);						\
 									\
 	if(using_time_asked())						\
@@ -631,6 +649,16 @@ int main(){
 	else if(id == 2)						\
 	    _not_null_failed_test_case(1,0);				\
 	_start_test_lassert(1,1, #name, start, end);                    \
+        id = 0;                                                         \
+        if(_failed_test_case(0, 0))                                     \
+            id = 1;                                                     \
+        else if(_not_null_failed_test_case(0, 0))                       \
+            id = 2;                                                     \
+        if(id)                                                          \
+            ++LASSERT_data.failed;                                      \
+        else                                                            \
+            ++LASSERT_data.passed;                                      \
+        return id;                                                      \
     }									\
     void _test_##name##_lassert(char * name_of_test, int * _id_flag, int _size_of_tab,int * _tab_lassert, int * _has_to_quit, int * _old_flag)
 
@@ -644,39 +672,39 @@ void LASSERT_PARAMETERS_INIT(int argc, char** argv) __attribute__((constructor))
 void LASSERT_PARAMETERS_INIT(int argc, char** argv);
 static void LASSERT_PARAMETERS_SUB_INIT(void) LASSERT_AUTOCALL_HANDLER(LASSERT_PARAMETERS_SUB_INIT)
 static void LASSERT_PARAMETERS_SUB_INIT(void) {
-	int argc;
-	LPWSTR * tmpArgv;
-	char ** argv = NULL;
-	int i;
-	size_t dummy;
-	size_t size;
+    int argc;
+    LPWSTR * tmpArgv;
+    char ** argv = NULL;
+    int i;
+    size_t dummy;
+    size_t size;
 
-	LPWSTR commandLine = GetCommandLineW();
-	tmpArgv = CommandLineToArgvW(commandLine, &argc);
+    LPWSTR commandLine = GetCommandLineW();
+    tmpArgv = CommandLineToArgvW(commandLine, &argc);
 
-	argv = (char**)malloc((argc + 1) * sizeof(char *));
+    argv = (char**)malloc((argc + 1) * sizeof(char *));
 
-	if(argv){
-		for(i = 0; i < argc; ++i){
-			size = wcslen(tmpArgv[i]) + 1;
-			argv[i] = (char*)malloc(size * sizeof(char));
-			if(argv[i]){
-				wcstombs_s(&dummy, argv[i], size * sizeof(char), tmpArgv[i], (size - 1) * sizeof(char));
-			}
-		}
-		argv[argc] = NULL;
-	}
+    if(argv){
+        for(i = 0; i < argc; ++i){
+            size = wcslen(tmpArgv[i]) + 1;
+            argv[i] = (char*)malloc(size * sizeof(char));
+            if(argv[i]){
+                wcstombs_s(&dummy, argv[i], size * sizeof(char), tmpArgv[i], (size - 1) * sizeof(char));
+            }
+        }
+        argv[argc] = NULL;
+    }
 
-	LASSERT_PARAMETERS_INIT(argc, argv);
+    LASSERT_PARAMETERS_INIT(argc, argv);
 
-	if(argv){
-		for(i = 0; i < argc; ++i){
-			if(argv[i]){
-				free(argv[i]);
-			}
-		}
-		free(argv);
-	}
+    if(argv){
+        for(i = 0; i < argc; ++i){
+            if(argv[i]){
+                free(argv[i]);
+            }
+        }
+        free(argv);
+    }
 }
 #  endif
 #endif
