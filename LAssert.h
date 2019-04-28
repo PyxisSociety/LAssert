@@ -431,7 +431,7 @@ char * get_color_result_lassert(double result){
 }
 void LASSERT_deactivate_output(void){
     int i;
-    char name[] = LASSERT_TMP_DIR "LASSERT_XXXXXX          ";
+    char name[] = LASSERT_TMP_DIR "LASSERT_XXXXXX                                ";
 	size_t size = sizeof(name);
 #ifdef LASSERT_WINDOWS
 	static int num = 0;
