@@ -21,6 +21,7 @@
 
 #if defined(unix) || defined(__unix) || defined(__unix__) || defined(__APPLE__) || defined(__MACH__)
 #  define LASSERT_UNIX
+#  define LASSERT_TMP_DIR "/tmp/"
 #  include <unistd.h>
 #  include <sys/time.h>
 #  ifdef LASSERT_CUSTOM_ALLOC
@@ -38,6 +39,7 @@
 #  define COPY(type,var) type var = var
 #else
 #  define LASSERT_WINDOWS
+#  define LASSERT_TMP_DIR "C:\\Windows\\Temp\\"
 #  include <windows.h>
 #  include <io.h>
 #  define TIME_TYPE_LASSERT ULONGLONG
@@ -420,30 +422,16 @@ char * get_color_result_lassert(double result){
         }
         return LASSERT_RED;
 }
-void LASSERT_PRINT_OUTPUT(void){
-    double result;
-    
-    if(LASSERT_parameters.output == LASSERT_minimized_output){
-        printf("Percentage of test section succeeded: ");
-        
-        result = (double)LASSERT_data.failed / (double)(LASSERT_data.failed + LASSERT_data.passed) * 100;
-        
-        printf("%s%f%%%s\n", get_color_result_lassert(result), result, LASSERT_NORMAL);
-    }else if(LASSERT_parameters.output == LASSERT_xml_output){
-        puts("</testsuites>");
-    }
-}
 void LASSERT_deactivate_output(void){
 #   ifdef LASSERT_UNIX
     int i;
-    char name[] = "XXXXXX";
+    char name[] = LASSERT_TMP_DIR "LASSERT_XXXXXX";
     int stdCopy[2];
     
     for(i = 0; i < 2; ++i){
-        strcpy(name, 6, "XXXXXX");
+        strcpy(name, sizeof(LASSERT_TMP_DIR) + sizeof("LASSERT_XXXXXX") - 2, LASSERT_TMP_DIR "LASSERT_XXXXXX");
         LASSERT_data.fdTmpFile[i] = mkstemp(name);
         if(LASSERT_data.fdTmpFile[i] == -1){
-            printf("FAILED ON %d\n", i);
             return;
         }
     }
@@ -493,7 +481,20 @@ void LASSERT_XML_PRINT(const char * s, ...){
 
         LASSERT_deactivate_output();
     }
-};
+}
+void LASSERT_PRINT_OUTPUT(void){
+    double result;
+    
+    if(LASSERT_parameters.output == LASSERT_minimized_output){
+        printf("Percentage of test section succeeded: ");
+        
+        result = (double)LASSERT_data.failed / (double)(LASSERT_data.failed + LASSERT_data.passed) * 100;
+        
+        printf("%s%f%%%s\n", get_color_result_lassert(result), result, LASSERT_NORMAL);
+    }else if(LASSERT_parameters.output == LASSERT_xml_output){
+        LASSERT_XML_PRINT("</testsuites>");
+    }
+}
 
 
 
