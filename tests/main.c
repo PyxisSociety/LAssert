@@ -107,6 +107,8 @@ TEST_SECTION(equal_test){
     TEST_CASE(should_failed){
 	EQ(.7,.6);
     }
+
+    REQUIRE(0);
 }
 
 long long unsigned factorial(unsigned i){

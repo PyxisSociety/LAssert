@@ -31,7 +31,7 @@ Some other functionalities can be (de)activated by macros _and_ parameters such 
   - **consol** (default behavior): standard output console with information about all test cases in all section
   - **small** or __LASSERT_MINIMIZED_OUTPUT__: smaller output giving only information about sections and not details about their test cases
   - **mini** or __LASSERT_SMALL_OUTPUT__: (stands for minimized) no details at all, it just give the percentage of succeeded test case in every sections (as a summarized result)
-  - **xml** or __LASSERT_XML_OUTPUT__: XML JUnit is rendered in standard output
+  - **xml** or __LASSERT_XML_OUTPUT__: JUnit like XML is rendered in standard output
   
 __NOTES:__
 * In auto main mode, the program will return the number of section on failure.
