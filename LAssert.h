@@ -35,7 +35,7 @@
     gettimeofday(&_timecheck_lassert, NULL);				\
     start = (long)_timecheck_lassert.tv_sec * 1000 + (long)_timecheck_lassert.tv_usec / 1000
 #  define INTERVAL_TIME_LASSERT(start,end) (double)((end) - (start)) / 1000
-#  define strcpy(a, b, c) strncpy(a, c, b)
+#  define LASSERT_strcpy(a, b, c) strncpy(a, c, b)
 #  define COPY(type,var) type var = var
 #else
 #  define LASSERT_WINDOWS
@@ -48,9 +48,12 @@
 #  define INTERVAL_TIME_LASSERT(start,end) \
 	((end >= start) ? (double)(end - start) : (double)((TIME_TYPE_LASSERT)-1 - start + end)) / 1000
 #  define isatty(a) _isatty(a)
-#  define strcpy strcpy_s
-#  define dup _dup
-#  define dup2 _dup2
+#  define LASSERT_strcpy strcpy_s
+#  define dup(a) _fdopen(_dup(_fileno(a)), "w")
+#  define dup2(a, b) _dup2(_fileno(a), _fileno(b))
+#  define STDOUT_FILENO stdout
+#  define STDERR_FILENO stderr
+#  define close fclose
 #  ifdef __cplusplus
 #    define COPY(type, var) type var = ::var
 #  else
@@ -113,7 +116,11 @@ struct{
     int failed;
     int passed;
     int testCaseOpened;
+#ifdef LASSERT_WINDOWS
+	FILE * fdTmpFile[2];
+#else
     int fdTmpFile[2];
+#endif
 } LASSERT_data = {0, 0, 0, {0, 0}};
 /*-------------------------------------------*/
 
@@ -423,17 +430,31 @@ char * get_color_result_lassert(double result){
         return LASSERT_RED;
 }
 void LASSERT_deactivate_output(void){
-#   ifdef LASSERT_UNIX
     int i;
-    char name[] = LASSERT_TMP_DIR "LASSERT_XXXXXX";
+    char name[] = LASSERT_TMP_DIR "LASSERT_XXXXXX          ";
+	size_t size = sizeof(name);
+#ifdef LASSERT_WINDOWS
+	static int num = 0;
+	FILE * stdCopy[2] = {NULL, NULL};
+	size += 1;
+#else
     int stdCopy[2];
+#endif
     
     for(i = 0; i < 2; ++i){
-        strcpy(name, sizeof(LASSERT_TMP_DIR) + sizeof("LASSERT_XXXXXX") - 2, LASSERT_TMP_DIR "LASSERT_XXXXXX");
+#ifdef LASSERT_WINDOWS
+		sprintf_s(name, LASSERT_TMP_DIR "LASSERT_%d_XXXXXX", ++num);
+		_mktemp_s(name, size - 1);
+		if(!*name)
+			return;
+		fopen_s(&(LASSERT_data.fdTmpFile[i]), name, "w");
+		if(!LASSERT_data.fdTmpFile[i])
+#else
+		LASSERT_strcpy(name, size - 1, LASSERT_TMP_DIR "LASSERT_XXXXXX");
         LASSERT_data.fdTmpFile[i] = mkstemp(name);
-        if(LASSERT_data.fdTmpFile[i] == -1){
+        if(LASSERT_data.fdTmpFile[i] == -1)
+#endif
             return;
-        }
     }
 
     stdCopy[0] = dup(STDOUT_FILENO);
@@ -447,18 +468,19 @@ void LASSERT_deactivate_output(void){
 
     LASSERT_data.fdTmpFile[0] = stdCopy[0];
     LASSERT_data.fdTmpFile[1] = stdCopy[1];
-#   endif
 }
 void LASSERT_activate_output(void){
-#   ifdef LASSERT_UNIX
     int i;
     for(i = 0; i < 2; ++i){
-        if(LASSERT_data.fdTmpFile[i] == -1){
+#ifdef LASSERT_WINDOWS
+		if(!LASSERT_data.fdTmpFile[i])
+#else
+        if(LASSERT_data.fdTmpFile[i] == -1)
+#endif
             return;
-        }
     }
     
-    dup2(LASSERT_data.fdTmpFile[0], STDOUT_FILENO);
+	dup2(LASSERT_data.fdTmpFile[0], STDOUT_FILENO);
     dup2(LASSERT_data.fdTmpFile[1], STDERR_FILENO);
     
     close(LASSERT_data.fdTmpFile[0]);
@@ -466,7 +488,6 @@ void LASSERT_activate_output(void){
 
     LASSERT_data.fdTmpFile[0] = 0;
     LASSERT_data.fdTmpFile[1] = 0;
-#   endif
 }
 void LASSERT_XML_PRINT(const char * s, ...){
     va_list vl;
@@ -488,7 +509,7 @@ void LASSERT_PRINT_OUTPUT(void){
     if(LASSERT_parameters.output == LASSERT_minimized_output){
         printf("Percentage of test section succeeded: ");
         
-        result = (double)LASSERT_data.failed / (double)(LASSERT_data.failed + LASSERT_data.passed) * 100;
+        result = (double)LASSERT_data.failed / ((double)LASSERT_data.failed + LASSERT_data.passed) * 100;
         
         printf("%s%f%%%s\n", get_color_result_lassert(result), result, LASSERT_NORMAL);
     }else if(LASSERT_parameters.output == LASSERT_xml_output){
@@ -585,7 +606,7 @@ void LAssert_alloc(int disable){
 	else if(*_id_flag == 2)                                         \
 	    _not_null_failed_test_case(1,0);                            \
 	_start_test_lassert(1,1, NULL, NULL_TIME_LASSERT, NULL_TIME_LASSERT); \
-	strcpy(name_of_test, 512, #NAME_OF_TEST);                       \
+	LASSERT_strcpy(name_of_test, 512, #NAME_OF_TEST);                       \
 	_start_running_lassert(1);                                      \
 	_in_case_lassert(1);                                            \
 	*_id_flag = 0;                                                  \
@@ -614,7 +635,7 @@ void LAssert_alloc(int disable){
 	_start_test_lassert(1,1, NULL, NULL_TIME_LASSERT, NULL_TIME_LASSERT); \
 	_size_of_tab = nb_of_values;					\
 	_tab_lassert = var_name;					\
-	strcpy(name_of_test, 512, #NAME_OF_TEST);                       \
+	LASSERT_strcpy(name_of_test, 512, #NAME_OF_TEST);                       \
 	_start_running_lassert(nb_of_values);				\
 	_in_case_lassert(!*_id_flag);					\
 	*_id_flag = 0;							\
@@ -645,7 +666,7 @@ void LAssert_alloc(int disable){
 	else if(*_id_flag == 2)						\
 	    _not_null_failed_test_case(1,0);				\
 	_start_test_lassert(1,1, NULL, NULL_TIME_LASSERT, NULL_TIME_LASSERT); \
-	strcpy(name_of_test, 512, #NAME_OF_TEST);                       \
+	LASSERT_strcpy(name_of_test, 512, #NAME_OF_TEST);                       \
 	*_id_flag = 0;							\
 	_generate_range_lassert(#NAME_OF_TEST,_id_flag,var_name,var_name##_begin,var_name##_end,var_name##_step,nb_of_values,#__VA_ARGS__,__VA_ARGS__); \
 	_in_case_lassert(1);						\
@@ -809,7 +830,7 @@ int main(){
             failed = _not_null_failed_test_case(0, 0) + _failed_test_case(0, 0); \
             succeeded = _succeeded_test_case(0, 0);                     \
             if(failed + succeeded){                                     \
-                result = (double)succeeded / (double)(failed + succeeded) * 100; \
+                result = (double)succeeded / ((double)failed + succeeded) * 100; \
                 printf("%sPercentage of test cases succeeded in section " \
                        #name ": %s%f%%%s\n\n\n",                        \
                        LASSERT_BLUE, get_color_result_lassert(result),  \
@@ -938,5 +959,14 @@ void LASSERT_PARAMETERS_INIT(int argc, char ** argv){
         LASSERT_deactivate_output();
     }
 }
+
+#ifdef LASSERT_WINDOWS
+#  undef isatty
+#  undef dup
+#  undef dup2
+#  undef close
+#  undef STDOUT_FILENO
+#  undef STDERR_FILENO
+#endif
 
 #endif
