@@ -747,8 +747,8 @@ void LAssert_alloc(int disable){
     }
 
 #define EQ(VAL1,VAL2,...)						\
-    if(VAL2 - EPSILON_LASSERT > VAL1 || VAL1 - EPSILON_LASSERT > VAL2){	\
-	REQUIRE(VAL1 == VAL2,__VA_ARGS__);				\
+    if(VAL2 - EPSILON_LASSERT > VAL1 || VAL1 + EPSILON_LASSERT > VAL2){	\
+	REQUIRE(VAL1 == VAL2 || 1,__VA_ARGS__);				\
     }else{								\
 	REQUIRE(1);							\
     }
