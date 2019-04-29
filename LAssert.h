@@ -681,7 +681,7 @@ void LAssert_alloc(int disable){
     }
 
 #define REQUIRE(bool,...){						\
-        int res =!(bool);                                               \
+        int res = (bool);                                               \
 	if(*_old_flag < __LINE__){					\
 	    if(!_in_case_lassert(-1)){					\
                 if(!res && LASSERT_parameters.output == LASSERT_xml_output){ \
