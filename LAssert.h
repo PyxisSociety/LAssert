@@ -160,10 +160,11 @@ void _init_rand_lassert(void){
 void _REQUIRE_CASE_failed(const char * statement, int line, const char * name_of_test){
     LASSERT_PRINT("\n%s%s test_case :%s\n",LASSERT_MAGENTA,name_of_test,LASSERT_NORMAL);
     LASSERT_PRINT("\t%s%llu test(s) passed%s\n",LASSERT_GREEN, _nb_tests_lassert(1),LASSERT_NORMAL);
-    if(statement)
+    if(statement){
 	LASSERT_PRINT("\t%sFailed statement case line %d :\n\t\t%s %s\n",LASSERT_RED, line, statement,LASSERT_NORMAL);
-    else
+    }else{
 	LASSERT_PRINT("%sA test failed line %d but statement could not be read (NULL PTR)%s\n",LASSERT_RED, line, LASSERT_NORMAL);
+    }
 }
 void _REQUIRE_CASE_succeed(void){
     _nb_tests_lassert(0);
@@ -171,10 +172,11 @@ void _REQUIRE_CASE_succeed(void){
 void _REQUIRE_CASE_not_null_failed(const char * ptr, int line, const char * name_of_test){
     LASSERT_PRINT("\n%s%s test_case :%s\n",LASSERT_MAGENTA,name_of_test,LASSERT_NORMAL);
     LASSERT_PRINT("\t%s%llu test(s) passed%s\n",LASSERT_GREEN, _nb_tests_lassert(1),LASSERT_NORMAL);
-    if(ptr)
+    if(ptr){
 	LASSERT_PRINT("\t%sFailed to allocate a pointer line %d :\n\t\t%s %s\n",LASSERT_YELLOW, line, ptr,LASSERT_NORMAL);
-    else
+    }else{
 	LASSERT_PRINT("%sFailed to allocate a pointer line %d :\n\t%sCouldn't read pointer's name%s\n",LASSERT_YELLOW, line, LASSERT_RED,LASSERT_NORMAL);
+    }
 }
 int _in_case_lassert(int option){
     static int is_in = 0;
@@ -400,15 +402,18 @@ int _va_arg_not_empty_lassert(const char * va_arg_str){
 	}
 	++i;
     }
-    ++i;
-
+    if(va_arg_str[i]){
+        ++i;
+    }
+    
     while(va_arg_str[i] == ' ')
 	++i;
 
     if(va_arg_str[i] == '"' && va_arg_str[i + 1] == '"'){
 	i += 2;
-	while(va_arg_str[i] == ' ')
+	while(va_arg_str[i] == ' '){
 	    ++i;
+        }
     }
 
     return va_arg_str[i] >= 10;
