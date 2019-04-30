@@ -32,6 +32,7 @@ Some other functionalities can be (de)activated by macros _and_ parameters such 
   - **small** or __LASSERT_MINIMIZED_OUTPUT__: smaller output giving only information about sections and not details about their test cases
   - **mini** or __LASSERT_SMALL_OUTPUT__: (stands for minimized) no details at all, it just give the percentage of succeeded test case in every sections (as a summarized result)
   - **xml** or __LASSERT_XML_OUTPUT__: JUnit like XML is rendered in standard output
+* __-epsilon=[value]__ or __LASSERT_EPSILON__: set the accepted difference on floating point number comparison (value must be a strictly positive floating point number)
   
 __NOTES:__
 * In auto main mode, the program will return the number of section on failure.

@@ -6,6 +6,7 @@
 #include <string.h>
 #include <stdarg.h>
 #include <time.h>
+#include <ctype.h>
 
 #ifndef LASSERT_LOCK_LIBRARY
 #  define LASSERT_LOCK_LIBRARY "libLAssert_alloc.so"
@@ -61,7 +62,10 @@
 #  endif
 #endif
 
-#define EPSILON_LASSERT 1e-6
+#define LASSERT_DEFAULT_EPSILON 1e-6
+#ifndef LASSERT_EPSILON
+#  define LASSERT_EPSILON LASSERT_DEFAULT_EPSILON
+#endif
 
 
 
@@ -117,11 +121,12 @@ struct{
     int passed;
     int testCaseOpened;
 #ifdef LASSERT_WINDOWS
-	FILE * fdTmpFile[2];
+    FILE * fdTmpFile[2];
 #else
     int fdTmpFile[2];
 #endif
-} LASSERT_data = {0, 0, 0, {0, 0}};
+    double epsilon;
+} LASSERT_data = {0, 0, 0, {0, 0}, LASSERT_EPSILON};
 /*-------------------------------------------*/
 
 
@@ -401,29 +406,11 @@ int _va_arg_not_empty_lassert(const char * va_arg_str){
     int i = 0;
     unsigned brackets = 0;
 
-    while(va_arg_str[i] && (va_arg_str[i] != ',' || brackets)){
-	if(va_arg_str[i] == '{' || va_arg_str[i] == '(' || va_arg_str[i] == '['){
-	    ++brackets;
-	}else if(brackets && (va_arg_str[i] == '}' || va_arg_str[i] == ')' || va_arg_str[i] == ']')){
-	    --brackets;
-	}
-	++i;
-    }
-    if(va_arg_str[i]){
+    while(va_arg_str[i] && isspace(va_arg_str[i])){
         ++i;
     }
-    
-    while(va_arg_str[i] == ' ')
-	++i;
 
-    if(va_arg_str[i] == '"' && va_arg_str[i + 1] == '"'){
-	i += 2;
-	while(va_arg_str[i] == ' '){
-	    ++i;
-        }
-    }
-
-    return va_arg_str[i] >= 10;
+    return va_arg_str[i];
 }
 char * get_color_result_lassert(double result){
         if(result >= 100){
@@ -752,7 +739,7 @@ void LAssert_alloc(int disable){
     }
 
 #define EQ(VAL1,VAL2,...)						\
-    if(VAL2 - EPSILON_LASSERT > VAL1 || VAL1 - EPSILON_LASSERT > VAL2){	\
+    if(VAL2 - LASSERT_data.epsilon > VAL1 || VAL1 - LASSERT_data.epsilon > VAL2){ \
 	REQUIRE(VAL1 == VAL2,__VA_ARGS__);				\
     }else{								\
 	REQUIRE(1);							\
@@ -911,7 +898,10 @@ void LASSERT_PARAMETERS_INIT(int argc, char ** argv){
     int help = 0;
     int i = 1;
     const char out[] = "-out=";
-    const size_t SIZE = sizeof(out) - 1;
+    const size_t OUT_SIZE = sizeof(out) - 1;
+    const char epsilonStr[] = "-epsilon=";
+    const size_t EPS_SIZE = sizeof(epsilonStr) - 1;
+    double epsilon;
 
     for(; i < argc; ++i){
         if(!strcmp("-t", argv[i])){
@@ -922,18 +912,28 @@ void LASSERT_PARAMETERS_INIT(int argc, char ** argv){
             LASSERT_parameters.color = LASSERT_color;
         }else if(!strcmp("-nc", argv[i])){
             LASSERT_parameters.color = LASSERT_no_color;
-        }else if(strlen(argv[i]) >= SIZE && !strncmp(out, argv[i], SIZE)){
-            if(!strcmp("small", argv[i] + SIZE)){
+        }else if(strlen(argv[i]) >= EPS_SIZE && !strncmp("-epsilon=", argv[i], EPS_SIZE)){
+            epsilon = atof(argv[i] + EPS_SIZE);
+            if(epsilon <= 0){
+                printf("%sEPSILON VALUE MUST BE STRICTLY POSITIVE\n\t%sVALUE [ %s%s%s ] IGNORED\n"
+                       "\tDEFAULT VALUE KEPT [ %s%f%s ]%s\n",
+                       LASSERT_RED, LASSERT_YELLOW, LASSERT_NORMAL, argv[i] + EPS_SIZE, LASSERT_YELLOW,
+                       LASSERT_NORMAL, LASSERT_EPSILON, LASSERT_YELLOW, LASSERT_NORMAL);
+            }else{
+                LASSERT_data.epsilon = epsilon;
+            }
+        }else if(strlen(argv[i]) >= OUT_SIZE && !strncmp(out, argv[i], OUT_SIZE)){
+            if(!strcmp("small", argv[i] + OUT_SIZE)){
                 LASSERT_parameters.output = LASSERT_small_output;
-            }else if(!strcmp("mini", argv[i] + SIZE)){
+            }else if(!strcmp("mini", argv[i] + OUT_SIZE)){
                 LASSERT_parameters.output = LASSERT_minimized_output;
-            }else if(!strcmp("consol", argv[i] + SIZE)){
+            }else if(!strcmp("consol", argv[i] + OUT_SIZE)){
                 LASSERT_parameters.output = LASSERT_normal_output;
-            }else if(!strcmp("xml", argv[i] + SIZE)){
+            }else if(!strcmp("xml", argv[i] + OUT_SIZE)){
                 LASSERT_parameters.output = LASSERT_xml_output;
             }else{
                 printf("%sUNKNOWN OUTPUT OPTION [ %s%s%s ] ignored%s\n",
-                       LASSERT_YELLOW, LASSERT_NORMAL, argv[i] + SIZE, LASSERT_YELLOW, LASSERT_NORMAL);
+                       LASSERT_YELLOW, LASSERT_NORMAL, argv[i] + OUT_SIZE, LASSERT_YELLOW, LASSERT_NORMAL);
             }
         }else if(!strcmp("-h", argv[i])){
             help = 1;
@@ -943,6 +943,8 @@ void LASSERT_PARAMETERS_INIT(int argc, char ** argv){
         }
     }
 
+#define LASSERT_STRINGIFY_IMPL(S) #S
+#define LASSERT_STRINGIFY(S) LASSERT_STRINGIFY_IMPL(S)
     if(help){
         puts("You can parametrize LASSERT to (de)activate some functionalities. All options starting with an n means to deactivate the same option without this letter.\n"
              "Here are all the available options:\n"
@@ -953,10 +955,12 @@ void LASSERT_PARAMETERS_INIT(int argc, char ** argv){
              "\t\tsmall: smaller output giving only information about sections and not details about their test cases\n"
              "\t\tmini: (stands for minimized) no details at all, it just give the percentage of succeeded test case in every sections (as a summarized result)\n"
              "\t\txml: JUnit like xml output\n"
-             "Default options are: -nt -c -out=consol"
+             "Default options are: -nt -c -out=consol -epsilon=" LASSERT_STRINGIFY(LASSERT_DEFAULT_EPSILON)
             );
         exit(1);
     }
+#undef LASSERT_STRINGIFY
+#undef LASSERT_STRINGIFY_IMPL
 
     if(LASSERT_parameters.output == LASSERT_xml_output){
         puts("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
