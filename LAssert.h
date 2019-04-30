@@ -423,7 +423,7 @@ char * get_color_result_lassert(double result){
 }
 void LASSERT_deactivate_output(void){
     int i;
-    char name[] = LASSERT_TMP_DIR "LASSERT_XXXXXX          ";
+    char name[] = LASSERT_TMP_DIR "LASSERT_XXXXXX                                ";
 	size_t size = sizeof(name);
 #ifdef LASSERT_WINDOWS
 	static int num = 0;
@@ -673,7 +673,7 @@ void LAssert_alloc(int disable){
     }
 
 #define REQUIRE(bool,...){						\
-        int res =!(bool);                                               \
+        int res = (bool);                                               \
 	if(*_old_flag < __LINE__){					\
 	    if(!_in_case_lassert(-1)){					\
                 if(!res && LASSERT_parameters.output == LASSERT_xml_output){ \
