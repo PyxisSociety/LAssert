@@ -22,7 +22,7 @@
 
 #if defined(unix) || defined(__unix) || defined(__unix__) || defined(__APPLE__) || defined(__MACH__)
 #  define LASSERT_UNIX
-#  define LASSERT_TMP_DIR "/tmp/"
+#  define LASSERT_TMP_NAME "/tmp/LASSERT_XXXXXX"
 #  include <unistd.h>
 #  include <sys/time.h>
 #  ifdef LASSERT_CUSTOM_ALLOC
@@ -41,6 +41,7 @@
 #else
 #  define LASSERT_WINDOWS
 #  define LASSERT_TMP_DIR "C:\\Windows\\Temp\\"
+#  define LASSERT_TMP_NAME LASSERT_TMP_DIR "LASSERT_XXXXXX                                   "
 #  include <windows.h>
 #  include <io.h>
 #  define TIME_TYPE_LASSERT ULONGLONG
@@ -91,7 +92,6 @@ struct{
     enum LASSERT_OUTPUT_OPTION output;
     enum LASSERT_COLOR_OPTION color;
     enum LASSERT_SECTION_TIME_OPTION timer;
-    const char * filename;
 } LASSERT_parameters = {
 #ifdef LASSERT_MINIMIZED_OUTPUT
     LASSERT_minimized_output,
@@ -120,13 +120,14 @@ struct{
     int failed;
     int passed;
     int testCaseOpened;
+    char tmpFileNames[2][sizeof(LASSERT_TMP_NAME)];
 #ifdef LASSERT_WINDOWS
     FILE * fdTmpFile[2];
 #else
     int fdTmpFile[2];
 #endif
     double epsilon;
-} LASSERT_data = {0, 0, 0, {0, 0}, LASSERT_EPSILON};
+} LASSERT_data = {0, 0, 0, {"", ""}, {0, 0}, LASSERT_EPSILON};
 /*-------------------------------------------*/
 
 
@@ -423,27 +424,25 @@ char * get_color_result_lassert(double result){
 }
 void LASSERT_deactivate_output(void){
     int i;
-    char name[] = LASSERT_TMP_DIR "LASSERT_XXXXXX                                ";
-	size_t size = sizeof(name);
+    size_t size = sizeof(LASSERT_TMP_NAME);
 #ifdef LASSERT_WINDOWS
-	static int num = 0;
-	FILE * stdCopy[2] = {NULL, NULL};
-	size += 1;
+    static int num = 0;
+    FILE * stdCopy[2] = {NULL, NULL};
 #else
     int stdCopy[2];
 #endif
     
     for(i = 0; i < 2; ++i){
 #ifdef LASSERT_WINDOWS
-		sprintf_s(name, LASSERT_TMP_DIR "LASSERT_%d_XXXXXX", ++num);
-		_mktemp_s(name, size - 1);
-		if(!*name)
-			return;
-		fopen_s(&(LASSERT_data.fdTmpFile[i]), name, "w");
-		if(!LASSERT_data.fdTmpFile[i])
+        sprintf_s(LASSERT_data.tmpFileNames[i], LASSERT_TMP_DIR "LASSERT_%d_XXXXXX", ++num);
+        _mktemp_s(LASSERT_data.tmpFileNames[i], size - 1);
+        if(!*name)
+            return;
+        fopen_s(&(LASSERT_data.fdTmpFile[i]), LASSERT_data.tmpFileNames[i], "w");
+        if(!LASSERT_data.fdTmpFile[i])
 #else
-		LASSERT_strcpy(name, size - 1, LASSERT_TMP_DIR "LASSERT_XXXXXX");
-        LASSERT_data.fdTmpFile[i] = mkstemp(name);
+            LASSERT_strcpy(LASSERT_data.tmpFileNames[i], size - 1, LASSERT_TMP_NAME);
+        LASSERT_data.fdTmpFile[i] = mkstemp(LASSERT_data.tmpFileNames[i]);
         if(LASSERT_data.fdTmpFile[i] == -1)
 #endif
             return;
@@ -465,18 +464,21 @@ void LASSERT_activate_output(void){
     int i;
     for(i = 0; i < 2; ++i){
 #ifdef LASSERT_WINDOWS
-		if(!LASSERT_data.fdTmpFile[i])
+        if(!LASSERT_data.fdTmpFile[i])
 #else
         if(LASSERT_data.fdTmpFile[i] == -1)
 #endif
             return;
     }
     
-	dup2(LASSERT_data.fdTmpFile[0], STDOUT_FILENO);
+    dup2(LASSERT_data.fdTmpFile[0], STDOUT_FILENO);
     dup2(LASSERT_data.fdTmpFile[1], STDERR_FILENO);
     
     close(LASSERT_data.fdTmpFile[0]);
     close(LASSERT_data.fdTmpFile[1]);
+
+    remove(LASSERT_data.tmpFileNames[0]);
+    remove(LASSERT_data.tmpFileNames[1]);
 
     LASSERT_data.fdTmpFile[0] = 0;
     LASSERT_data.fdTmpFile[1] = 0;
@@ -506,6 +508,8 @@ void LASSERT_PRINT_OUTPUT(void){
         printf("%s%f%%%s\n", get_color_result_lassert(result), result, LASSERT_NORMAL);
     }else if(LASSERT_parameters.output == LASSERT_xml_output){
         LASSERT_XML_PRINT("</testsuites>");
+        remove(LASSERT_data.tmpFileNames[0]);
+        remove(LASSERT_data.tmpFileNames[1]);
     }
 }
 
