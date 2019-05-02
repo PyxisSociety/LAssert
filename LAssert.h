@@ -41,7 +41,8 @@
 #else
 #  define LASSERT_WINDOWS
 #  define LASSERT_TMP_DIR "C:\\Windows\\Temp\\"
-#  define LASSERT_TMP_NAME LASSERT_TMP_DIR "LASSERT_XXXXXX                                   "
+#  define LASSERT_TMP_TRUE_NAME LASSERT_TMP_DIR "LASSERT_XXXXXX"
+#  define LASSERT_TMP_NAME LASSERT_TMP_TRUE_NAME "                                   "
 #  include <windows.h>
 #  include <io.h>
 #  define TIME_TYPE_LASSERT ULONGLONG
@@ -434,10 +435,14 @@ void LASSERT_deactivate_output(void){
     
     for(i = 0; i < 2; ++i){
 #ifdef LASSERT_WINDOWS
-        sprintf_s(LASSERT_data.tmpFileNames[i], LASSERT_TMP_DIR "LASSERT_%d_XXXXXX", ++num);
-        _mktemp_s(LASSERT_data.tmpFileNames[i], size - 1);
-        if(!*name)
+		for(int j = 0; j < sizeof(LASSERT_TMP_NAME); ++j){
+			LASSERT_data.tmpFileNames[i][j] = 0;
+		}
+        int e = sprintf_s(LASSERT_data.tmpFileNames[i], sizeof(LASSERT_data.tmpFileNames[i]) - 1, LASSERT_TMP_DIR "LASSERT_%d_XXXXXX", ++num);
+        _mktemp_s(LASSERT_data.tmpFileNames[i], sizeof(LASSERT_data.tmpFileNames[i]) - 1);
+        if(!*LASSERT_data.tmpFileNames[i])
             return;
+		LASSERT_data.fdTmpFile[i] = NULL;
         fopen_s(&(LASSERT_data.fdTmpFile[i]), LASSERT_data.tmpFileNames[i], "w");
         if(!LASSERT_data.fdTmpFile[i])
 #else
@@ -508,8 +513,7 @@ void LASSERT_PRINT_OUTPUT(void){
         printf("%s%f%%%s\n", get_color_result_lassert(result), result, LASSERT_NORMAL);
     }else if(LASSERT_parameters.output == LASSERT_xml_output){
         LASSERT_XML_PRINT("</testsuites>");
-        remove(LASSERT_data.tmpFileNames[0]);
-        remove(LASSERT_data.tmpFileNames[1]);
+		LASSERT_activate_output();
     }
 }
 void LASSERT_set_epsilon(double epsilon){
@@ -680,7 +684,7 @@ void LAssert_alloc(int disable){
     }
 
 #define REQUIRE(bool,...){						\
-        int res = (bool);                                               \
+        int res = !!(bool);                                               \
 	if(*_old_flag < __LINE__){					\
 	    if(!_in_case_lassert(-1)){					\
                 if(!res && LASSERT_parameters.output == LASSERT_xml_output){ \
