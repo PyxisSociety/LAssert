@@ -108,6 +108,7 @@ TEST_SECTION(equal_test){
 	EQ(.7,.6);
     }
 
+    EQ_EPS(.7, .6, .2);
     REQUIRE(0);
 }
 

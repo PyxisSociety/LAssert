@@ -512,6 +512,9 @@ void LASSERT_PRINT_OUTPUT(void){
         remove(LASSERT_data.tmpFileNames[1]);
     }
 }
+void LASSERT_set_epsilon(double epsilon){
+    LASSERT_data.epsilon = epsilon;
+}
 
 
 
@@ -743,8 +746,15 @@ void LAssert_alloc(int disable){
     }
 
 #define EQ(VAL1,VAL2,...)						\
-    if(VAL2 - LASSERT_data.epsilon > VAL1 || VAL1 - LASSERT_data.epsilon > VAL2){ \
-	REQUIRE(VAL1 == VAL2,__VA_ARGS__);				\
+    if((VAL2) - LASSERT_data.epsilon > (VAL1) || (VAL1) - LASSERT_data.epsilon > (VAL2)){ \
+        REQUIRE((VAL1) == (VAL2),__VA_ARGS__);                          \
+    }else{								\
+	REQUIRE(1);							\
+    }
+
+#define EQ_EPS(VAL1,VAL2, EPS,...)                                      \
+    if((VAL2) - (EPS) > (VAL1) || (VAL1) - (EPS) > (VAL2)){             \
+        REQUIRE((VAL1) == (VAL2),__VA_ARGS__);                          \
     }else{								\
 	REQUIRE(1);							\
     }

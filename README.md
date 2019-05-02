@@ -32,7 +32,7 @@ Some other functionalities can be (de)activated by macros _and_ parameters such 
   - **small** or __LASSERT_MINIMIZED_OUTPUT__: smaller output giving only information about sections and not details about their test cases
   - **mini** or __LASSERT_SMALL_OUTPUT__: (stands for minimized) no details at all, it just give the percentage of succeeded test case in every sections (as a summarized result)
   - **xml** or __LASSERT_XML_OUTPUT__: JUnit like XML is rendered in standard output
-* __-epsilon=[value]__ or __LASSERT_EPSILON__: set the accepted difference on floating point number comparison (value must be a strictly positive floating point number)
+* __-epsilon=[value]__, __LASSERT_EPSILON__ or `LASSERT_set_epsilon(yourValue)`: set the accepted difference on floating point number comparison (value must be a strictly positive floating point number)
   
 __NOTES:__
 * In auto main mode, the program will return the number of section on failure.
@@ -80,6 +80,8 @@ TEST_SECTION(equal_test){
     TEST_CASE(should_failed){
 	EQ(.7,.6, "it is not possible");
     }
+
+    EQ_EPS(.7, .6, .2);
 }
 
 #ifdef LASSERT_MANUAL_MAIN
@@ -98,6 +100,7 @@ Here is what each macro means in case you did not guess :
 * **REQUIRE_NOT_NULL**: same as **REQUIRE** but with a different log message on fail
 * **RUN_SECTION**: manually run a test section
 * **EQ**: test if two numbers are equals (useful for floating point numbers)
+* **EQ_EPS**: test if two numbers are equals (useful for floating point numbers) with a user define tolerated error
 
 __NOTE:__ As you may have noticed, you can add formatted string like printf parameters to REQUIRE, REQUIRE_NOT_NULL and EQ macros. This formatted string will be shown only when the test will fail.
   
