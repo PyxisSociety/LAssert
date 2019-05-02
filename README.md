@@ -33,6 +33,7 @@ Some other functionalities can be (de)activated by macros _and_ parameters such 
   - **mini** or __LASSERT_SMALL_OUTPUT__: (stands for minimized) no details at all, it just give the percentage of succeeded test case in every sections (as a summarized result)
   - **xml** or __LASSERT_XML_OUTPUT__: JUnit like XML is rendered in standard output
 * __-epsilon=[value]__, __LASSERT_EPSILON__ or `LASSERT_set_epsilon(yourValue)`: set the accepted difference on floating point number comparison (value must be a strictly positive floating point number)
+* __-seed=[value]__, __LASSERT_SEED__ or `LASSERT_init_seed(yourSeed)`: set the seed to initialize random number (the function re initialize the random generator)
   
 __NOTES:__
 * In auto main mode, the program will return the number of section on failure.

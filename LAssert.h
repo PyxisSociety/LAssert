@@ -68,6 +68,9 @@
 #ifndef LASSERT_EPSILON
 #  define LASSERT_EPSILON LASSERT_DEFAULT_EPSILON
 #endif
+#ifndef LASSERT_SEED
+#  define LASSERT_SEED -1
+#endif
 
 
 
@@ -128,7 +131,8 @@ struct{
     int fdTmpFile[2];
 #endif
     double epsilon;
-} LASSERT_data = {0, 0, 0, {"", ""}, {0, 0}, LASSERT_EPSILON};
+    long seed;
+} LASSERT_data = {0, 0, 0, {"", ""}, {0, 0}, LASSERT_EPSILON, LASSERT_SEED};
 /*-------------------------------------------*/
 
 
@@ -164,11 +168,15 @@ unsigned long long _nb_tests_lassert(int i){
 
     return count;
 }
-void _init_rand_lassert(void){
+void _init_rand_lassert(int force){
     static int not_init = 1;
-    if(not_init){
+    if(not_init || force){
 	not_init = 0;
-	srand(time(NULL));
+        if(LASSERT_data.seed >= 0){
+            srand((unsigned)LASSERT_data.seed);
+        }else{
+            srand(time(NULL));
+        }
     }
 }
 void _REQUIRE_CASE_failed(const char * statement, int line, const char * name_of_test){
@@ -258,7 +266,7 @@ void _generate_tab_lassert(const char * name_of_case,int * _id_flag,int * begin,
     size_t id = 0,j;
     
     if(begin && end){
-	_init_rand_lassert();
+	_init_rand_lassert(0);
 	while(attributes[id]){
 	    if(attributes[id] == ',')
 		++number_of_parameter;
@@ -518,6 +526,9 @@ void LASSERT_PRINT_OUTPUT(void){
 }
 void LASSERT_set_epsilon(double epsilon){
     LASSERT_data.epsilon = epsilon;
+}
+void LASSERT_init_seed(unsigned seed){
+    LASSERT_data.seed = seed;
 }
 
 
@@ -919,18 +930,26 @@ void LASSERT_PARAMETERS_INIT(int argc, char ** argv){
     const size_t OUT_SIZE = sizeof(out) - 1;
     const char epsilonStr[] = "-epsilon=";
     const size_t EPS_SIZE = sizeof(epsilonStr) - 1;
+    const char seedStr[] = "-seed=";
+    const size_t SEED_SIZE = sizeof(seedStr) - 1;
+    long seed;
     double epsilon;
 
     for(; i < argc; ++i){
         if(!strcmp("-t", argv[i])){
+            // -t
             LASSERT_parameters.timer = LASSERT_section_time;
         }else if(!strcmp("-nt", argv[i])){
+            // -nt
             LASSERT_parameters.timer = LASSERT_no_section_time;
         }else if(!strcmp("-c", argv[i])){
+            // -c
             LASSERT_parameters.color = LASSERT_color;
         }else if(!strcmp("-nc", argv[i])){
+            // -nc
             LASSERT_parameters.color = LASSERT_no_color;
         }else if(strlen(argv[i]) >= EPS_SIZE && !strncmp("-epsilon=", argv[i], EPS_SIZE)){
+            // -epsilon=...
             epsilon = atof(argv[i] + EPS_SIZE);
             if(epsilon <= 0){
                 printf("%sEPSILON VALUE MUST BE STRICTLY POSITIVE\n\t%sVALUE [ %s%s%s ] IGNORED\n"
@@ -940,7 +959,19 @@ void LASSERT_PARAMETERS_INIT(int argc, char ** argv){
             }else{
                 LASSERT_data.epsilon = epsilon;
             }
+        }else if(strlen(argv[i]) >= SEED_SIZE && !strncmp(seedStr, argv[i], SEED_SIZE)){
+            // -seed=...
+            seed = atol(argv[i] + SEED_SIZE);
+            if(seed >= 0){
+                LASSERT_data.seed = seed;
+            }else{
+                printf("%sSEED VALUE MUST BE AT LEAST ZERO\n\t%sVALUE [ %s%s%s ] IGNORED\n"
+                       "\tDEFAULT VALUE KEPT [ %s%d%s ]%s\n",
+                       LASSERT_RED, LASSERT_YELLOW, LASSERT_NORMAL, argv[i] + SEED_SIZE, LASSERT_YELLOW,
+                       LASSERT_NORMAL, LASSERT_SEED, LASSERT_YELLOW, LASSERT_NORMAL);
+            }
         }else if(strlen(argv[i]) >= OUT_SIZE && !strncmp(out, argv[i], OUT_SIZE)){
+            // -out=...
             if(!strcmp("small", argv[i] + OUT_SIZE)){
                 LASSERT_parameters.output = LASSERT_small_output;
             }else if(!strcmp("mini", argv[i] + OUT_SIZE)){
@@ -973,7 +1004,9 @@ void LASSERT_PARAMETERS_INIT(int argc, char ** argv){
              "\t\tsmall: smaller output giving only information about sections and not details about their test cases\n"
              "\t\tmini: (stands for minimized) no details at all, it just give the percentage of succeeded test case in every sections (as a summarized result)\n"
              "\t\txml: JUnit like xml output\n"
-             "Default options are: -nt -c -out=consol -epsilon=" LASSERT_STRINGIFY(LASSERT_DEFAULT_EPSILON)
+             "\t-epsilon=[value]: set the accepted difference on floating point number comparison (value must be a strictly positive floating point number)\n"
+             "\t-seed=[value]: set the random seed to be used to initialize\n"
+             "\nDefault options are: -nt -c -out=consol -epsilon=" LASSERT_STRINGIFY(LASSERT_DEFAULT_EPSILON)
             );
         exit(1);
     }
