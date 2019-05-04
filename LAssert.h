@@ -7,6 +7,8 @@
 #include <stdarg.h>
 #include <time.h>
 #include <ctype.h>
+#include <errno.h>
+#include <signal.h>
 
 #ifndef LASSERT_LOCK_LIBRARY
 #  define LASSERT_LOCK_LIBRARY "libLAssert_alloc.so"
@@ -23,6 +25,8 @@
 #if defined(unix) || defined(__unix) || defined(__unix__) || defined(__APPLE__) || defined(__MACH__)
 #  define LASSERT_UNIX
 #  define LASSERT_TMP_NAME "/tmp/LASSERT_XXXXXX"
+#  include <sys/types.h>
+#  include <sys/wait.h>
 #  include <unistd.h>
 #  include <sys/time.h>
 #  ifdef LASSERT_CUSTOM_ALLOC
@@ -71,6 +75,13 @@
 #ifndef LASSERT_SEED
 #  define LASSERT_SEED -1
 #endif
+
+#define LOG_MESSAGE_LASSERT(ptr, ...)					\
+    if(_va_arg_not_empty_lassert(#__VA_ARGS__)){			\
+	LASSERT_PRINT("\t%slog message :%s\n",LASSERT_YELLOW,LASSERT_NORMAL);  \
+	_log_message_lassert(ptr, "" __VA_ARGS__);                      \
+	puts(LASSERT_NORMAL);                                           \
+    }
 
 
 
@@ -132,7 +143,9 @@ struct{
 #endif
     double epsilon;
     long seed;
-} LASSERT_data = {0, 0, 0, {"", ""}, {0, 0}, LASSERT_EPSILON, LASSERT_SEED};
+    int perfoLine;
+    int inPerfoBlock;
+} LASSERT_data = {0, 0, 0, {"", ""}, {0, 0}, LASSERT_EPSILON, LASSERT_SEED, 0, 0};
 /*-------------------------------------------*/
 
 
@@ -530,6 +543,17 @@ void LASSERT_set_epsilon(double epsilon){
 void LASSERT_init_seed(unsigned seed){
     LASSERT_data.seed = seed;
 }
+void LASSERT_signal_capture(int sig){
+    if(LASSERT_data.inPerfoBlock && sig == SIGTERM){
+        if(LASSERT_parameters.output == LASSERT_xml_output){
+            LASSERT_XML_PRINT("\t\t\t<failure>");
+            LASSERT_XML_PRINT("Error in performance block starting at line %d, timeout reached",
+                              LASSERT_data.perfoLine);
+            LASSERT_XML_PRINT("\t\t\t</failure>");
+        }
+        exit(1);
+    }
+}
 
 
 
@@ -687,16 +711,9 @@ void LAssert_alloc(int disable){
     }									\
     while(*_old_flag < __LINE__ && _next_range_lassert(var_name,var_name##_begin,var_name##_end,var_name##_step,nb_of_values) && !*_id_flag)
 
-#define LOG_MESSAGE_LASSERT(ptr, ...)					\
-    if(_va_arg_not_empty_lassert(#__VA_ARGS__)){			\
-	LASSERT_PRINT("\t%slog message :%s\n",LASSERT_YELLOW,LASSERT_NORMAL);  \
-	_log_message_lassert(ptr, "" __VA_ARGS__);                      \
-	puts(LASSERT_NORMAL);                                           \
-    }
-
 #define REQUIRE(bool,...){						\
-        int res = !!(bool);                                               \
-	if(*_old_flag < __LINE__){					\
+        int res = !!(bool);                                             \
+	if(*_old_flag < __LINE__ && !*_has_to_quit){                    \
 	    if(!_in_case_lassert(-1)){					\
                 if(!res && LASSERT_parameters.output == LASSERT_xml_output){ \
                     if(LASSERT_data.testCaseOpened){                    \
@@ -735,7 +752,7 @@ void LAssert_alloc(int disable){
     }
 
 #define REQUIRE_NOT_NULL(ptr,...){					\
-	if(*_old_flag < __LINE__){					\
+	if(*_old_flag < __LINE__ && !*_has_to_quit){                    \
 	    if(!_in_case_lassert(-1))					\
 		_start_test_lassert(1,0, NULL, NULL_TIME_LASSERT, NULL_TIME_LASSERT); \
 	    if(!(ptr)){							\
@@ -760,19 +777,64 @@ void LAssert_alloc(int disable){
 	}								\
     }
 
-#define EQ(VAL1,VAL2,...)						\
-    if((VAL2) - LASSERT_data.epsilon > (VAL1) || (VAL1) - LASSERT_data.epsilon > (VAL2)){ \
-        REQUIRE((VAL1) == (VAL2),__VA_ARGS__);                          \
-    }else{								\
-	REQUIRE(1);							\
-    }
-
 #define EQ_EPS(VAL1,VAL2, EPS,...)                                      \
     if((VAL2) - (EPS) > (VAL1) || (VAL1) - (EPS) > (VAL2)){             \
         REQUIRE((VAL1) == (VAL2),__VA_ARGS__);                          \
     }else{								\
 	REQUIRE(1);							\
     }
+
+#define EQ(VAL1,VAL2,...) EQ_EPS(VAL1, VAL2, LASSERT_data.epsilon, ##__VA_ARGS__)
+
+#define PERFORMANCE(timeout)                                            \
+    if(*_old_flag < __LINE__){						\
+        if(!_in_case_lassert(-1)){					\
+            _start_test_lassert(1,0, NULL, NULL_TIME_LASSERT, NULL_TIME_LASSERT); \
+            *_has_to_quit = 1;                                          \
+        }                                                               \
+        _size_of_tab = fork();                                          \
+        LASSERT_data.perfoLine = __LINE__;                              \
+    }else{                                                              \
+        _size_of_tab = -2;                                              \
+    }                                                                   \
+    if(_size_of_tab == -1){                                             \
+        printf("%s--- PERFORMANCE COULD NOT BE RUN (fork failure)\n"    \
+               "\tError message: %s%s\n", LASSERT_RED, strerror(errno), \
+               LASSERT_NORMAL);                                         \
+    }else if(_size_of_tab > 0){                                         \
+        sleep(timeout);                                                 \
+        int i = kill(_size_of_tab, SIGTERM);                            \
+        if(!i){                                                         \
+            waitpid(_size_of_tab, &i, 0);                               \
+            if(WIFEXITED(i)){                                           \
+                if(WEXITSTATUS(i)){                                     \
+                    if(!*_has_to_quit){                                 \
+                        _REQUIRE_CASE_failed("timeout reached in PERFORMANCE block", __LINE__, name_of_test); \
+                        _in_case_lassert(0);				\
+                        *_id_flag = 1;					\
+                    }else{                                              \
+                        _failed_test_case(1,0);                         \
+                    }                                                   \
+                    *_has_to_quit = 0;                                  \
+                    /**_has_to_quit = __LINE__; */                      \
+                }else{                                                  \
+                    if(*_has_to_quit)                                   \
+                        _REQUIRE_succeed();                             \
+                    *_has_to_quit = 0;                                  \
+                }                                                       \
+            }else{                                                      \
+                printf("%s--- PERFORMANCE FAILED TO GET OUTPUT%s\n",    \
+                       LASSERT_YELLOW, LASSERT_NORMAL);                 \
+            }                                                           \
+        }else{                                                          \
+            printf("%s--- PERFORMANCE COULD NOT BE KILLED ON TIMEOUT\n" \
+                   "\tError message: %s%s\n", LASSERT_RED, strerror(errno), \
+                   LASSERT_NORMAL);                                     \
+        }                                                               \
+    }else if(_size_of_tab == 0 && ((LASSERT_data.inPerfoBlock = 1, signal(SIGTERM, LASSERT_signal_capture)) || 1))
+
+#define PERFO_EXIT exit(0)
+
 
 
     

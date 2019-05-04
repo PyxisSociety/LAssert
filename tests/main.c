@@ -112,6 +112,7 @@ TEST_SECTION(equal_test){
     REQUIRE(0);
 }
 
+#ifdef LASSERT_SECTION_TIME
 long long unsigned factorial(unsigned i){
     long long unsigned res = 1;
     for(unsigned j = 2; j < i; ++j)
@@ -123,6 +124,39 @@ TEST_SECTION(time_test){
     for(unsigned i = 0; i < 100; ++i)
 	for(unsigned i = 0; i < 100; ++i)
 	    factorial(100000);
+}
+#endif
+
+TEST_SECTION(perfo_test){
+    TEST_CASE(inside_case_ok){
+        PERFORMANCE(1){
+            PERFO_EXIT;
+        }
+    }
+    
+    TEST_CASE(inside_case_ko){
+        puts("After this line, \"1\" should be printed");
+        PERFORMANCE(1){
+            while(1);
+            PERFO_EXIT;
+        }
+        puts("1");
+        REQUIRE(1);
+        REQUIRE(0);
+    }
+
+    PERFORMANCE(1){
+        PERFO_EXIT;
+    }
+
+    PERFORMANCE(1){
+        while(1);
+        PERFO_EXIT;
+    }
+
+    PERFORMANCE(1){
+        PERFO_EXIT;
+    }
 }
 
 #ifdef LASSERT_CUSTOM_ALLOC
