@@ -786,7 +786,8 @@ void LAssert_alloc(int disable){
 
 #define EQ(VAL1,VAL2,...) EQ_EPS(VAL1, VAL2, LASSERT_data.epsilon, ##__VA_ARGS__)
 
-#define PERFORMANCE(timeout)                                            \
+#ifndef LASSERT_WINDOWS
+#  define PERFORMANCE(timeout)                                          \
     if(*_old_flag < __LINE__){						\
         if(!_in_case_lassert(-1)){					\
             _start_test_lassert(1,0, NULL, NULL_TIME_LASSERT, NULL_TIME_LASSERT); \
@@ -833,7 +834,8 @@ void LAssert_alloc(int disable){
         }                                                               \
     }else if(_size_of_tab == 0 && ((LASSERT_data.inPerfoBlock = 1, signal(SIGTERM, LASSERT_signal_capture)) || 1))
 
-#define PERFO_EXIT exit(0)
+#  define PERFO_EXIT exit(0)
+#endif
 
 
 
