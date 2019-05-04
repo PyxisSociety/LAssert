@@ -237,3 +237,5 @@ TEST_SECTION(perfo_test){
     }
 }
 ```
+__NOTES:__
+* You _need_ to end the `PERFORMANCE` block with the `PERFO_EXIT` macro.
