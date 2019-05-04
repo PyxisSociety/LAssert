@@ -10,12 +10,13 @@ Some functionalities are not available on windows:
 ## How to use it
 
 Here is a small tutorial devided in few steps:
-* [Configuration of this tool](#markkdown-header-Configuration) and some remarks
-* [Simple macros](#markkdown-header-Simple-macros) you can use
-* [Advanced macros](#markkdown-header-Advanced-macros) you can use
-* [Disabling allocation functions](#markkdown-header-Disabling-allocation) to make them return `NULL`
+* [Configuration of this tool](#markdown-header-Configuration) and some remarks
+* [Simple macros](#markdown-header-Simple-macros) you can use
+* [Advanced macros](#markdown-header-Advanced-macros) you can use
+* [Disabling allocation functions](#markdown-header-Disabling-allocation) to make them return `NULL` (not on Windows)
+* [Performance testing](#markdown-header-Performance) (not on Windows)
 
-### <a id="markkdown-header-Configuration"></a>Configuration and remarks
+### <a id="markdown-header-Configuration"></a>Configuration and remarks
 Some functionalities can be (de)activated by macros only (that need to be put before including LAssert) such as:
 * **LASSERT_MANUAL_MAIN**: providing a self define main
 * **LASSERT_CUSTOM_ALLOC**: enabling (de)activation of allocation functions (making them work normally or always return `NULL`)
@@ -41,7 +42,7 @@ __NOTES:__
 * In manual main and minimized output mode, you need to call `LASSERT_PRINT_OUTPUT()` to show the result. If you call this function in another mode, it will simply do nothing so you should call it either way.
 * In XML output mode, all user call to write things in standard and error outputs are locked. Forcedly unlocking will make this option unusable. 
 
-### <a id="markkdown-header-Simple-macros"></a>Simple macros
+### <a id="markdown-header-Simple-macros"></a>Simple macros
 The code below show all the simple macros you can use in LAssert :
 ```c
 #include "LAssert.h"
@@ -107,7 +108,7 @@ __NOTE:__ As you may have noticed, you can add formatted string like printf para
   
 _WARNING:_ On contrary to printf first argument, it has to be a string constant, not a variable (even variable constants are not allowed)
 
-### <a id="markkdown-header-Advanced-macros"></a>Advanced macros
+### <a id="markdown-header-Advanced-macros"></a>Advanced macros
 The code below show all the other macros you can use in LAssert :
 ```c
 #include "LAssert.h"
@@ -180,7 +181,7 @@ Here is what each macro means in case you did not guess :
 * **ONCE** : prevent a code inside a section but outside a test case to be called more than once<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This problem can occure when you mix up test cases and code not inside test cases
 
-### <a id="markkdown-header-Disabling-allocation"></a>Disabling allocation
+### <a id="markdown-header-Disabling-allocation"></a>Disabling allocation
 
 With those tools, you can render allocation functions to return `NULL` whenever they are called. You have to do three modifications for that:
 * You need to call a function in your code (see example below)
@@ -205,3 +206,34 @@ TEST_SECTION(alloc_disabled){
 __NOTES:__
 * If `LASSERT_CUSTOM_ALLOC` is not defined, you do not need all this set up.
 * You can use your own dynamic library to override allocation functions by defining the macro __LASSERT_LOCK_LIBRARY__ with a constant string containing the name of your library.
+
+### <a id="markdown-header-Performance"></a> Performance testing
+
+You can run an algorithm with a timeout (in seconds). If the timeout is reached before the algorithm ends, the test is considered as failing. You can do as follow:
+```c
+#include "LAssert.h"
+
+TEST_SECTION(perfo_test){
+    TEST_CASE(inside_case_ok){
+        PERFORMANCE(1){
+            PERFO_EXIT;
+        }
+    }
+    
+    TEST_CASE(inside_case_ko){
+        PERFORMANCE(1){
+            while(1);
+            PERFO_EXIT;
+        }
+    }
+
+    PERFORMANCE(1){
+        PERFO_EXIT;
+    }
+
+    PERFORMANCE(1){
+        while(1);
+        PERFO_EXIT;
+    }
+}
+```
