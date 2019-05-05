@@ -176,7 +176,7 @@ Here is what each macro means in case you did not guess :
   * the variable in which we want to store the random values (`int tab[]`) (WARNING : if you use more than one **RAND_CASE** or **RANGE_CASE** in the same section, variable names have to be different)
   * the size of tab
   * an unlimited number of ranges that have the form `begin, end, step`
-* **COPY** : copy a variable of a section in a test case so that the modifications brought by the test case will only be effective in it
+* **COPY** : copy a variable of a section in a test case so that the modifications brought by the test case will only be effective in it (not available on `msvc` but available on `msvc++`)
 * **ONCE** : prevent a code inside a section but outside a test case to be called more than once<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This problem can occure when you mix up test cases and code not inside test cases
 

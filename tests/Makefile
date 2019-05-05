@@ -10,6 +10,9 @@ LIB=$(LIB_PATH)/libLAssert_alloc.so
 LDFLAGS=-g -ldl -Wl,-rpath,$(LIB_PATH) -L$(LIB_PATH) -lLAssert_alloc
 CFLAGS=-DLASSERT_CUSTOM_ALLOC
 
+CC?=gcc
+CXX?=g++
+
 
 
 all: clean
@@ -21,20 +24,20 @@ all: clean
 c:$(EXEC)
 
 $(EXEC):main.c.o
-	gcc $^ -o $@ $(LDFLAGS)
+	$(CC) $^ -o $@ $(LDFLAGS)
 
 main.c.o:main.c
-	gcc -o $@ -c $< $(CFLAGS)
+	$(CC) -o $@ -c $< $(CFLAGS)
 
 
 
 cpp:$(EXECPP)
 
 $(EXECPP):main.cpp.o
-	g++ $^ -o $@ $(LDFLAGS)
+	$(CXX) $^ -o $@ $(LDFLAGS)
 
 main.cpp.o:main.cpp
-	g++ -o $@ -c $< $(CFLAGS)
+	$(CXX) -o $@ -c $< $(CFLAGS)
 
 
 
