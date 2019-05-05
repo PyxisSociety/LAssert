@@ -3,21 +3,20 @@
 EXEC=ctest.out
 EXECPP=cpptest.out
 EXEC_ALLOC=alloctest.out
-CLEAN=*.o *~
-LIB=../libLAssert_alloc.so
+CLEAN=main.cpp *.o *~
 PWD=$(shell pwd)
-LDFLAGS=-g
-CUSTOMALLOCFLAGS=-ldl -Wl,-rpath,.. -L$(PWD)/.. -lLAssert_alloc -DLASSERT_CUSTOM_ALLOC
-CFLAGS=-Wall -Wextra
-ADDCFLAG?=
+LIB_PATH=$(PWD)/..
+LIB=$(LIB_PATH)/libLAssert_alloc.so
+LDFLAGS=-g -ldl -Wl,-rpath,$(LIB_PATH) -L$(LIB_PATH) -lLAssert_alloc
+CFLAGS=-DLASSERT_CUSTOM_ALLOC
 
 
 
-all:
+all: clean
 	@make c --no-print-directory
-	@rm -rf *.c.o
-	@make alloc --no-print-directory
+	@cp main.c main.cpp
 	@make cpp --no-print-directory
+	@make clean --no-print-directory
 
 c:$(EXEC)
 
@@ -25,14 +24,7 @@ $(EXEC):main.c.o
 	gcc $^ -o $@ $(LDFLAGS)
 
 main.c.o:main.c
-	gcc -o $@ -c $< $(CLFAGS) $(ADDCFLAG)
-
-
-alloc:
-	@make $(EXEC_ALLOC) ADDCFLAG=-DLASSERT_CUSTOM_ALLOC --no-print-directory
-
-$(EXEC_ALLOC):main.c.o
-	gcc $^ -o $@ $(CUSTOMALLOCFLAGS)
+	gcc -o $@ -c $< $(CFLAGS)
 
 
 
@@ -42,12 +34,12 @@ $(EXECPP):main.cpp.o
 	g++ $^ -o $@ $(LDFLAGS)
 
 main.cpp.o:main.cpp
-	g++ -o $@ -c $< $(CLFAGS)
+	g++ -o $@ -c $< $(CFLAGS)
 
 
 
 clean:
-	rm $(CLEAN)
+	rm -f $(CLEAN)
 clear: clean
 cleaner:
 	rm $(EXEC) $(CLEAN)

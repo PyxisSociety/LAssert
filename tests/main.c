@@ -1,27 +1,24 @@
-//#define LASSERT_MANUAL_MAIN
-
-//#define LASSERT_SECTION_TIME
-
+#define LASSERT_SECTION_TIME
 #include "../LAssert.h"
 
-TEST_SECTION(noTestCase){
+TEST_SECTION(noTestCase_noFailure){
     REQUIRE(1);
     REQUIRE(1);
     REQUIRE(1);
 }
 
-TEST_SECTION(tralala){
+TEST_SECTION(testCasesMixedUp){
     
-    TEST_CASE(tralalatsointsoin){
+    TEST_CASE(failing){
 	unsigned i = 1;
 
 	REQUIRE(i == 1);
 	REQUIRE(i == 0);
     }
 
-    REQUIRE( 1 , "Ah que coucou Johnny" );
+    REQUIRE(1 , "Ah que coucou Johnny");
 
-    TEST_CASE(tralalapastsointsoin){
+    TEST_CASE(succeeding){
 	unsigned j = 3;
 
 	REQUIRE(j);
@@ -30,24 +27,12 @@ TEST_SECTION(tralala){
 	REQUIRE(j);
     }
 
-    TEST_CASE(plop){
-	REQUIRE_NOT_NULL( NULL , "oups, null pointer");
+    TEST_CASE(failingNotNull){
+	REQUIRE_NOT_NULL(NULL , "oups, null pointer");
     }
 }
 
-TEST_SECTION(un_bon_gros_test){
-    TEST_CASE(on_l_appel_baudhuit){
-	unsigned * j = (unsigned*)malloc(sizeof(*j));
-
-	REQUIRE_NOT_NULL(j);
-
-	printf("j == %p\n",(void*)j);
-
-	free(j);
-    }
-}
-
-TEST_SECTION(un_test_vide){
+TEST_SECTION(empty_section){
 }
 
 TEST_SECTION(random_test){
@@ -59,8 +44,8 @@ TEST_SECTION(random_test){
 	}
 	putchar('\n');
     }
-
-    RAND_CASE(should_failed,tab2,5,5,1){
+    
+    RAND_CASE(bad_parameters,tab2,5,5,1){
     }
 
     RAND_CASE(fail_on_0, tab3, 4, 4, 0, 3){
@@ -76,20 +61,22 @@ TEST_SECTION(range_test){
 	putchar('\n');
     }
 
-    RANGE_CASE(should_failed,tab2,3,1){
+    RANGE_CASE(bad_parameters,tab2,3,1){
     }
 }
 
 TEST_SECTION(copy_test){
     unsigned i = 0;
 
+#ifndef LASSERT_WINDOWS
     TEST_CASE(should_succeed){
 	COPY(unsigned,i);
 	i = 2;
 	REQUIRE(i);
     }
+#endif
 
-    /* ONCE has to be put if there are test cases AND code not inside a test_case for the last one not to be done more than once */
+    // ONCE has to be put if there are test cases AND code not inside a test_case for the last one not to be done more than once
     ONCE puts("Display twice if problem not solved");
 
     ONCE {
@@ -109,23 +96,7 @@ TEST_SECTION(equal_test){
     }
 
     EQ_EPS(.7, .6, .2);
-    REQUIRE(0);
 }
-
-#ifdef LASSERT_SECTION_TIME
-long long unsigned factorial(unsigned i){
-    long long unsigned res = 1;
-    for(unsigned j = 2; j < i; ++j)
-	res *= j;
-
-    return res;
-}
-TEST_SECTION(time_test){
-    for(unsigned i = 0; i < 100; ++i)
-	for(unsigned i = 0; i < 100; ++i)
-	    factorial(100000);
-}
-#endif
 
 TEST_SECTION(perfo_test){
     TEST_CASE(inside_case_ok){
@@ -159,7 +130,7 @@ TEST_SECTION(perfo_test){
     }
 }
 
-#ifdef LASSERT_CUSTOM_ALLOC
+#ifndef LASSERT_WINDOWS
 TEST_SECTION(malloc_disable){
     LAssert_alloc(1);
     int * i = (int*)malloc(sizeof(*i));
@@ -172,34 +143,16 @@ TEST_SECTION(malloc_disable){
 }
 #endif
 
-#ifdef LASSERT_MANUAL_MAIN
-int main(int argc, char ** argv){
-    #ifdef LASSERT_SECTION_TIME
-    if(argc < 2){
-	RUN_SECTION(tralala);
-	RUN_SECTION(un_bon_gros_test);
-	RUN_SECTION(un_test_vide);
-	RUN_SECTION(random_test);
-	RUN_SECTION(range_test);
-	RUN_SECTION(copy_test);
-	RUN_SECTION(equal_test);
-    }else if(argc == 2 && !strcmp(argv[1],"-t")){
-	RUN_SECTION(time_test);
-    }else{
-	puts("Unknown set of parameters :");
-	for(unsigned i = 1 + !strcmp(argv[1],"-t"); i < argc; ++i)
-	    printf("\t%s\n",argv[i]);
-    }
-    #else
-    RUN_SECTION(tralala);
-    RUN_SECTION(un_bon_gros_test);
-    RUN_SECTION(un_test_vide);
-    RUN_SECTION(random_test);
-    RUN_SECTION(range_test);
-    RUN_SECTION(copy_test);
-    RUN_SECTION(equal_test);
-    #endif
-    
-    return 0;
+long long unsigned factorial(unsigned i){
+    long long unsigned res = 1;
+    for(unsigned j = 2; j < i; ++j)
+	res *= j;
+
+    return res;
 }
-#endif
+TEST_SECTION(time_test){
+    for(unsigned i = 0; i < 100; ++i)
+	for(unsigned i = 0; i < 100; ++i)
+	    factorial(100000);
+}
+
