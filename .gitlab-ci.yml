@@ -4,44 +4,8 @@ gcc:
   image: gcc
   stage: test
 
-gpp:
+windows:
   script:
-    - echo "yes"
-  image: g++
-  stage: test
-
-clang:
-  script:
-    - echo "yes"
-  image: clang
-  stage: test
-
-clangpp:
-  script:
-    - echo "yes"
-  image: clang++
-  stage: test
-
-cc:
-  script:
-    - echo "yes"
-  image: cc
-  stage: test
-
-msvc:
-  script:
-    - echo "yes"
-  image: msvc
-  stage: test
-
-msvcpp:
-  script:
-    - echo "yes"
-  image: msvc++
-  stage: test
-
-cygwin:
-  script:
-    - echo "yes"
-  image: cygwin
+    - cd
+  image: windows
   stage: test

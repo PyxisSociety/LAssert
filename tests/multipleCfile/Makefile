@@ -14,7 +14,7 @@ CC?=gcc
 
 all: $(EXEC)
 
-$(EXEC):main.o
+$(EXEC):main.o second.o
 	$(CC) $^ -o $@ $(LDFLAGS)
 
 %.o:%.c

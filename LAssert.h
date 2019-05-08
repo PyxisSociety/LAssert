@@ -779,11 +779,13 @@ void LAssert_alloc(int disable){
 
 
     
-#if !defined(LASSERT_MANUAL_MAIN)
+#ifndef LASSERT_MANUAL_MAIN
+#  ifdef LASSERT_MAIN
 int main(){
     LASSERT_PRINT_OUTPUT_();
     return LASSERT_data_.failed;
 }
+#  endif
 #  ifdef LASSERT_WINDOWS
 #    ifdef __cplusplus
 #      define LASSERT_AUTOCALL_HANDLER_(fname) ;                        \
