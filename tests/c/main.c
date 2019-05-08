@@ -1,7 +1,7 @@
 #define LASSERT_SECTION_TIME
 #include "../../LAssert.h"
 
-TEST_SECTION(noTestCase_noFailure){
+TEST_SECTION("no test case, no failure"){
     REQUIRE(1);
     REQUIRE(1);
     REQUIRE(1);
@@ -11,7 +11,7 @@ TEST_SECTION(checkTests){
     CHECK(0);
     puts("Should be printed (outside case)");
 
-    TEST_CASE(inCase){
+    TEST_CASE("in case"){
         CHECK(0);
         puts("Should be printed (inside case)");
         REQUIRE(1);
@@ -62,7 +62,7 @@ TEST_SECTION(random_test){
 	putchar('\n');
     }
     
-    RAND_CASE(bad_parameters,tab2,5,5,1){
+    RAND_CASE("bad parameters",tab2,5,5,1){
     }
 
     RAND_CASE(fail_on_0, tab3, 4, 4, 0, 3){
@@ -77,7 +77,7 @@ TEST_SECTION(random_test){
 }
 
 TEST_SECTION(range_test){
-    RANGE_CASE(should_succeed,tab,3,1,3,1){
+    RANGE_CASE("should succeed",tab,3,1,3,1){
 	for(unsigned i = 0; i < 3; ++i)
 	    printf("%d ",tab[i]);
 	putchar('\n');

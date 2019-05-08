@@ -1,6 +1,5 @@
 # LAssert
 
-
 Unary test library in C for Linux
 
 ## Notes
@@ -59,13 +58,13 @@ TEST_SECTION(Section1){
 		puts("This text will not be printed");
 	}
 
-	TEST_CASE(Case2){
+	TEST_CASE("case 2"){
 		REQUIRE(1);
 		puts("This text will be printed");
 	}
 }
 
-TEST_SECTION(Section2){
+TEST_SECTION("second section"){
 	int * p = (int*)malloc(sizeof(int));
 
 	REQUIRE_NOT_NULL(p, "will be shown only if malloc failed"); /* will fail if p is NULL, not the same error log as require if failed */
@@ -106,7 +105,9 @@ Here is what each macro means in case you did not guess :
 * **EQ**: test if two numbers are equals (useful for floating point numbers)
 * **EQ_EPS**: test if two numbers are equals (useful for floating point numbers) with a user define tolerated error
 
-__NOTE:__ As you may have noticed, you can add formatted string like printf parameters to REQUIRE, REQUIRE_NOT_NULL and EQ macros. This formatted string will be shown only when the test will fail.
+__NOTES:__
+* As you may have noticed, you can add formatted string like printf parameters to REQUIRE, REQUIRE_NOT_NULL and EQ macros. This formatted string will be shown only when the test will fail.
+* Sections and cases names can be either an identifier or a string
   
 _WARNING:_ On contrary to printf first argument, it has to be a string constant, not a variable (even variable constants are not allowed)
 
