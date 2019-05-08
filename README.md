@@ -1,12 +1,14 @@
 # LAssert
 
-Unary test library in C for Linux
+Unary test library in C, greatly inspired by [Catch2](https://github.com/catchorg/Catch2).
 
 ## Notes
 
 Some functionalities are not available on windows:
 * text color in console output
 * making allocation functions return always `NULL`
+* the `COPY` macro (works on windows if compiled in C++)
+* the `PERFORMANCE` macro
 
 ## How to use it
 
