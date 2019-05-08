@@ -48,6 +48,10 @@ TEST_SECTION(testCasesMixedUp){
 TEST_SECTION(empty_section){
 }
 
+int myRand(void){
+    return 0;
+}
+
 TEST_SECTION(random_test){
     RAND_CASE(first_random,tab,3,3,1,10,10,100){
 	puts("BEEEEGIN");
@@ -64,6 +68,11 @@ TEST_SECTION(random_test){
     RAND_CASE(fail_on_0, tab3, 4, 4, 0, 3){
 	for(unsigned i = 0; i < 4; ++i)
 	    REQUIRE(tab3[i]);
+    }
+
+    LASSERT_set_rand_function(myRand);
+    RAND_CASE(selfDefineRandFunction, tab4, 1, 5, 0, 1000){
+        REQUIRE(!*tab4);
     }
 }
 

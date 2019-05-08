@@ -24,7 +24,7 @@ Some functionalities can be (de)activated by macros only (that need to be put be
 The resulting program can have predefined parameters described bellow. If you used **LASSERT_MANUAL_MAIN**, you can still have this behavior by calling `LASSERT_PARAMETERS_INIT(argc, argv)`. Using `-h` option will show you all available parameters but will prevent the program from running the tests.
   
 
-Default options are: -nt -c -out=consol
+Default options are: -nt -c -out=consol -epsilon=1e-6
 Some other functionalities can be (de)activated by macros _and_ parameters such as:
 * __-\[n]t__ or __LASSERT_SECTION_TIME__: (de)activate timer functionality for sections
 * __-\[n]c__ or __LASSERT_NO_COLOR__: (de)activate color in input (only available for UNIX systems and in consol output)
@@ -34,7 +34,7 @@ Some other functionalities can be (de)activated by macros _and_ parameters such 
   - **mini** or __LASSERT_SMALL_OUTPUT__: (stands for minimized) no details at all, it just give the percentage of succeeded test case in every sections (as a summarized result)
   - **xml** or __LASSERT_XML_OUTPUT__: JUnit like XML is rendered in standard output
 * __-epsilon=[value]__, __LASSERT_EPSILON__ or `LASSERT_set_epsilon(yourValue)`: set the accepted difference on floating point number comparison (value must be a strictly positive floating point number)
-* __-seed=[value]__, __LASSERT_SEED__ or `LASSERT_init_seed(yourSeed)`: set the seed to initialize random number (the function re initialize the random generator)
+* __-seed=[value]__, __LASSERT_SEED__ or `LASSERT_init_seed(yourSeed)`: set the seed to initialize random number (the function re initialize the random generator), default value use the `time(NULL)` function.
   
 __NOTES:__
 * In auto main mode, the program will return the number of section on failure.
@@ -130,6 +130,11 @@ TEST_SECTION(random_test){
 	for(unsigned i = 0; i < 4; ++i)
 	    REQUIRE(tab3[i]);
     }
+
+    LASSERT_set_rand_function(myRand);
+    RAND_CASE(selfDefineRandFunction, tab4, 1, 5, 0, 1000){
+        REQUIRE(!*tab4);
+    }
 }
 
 TEST_SECTION(range_test){
@@ -180,6 +185,8 @@ Here is what each macro means in case you did not guess :
 * **COPY** : copy a variable of a section in a test case so that the modifications brought by the test case will only be effective in it (not available on `msvc` but available on `msvc++`)
 * **ONCE** : prevent a code inside a section but outside a test case to be called more than once<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This problem can occure when you mix up test cases and code not inside test cases
+
+__NOTE:__ You can set the random function using `LASSERT_set_rand_function`. The function needs to have the following prototype `int (*) (void)`.
 
 ### <a id="markdown-header-Disabling-allocation"></a>Disabling allocation
 

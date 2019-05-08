@@ -146,12 +146,30 @@ struct{
     int passed;
     int testCaseOpened;
     int currentCaseFailed;
+    int (*rand)(void);
     unsigned long long succeededTestsInCurrentCase;
     unsigned long long nbRunInCase;
     unsigned long long failedCases;
     unsigned long long succeededCases;
     unsigned long long notNullFailedCases;
-} LASSERT_data_ = {{"", ""}, {0, 0}, LASSERT_EPSILON, LASSERT_SEED, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+} LASSERT_data_ = {
+    {"", ""}, // tmpFileNames
+    {0, 0}, // fdTmpFile
+    LASSERT_EPSILON, // epsilon
+    LASSERT_SEED, // seed
+    0, // perfoLine
+    0, // inPerfoBlock
+    0, // failed
+    0, // passed
+    0, // testCaseOpened
+    0, // currentCaseFailed
+    rand, // rand
+    0, // succeededTestsInCurrentCase
+    0, // nbRunInCase
+    0, // failedCases
+    0, // succeededCases
+    0 // notNullFailedCases
+};
 /*-------------------------------------------*/
 
 
@@ -258,7 +276,7 @@ void LASSERT_generate_tab_(const char * name_of_case,int * _id_flag,int * begin,
 void LASSERT_next_rand_tab_(int * tab, int * begin, int * end, unsigned size){
     for(unsigned i = 0; i < size; ++i){
 	if(end[i] != begin[i])
-	    tab[i] = rand()%(end[i] - begin[i]) + begin[i];
+	    tab[i] = LASSERT_data_.rand()%(end[i] - begin[i]) + begin[i];
 	else
 	    tab[i] = end[i];
     }
@@ -455,6 +473,12 @@ void LASSERT_set_epsilon(double epsilon){
 }
 void LASSERT_init_seed(unsigned seed){
     LASSERT_data_.seed = seed;
+}
+void LASSERT_set_rand_function(int (*random)(void)){
+    if(random)
+        LASSERT_data_.rand = random;
+    else
+        LASSERT_data_.rand = rand;
 }
 void LASSERT_signal_capture_(int sig){
     if(LASSERT_data_.inPerfoBlock && sig == SIGTERM){
@@ -811,6 +835,10 @@ int main(){
 	while(i){							\
 	    i = 0;							\
 	    _test_##name##_lassert(s,&id,0,0,&i, &old);                 \
+            if(!id){                                                    \
+                ++LASSERT_data_.succeededCases;                         \
+            }                                                           \
+            id = -1;                                                    \
 	    old = i;							\
 	}								\
 	if(LASSERT_parameters_.timer == LASSERT_section_time)           \
