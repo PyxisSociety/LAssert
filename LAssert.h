@@ -780,12 +780,10 @@ void LAssert_alloc(int disable){
 
     
 #ifndef LASSERT_MANUAL_MAIN
-#  ifdef LASSERT_MAIN
 int main(){
     LASSERT_PRINT_OUTPUT_();
     return LASSERT_data_.failed;
 }
-#  endif
 #  ifdef LASSERT_WINDOWS
 #    ifdef __cplusplus
 #      define LASSERT_AUTOCALL_HANDLER_(fname) ;                        \
@@ -811,11 +809,13 @@ int main(){
 
 
 
-#define TEST_SECTION(name)						\
-    void _test_##name##_lassert( char *,int *, int, int*, int*, int *); \
-    static int _call_test_##name##_lassert(void)                        \
-	LASSERT_AUTOCALL_HANDLER_(_call_test_##name##_lassert)          \
-        static int _call_test_##name##_lassert(void){                   \
+#define TEST_SECTION(name) LASSERT_SUB_TEST_SECTION_(name, __COUNTER__)
+#define LASSERT_SUB_TEST_SECTION_(name, number) LASSERT_TEST_SECTION_(name, number)
+#define LASSERT_TEST_SECTION_(name, number)                             \
+    void _test_##number##_lassert( char *,int *, int, int*, int*, int *); \
+    static int _call_test_##number##_lassert(void)                      \
+	LASSERT_AUTOCALL_HANDLER_(_call_test_##number##_lassert)        \
+        static int _call_test_##number##_lassert(void){                 \
 	char s[512] = {0};						\
 	LASSERT_TIME_TYPE_ start = LASSERT_TIME_NULL_, end = LASSERT_TIME_NULL_; \
 	int id = -1, i = 1, old = 0;					\
@@ -824,7 +824,7 @@ int main(){
         LASSERT_data_.testCaseOpened = 0;                               \
                                                                         \
 	LASSERT_PRINT_("%s------------------------------------------------------------\n" \
-                       "BEGIN OF SECTION %s %s\n",LASSERT_BLUE_, #name, LASSERT_NORMAL_); \
+                       "BEGIN OF SECTION " #name " %s\n",LASSERT_BLUE_, LASSERT_NORMAL_); \
                                                                         \
 	LASSERT_data_.succeededCases = 0;                               \
 	LASSERT_data_.notNullFailedCases = 0;				\
@@ -836,7 +836,7 @@ int main(){
 	    start = LASSERT_time_used_();                               \
 	while(i){							\
 	    i = 0;							\
-	    _test_##name##_lassert(s,&id,0,0,&i, &old);                 \
+	    _test_##number##_lassert(s,&id,0,0,&i, &old);               \
             if(!id){                                                    \
                 ++LASSERT_data_.succeededCases;                         \
             }                                                           \
@@ -866,7 +866,7 @@ int main(){
             }                                                           \
         }                                                               \
                                                                         \
-        LASSERT_PRINT_("\n%sEND OF SECTION %s %s\n", LASSERT_BLUE_, #name, LASSERT_NORMAL_); \
+        LASSERT_PRINT_("\n%sEND OF SECTION " #name " %s\n", LASSERT_BLUE_, LASSERT_NORMAL_); \
         if (LASSERT_parameters_.timer == LASSERT_section_time)          \
             LASSERT_PRINT_("%sExecuting section took : %fs%s\n",        \
                            LASSERT_CYAN_, LASSERT_TIME_INTERVAL_(start, end), LASSERT_NORMAL_); \
@@ -896,7 +896,7 @@ int main(){
                                                                         \
         return id;                                                      \
     }									\
-    void _test_##name##_lassert(char * LASSERT_name_of_test_, int * _id_flag, int _size_of_tab,int * _tab_lassert, int * _has_to_quit, int * _old_flag)
+    void _test_##number##_lassert(char * LASSERT_name_of_test_, int * _id_flag, int _size_of_tab,int * _tab_lassert, int * _has_to_quit, int * _old_flag)
 
 
 
