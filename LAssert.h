@@ -19,8 +19,8 @@
 #define LASSERT_GREEN_ LASSERT_get_color_(2)
 #define LASSERT_YELLOW_ LASSERT_get_color_(3)
 #define LASSERT_BLUE_ LASSERT_get_color_(4)
-#define LASSERT_CYAN_ LASSERT_get_color_(6)
 #define LASSERT_MAGENTA_ LASSERT_get_color_(5)
+#define LASSERT_CYAN_ LASSERT_get_color_(6)
 
 #if defined(unix) || defined(__unix) || defined(__unix__) || defined(__APPLE__) || defined(__MACH__)
 #  define LASSERT_UNIX
@@ -52,8 +52,8 @@
 #  define LASSERT_TIME_TYPE_ ULONGLONG
 #  define LASSERT_TIME_NULL_ {0}
 #  define LASSERT_TIME_(start) LASSERT_TIME_TYPE_ start = GetTickCount64()
-#  define LASSERT_TIME_INTERVAL_(start,end) \
-	((end >= start) ? (double)(end - start) : (double)((LASSERT_TIME_TYPE_)-1 - start + end)) / 1000
+#  define LASSERT_TIME_INTERVAL_(start,end)                             \
+    ((end >= start) ? (double)(end - start) : (double)((LASSERT_TIME_TYPE_)-1 - start + end)) / 1000
 #  define isatty(a) _isatty(a)
 #  define LASSERT_STRCPY_ strcpy_s
 #  define dup(a) _fdopen(_dup(_fileno(a)), "w")
@@ -78,9 +78,9 @@
 
 #define LASSERT_LOG_MESSAGE_(ptr, ...)					\
     if(LASSERT_va_arg_not_empty_(#__VA_ARGS__)){			\
-	LASSERT_PRINT_("\t%slog message :%s\n",LASSERT_YELLOW_,LASSERT_NORMAL_);  \
+	LASSERT_PRINT_("\t%slog message :%s\n",LASSERT_YELLOW_,LASSERT_NORMAL_); \
 	LASSERT_log_message_(ptr, "" __VA_ARGS__);                      \
-	puts(LASSERT_NORMAL_);                                           \
+	puts(LASSERT_NORMAL_);                                          \
     }
 
 
@@ -159,8 +159,8 @@ struct{
 
 
 
-#define LASSERT_PRINT_(...)                                      \
-    if(LASSERT_parameters_.output == LASSERT_normal_output)      \
+#define LASSERT_PRINT_(...)                                     \
+    if(LASSERT_parameters_.output == LASSERT_normal_output)     \
         printf(__VA_ARGS__)
 
 char * LASSERT_get_color_(int i){
@@ -349,13 +349,13 @@ int LASSERT_va_arg_not_empty_(const char * va_arg_str){
     return va_arg_str[i];
 }
 char * LASSERT_get_color_result_(double result){
-        if(result >= 100){
-            return LASSERT_GREEN_;
-        }
-        if(result >= 50){
-            return LASSERT_YELLOW_;
-        }
-        return LASSERT_RED_;
+    if(result >= 100){
+        return LASSERT_GREEN_;
+    }
+    if(result >= 50){
+        return LASSERT_YELLOW_;
+    }
+    return LASSERT_RED_;
 }
 void LASSERT_deactivate_output_(void){
     int i;
@@ -376,7 +376,7 @@ void LASSERT_deactivate_output_(void){
         _mktemp_s(LASSERT_data_.tmpFileNames[i], sizeof(LASSERT_data_.tmpFileNames[i]) - 1);
         if(!*LASSERT_data_.tmpFileNames[i])
             return;
-		LASSERT_data_.fdTmpFile[i] = NULL;
+        LASSERT_data_.fdTmpFile[i] = NULL;
         fopen_s(&(LASSERT_data_.fdTmpFile[i]), LASSERT_data_.tmpFileNames[i], "w");
         if(!LASSERT_data_.fdTmpFile[i])
 #else
@@ -405,9 +405,9 @@ void LASSERT_activate_output_(void){
 #ifdef LASSERT_WINDOWS
         if(!LASSERT_data_.fdTmpFile[i])
 #else
-        if(LASSERT_data_.fdTmpFile[i] == -1)
+            if(LASSERT_data_.fdTmpFile[i] == -1)
 #endif
-            return;
+                return;
     }
     
     dup2(LASSERT_data_.fdTmpFile[0], STDOUT_FILENO);
@@ -447,7 +447,7 @@ void LASSERT_PRINT_OUTPUT_(void){
         printf("%s%f%%%s\n", LASSERT_get_color_result_(result), result, LASSERT_NORMAL_);
     }else if(LASSERT_parameters_.output == LASSERT_xml_output){
         LASSERT_XML_PRINT_("</testsuites>");
-		LASSERT_activate_output_();
+        LASSERT_activate_output_();
     }
 }
 void LASSERT_set_epsilon(double epsilon){
@@ -461,7 +461,7 @@ void LASSERT_signal_capture_(int sig){
         if(LASSERT_parameters_.output == LASSERT_xml_output){
             LASSERT_XML_PRINT_("\t\t\t<failure>");
             LASSERT_XML_PRINT_("Error in performance block starting at line %d, timeout reached",
-                              LASSERT_data_.perfoLine);
+                               LASSERT_data_.perfoLine);
             LASSERT_XML_PRINT_("\t\t\t</failure>");
         }
         exit(1);
@@ -550,20 +550,20 @@ void LAssert_alloc(int disable){
 #define TEST_CASE(NAME_OF_TEST)                                         \
     if(*_old_flag < __LINE__){                                          \
         if(!*_id_flag)                                                  \
-            ++LASSERT_data_.succeededCases;                              \
-        LASSERT_data_.succeededTestsInCurrentCase = 0;                   \
-        LASSERT_data_.currentCaseFailed = 0;                             \
-        if(LASSERT_parameters_.output == LASSERT_xml_output){            \
-            if(LASSERT_data_.testCaseOpened){                            \
-                LASSERT_XML_PRINT_("\t\t</testcase>");                   \
+            ++LASSERT_data_.succeededCases;                             \
+        LASSERT_data_.succeededTestsInCurrentCase = 0;                  \
+        LASSERT_data_.currentCaseFailed = 0;                            \
+        if(LASSERT_parameters_.output == LASSERT_xml_output){           \
+            if(LASSERT_data_.testCaseOpened){                           \
+                LASSERT_XML_PRINT_("\t\t</testcase>");                  \
             }else                                                       \
-                LASSERT_data_.testCaseOpened = 1;                        \
-            LASSERT_XML_PRINT_("\t\t<testcase name="                     \
-                              #NAME_OF_TEST ">");                       \
+                LASSERT_data_.testCaseOpened = 1;                       \
+            LASSERT_XML_PRINT_("\t\t<testcase name="                    \
+                               #NAME_OF_TEST ">");                      \
         }                                                               \
 	_tab_lassert = NULL;                                            \
-	LASSERT_STRCPY_(LASSERT_name_of_test_, 512, #NAME_OF_TEST);               \
-	LASSERT_data_.nbRunInCase = 2;                                   \
+	LASSERT_STRCPY_(LASSERT_name_of_test_, 512, #NAME_OF_TEST);     \
+	LASSERT_data_.nbRunInCase = 2;                                  \
 	*_id_flag = 0;                                                  \
     }                                                                   \
     while(*_old_flag < __LINE__ && --LASSERT_data_.nbRunInCase)
@@ -574,21 +574,21 @@ void LAssert_alloc(int disable){
     int var_name##end[nb_of_values] = {0};				\
     if(*_old_flag < __LINE__){						\
         if(!*_id_flag)                                                  \
-            ++LASSERT_data_.succeededCases;                              \
-        LASSERT_data_.succeededTestsInCurrentCase = 0;                   \
-        LASSERT_data_.currentCaseFailed = 0;                             \
-        if(LASSERT_parameters_.output == LASSERT_xml_output){            \
-            if(LASSERT_data_.testCaseOpened){                            \
-                LASSERT_XML_PRINT_("\t\t</testcase>");                   \
+            ++LASSERT_data_.succeededCases;                             \
+        LASSERT_data_.succeededTestsInCurrentCase = 0;                  \
+        LASSERT_data_.currentCaseFailed = 0;                            \
+        if(LASSERT_parameters_.output == LASSERT_xml_output){           \
+            if(LASSERT_data_.testCaseOpened){                           \
+                LASSERT_XML_PRINT_("\t\t</testcase>");                  \
             }else                                                       \
-                LASSERT_data_.testCaseOpened = 1;                        \
-            LASSERT_XML_PRINT_("\t\t<testcase name="                     \
-                              #NAME_OF_TEST ">");                       \
+                LASSERT_data_.testCaseOpened = 1;                       \
+            LASSERT_XML_PRINT_("\t\t<testcase name="                    \
+                               #NAME_OF_TEST ">");                      \
         }                                                               \
 	_size_of_tab = nb_of_values;					\
 	_tab_lassert = var_name;					\
-	LASSERT_STRCPY_(LASSERT_name_of_test_, 512, #NAME_OF_TEST);               \
-        LASSERT_data_.nbRunInCase = nb_of_values + 1;                    \
+	LASSERT_STRCPY_(LASSERT_name_of_test_, 512, #NAME_OF_TEST);     \
+        LASSERT_data_.nbRunInCase = nb_of_values + 1;                   \
 	*_id_flag = 0;							\
 	LASSERT_generate_tab_(#NAME_OF_TEST,_id_flag,var_name##begin,var_name##end,nb_of_values,#__VA_ARGS__,__VA_ARGS__); \
     }									\
@@ -601,108 +601,112 @@ void LAssert_alloc(int disable){
     int var_name##_step[nb_of_values] = {0};				\
     if(*_old_flag < __LINE__){						\
         if(!*_id_flag)                                                  \
-            ++LASSERT_data_.succeededCases;                              \
-        LASSERT_data_.succeededTestsInCurrentCase = 0;                   \
-        LASSERT_data_.currentCaseFailed = 0;                             \
-        if(LASSERT_parameters_.output == LASSERT_xml_output){            \
-            if(LASSERT_data_.testCaseOpened){                            \
-                LASSERT_XML_PRINT_("\t\t</testcase>");                   \
+            ++LASSERT_data_.succeededCases;                             \
+        LASSERT_data_.succeededTestsInCurrentCase = 0;                  \
+        LASSERT_data_.currentCaseFailed = 0;                            \
+        if(LASSERT_parameters_.output == LASSERT_xml_output){           \
+            if(LASSERT_data_.testCaseOpened){                           \
+                LASSERT_XML_PRINT_("\t\t</testcase>");                  \
             }else                                                       \
-                LASSERT_data_.testCaseOpened = 1;                        \
-            LASSERT_XML_PRINT_("\t\t<testcase name="                     \
-                              #NAME_OF_TEST ">");                       \
+                LASSERT_data_.testCaseOpened = 1;                       \
+            LASSERT_XML_PRINT_("\t\t<testcase name="                    \
+                               #NAME_OF_TEST ">");                      \
         }                                                               \
 	_size_of_tab = nb_of_values;					\
 	_tab_lassert = var_name;					\
-	LASSERT_STRCPY_(LASSERT_name_of_test_, 512, #NAME_OF_TEST);               \
+	LASSERT_STRCPY_(LASSERT_name_of_test_, 512, #NAME_OF_TEST);     \
 	*_id_flag = 0;							\
 	LASSERT_generate_range_(#NAME_OF_TEST,_id_flag,var_name,var_name##_begin,var_name##_end,var_name##_step,nb_of_values,#__VA_ARGS__,__VA_ARGS__); \
-	LASSERT_data_.nbRunInCase = 1;                                   \
+	LASSERT_data_.nbRunInCase = 1;                                  \
     }									\
     while(*_old_flag < __LINE__ && LASSERT_next_range_(var_name,var_name##_begin,var_name##_end,var_name##_step,nb_of_values) && !*_id_flag)
 
-#define REQUIRE(bool,...){						\
+#define LASSERT_INTERNAL_REQUIRE_(blocking, bool, ...){                 \
         int res = !!(bool);                                             \
 	if(*_old_flag < __LINE__ && !*_has_to_quit){                    \
-	    if(!LASSERT_data_.nbRunInCase){                              \
+	    if(!LASSERT_data_.nbRunInCase){                             \
                 if(!res && LASSERT_parameters_.output == LASSERT_xml_output){ \
-                    if(LASSERT_data_.testCaseOpened){                    \
-                        LASSERT_XML_PRINT_("\t\t</testcase>");           \
+                    if(LASSERT_data_.testCaseOpened){                   \
+                        LASSERT_XML_PRINT_("\t\t</testcase>");          \
                     }else                                               \
-                        LASSERT_data_.testCaseOpened = 1;                \
-                    LASSERT_XML_PRINT_("\t\t<testcase>");                \
+                        LASSERT_data_.testCaseOpened = 1;               \
+                    LASSERT_XML_PRINT_("\t\t<testcase>");               \
                 }                                                       \
             }                                                           \
 	    if(!res){                                                   \
 		if(LASSERT_data_.nbRunInCase){				\
-		    *_has_to_quit = __LINE__;				\
+		    if(blocking) *_has_to_quit = __LINE__;              \
 		    LASSERT_REQUIRE_CASE_failed_(#bool, __LINE__, LASSERT_name_of_test_); \
 		    if(_tab_lassert){					\
 			LASSERT_PRINT_("\t%sFailed on this sequence :\n\t\t",LASSERT_RED_); \
 			for(long _id = 0; _id < _size_of_tab; ++_id)    \
-			    LASSERT_PRINT_("%d ",_tab_lassert[_id]);     \
-                        printf("%s\n", LASSERT_NORMAL_);                 \
+			    LASSERT_PRINT_("%d ",_tab_lassert[_id]);    \
+                        printf("%s\n", LASSERT_NORMAL_);                \
 		    }							\
-		    LASSERT_data_.nbRunInCase = 0;                       \
+		    if(blocking) LASSERT_data_.nbRunInCase = 0;         \
 		}else							\
 		    LASSERT_REQUIRE_failed_(#bool, __LINE__);           \
-                *_id_flag = 1;                                          \
-                if(LASSERT_parameters_.output == LASSERT_xml_output){    \
-                    LASSERT_XML_PRINT_("\t\t\t<failure>");               \
+                if(blocking) *_id_flag = 1;                             \
+                if(LASSERT_parameters_.output == LASSERT_xml_output){   \
+                    LASSERT_XML_PRINT_("\t\t\t<failure>");              \
                     LASSERT_XML_PRINT_("Error on line %d, for expression " #bool, __LINE__); \
-                    LASSERT_XML_PRINT_("" __VA_ARGS__);                  \
-                    LASSERT_XML_PRINT_("\t\t\t</failure>");              \
+                    LASSERT_XML_PRINT_("" __VA_ARGS__);                 \
+                    LASSERT_XML_PRINT_("\t\t\t</failure>");             \
                 }else{                                                  \
                     LASSERT_LOG_MESSAGE_(#bool, ##__VA_ARGS__);		\
                 }                                                       \
-		return;							\
-	    }else if(!LASSERT_data_.nbRunInCase){                        \
-                ++LASSERT_data_.succeededCases;                          \
+		if(blocking) return;                                    \
+	    }else if(!LASSERT_data_.nbRunInCase){                       \
+                ++LASSERT_data_.succeededCases;                         \
             }else                                                       \
-                ++LASSERT_data_.succeededTestsInCurrentCase;             \
+                ++LASSERT_data_.succeededTestsInCurrentCase;            \
 	}								\
     }
 
+#define REQUIRE(bool,...) LASSERT_INTERNAL_REQUIRE_(1, bool, ##__VA_ARGS__)
+
+#define CHECK(bool, ...) LASSERT_INTERNAL_REQUIRE_(0, bool, ##__VA_ARGS__)
+
 #define REQUIRE_NOT_NULL(ptr,...){					\
 	if(*_old_flag < __LINE__ && !*_has_to_quit){                    \
-	    if(!LASSERT_data_.nbRunInCase){                              \
+	    if(!LASSERT_data_.nbRunInCase){                             \
                 if(!ptr && LASSERT_parameters_.output == LASSERT_xml_output){ \
-                    if(LASSERT_data_.testCaseOpened){                    \
-                        LASSERT_XML_PRINT_("\t\t</testcase>");           \
+                    if(LASSERT_data_.testCaseOpened){                   \
+                        LASSERT_XML_PRINT_("\t\t</testcase>");          \
                     }else                                               \
-                        LASSERT_data_.testCaseOpened = 1;                \
-                    LASSERT_XML_PRINT_("\t\t<testcase>");                \
+                        LASSERT_data_.testCaseOpened = 1;               \
+                    LASSERT_XML_PRINT_("\t\t<testcase>");               \
                 }                                                       \
             }                                                           \
 	    if(!(ptr)){							\
 		if(LASSERT_data_.nbRunInCase){				\
 		    *_has_to_quit = __LINE__;				\
 		    LASSERT_REQUIRE_CASE_not_null_failed_(#ptr, __LINE__, LASSERT_name_of_test_); \
-		    LASSERT_data_.nbRunInCase = 0;                       \
+		    LASSERT_data_.nbRunInCase = 0;                      \
 		    *_id_flag = 2;					\
 		}else							\
 		    LASSERT_REQUIRE_not_null_failed_(#ptr, __LINE__);   \
-                if(LASSERT_parameters_.output == LASSERT_xml_output){    \
-                    LASSERT_XML_PRINT_("\t\t\t<failure>");               \
+                if(LASSERT_parameters_.output == LASSERT_xml_output){   \
+                    LASSERT_XML_PRINT_("\t\t\t<failure>");              \
                     LASSERT_XML_PRINT_("Error on line %d, for expression " #ptr, __LINE__); \
-                    LASSERT_XML_PRINT_("" __VA_ARGS__);                  \
-                    LASSERT_XML_PRINT_("\t\t\t</failure>");              \
+                    LASSERT_XML_PRINT_("" __VA_ARGS__);                 \
+                    LASSERT_XML_PRINT_("\t\t\t</failure>");             \
                 }else{                                                  \
                     LASSERT_LOG_MESSAGE_(#ptr, ##__VA_ARGS__);		\
                 }                                                       \
 		return;							\
-	    }else if(!LASSERT_data_.nbRunInCase)                         \
-                ++LASSERT_data_.succeededCases;                          \
+	    }else if(!LASSERT_data_.nbRunInCase)                        \
+                ++LASSERT_data_.succeededCases;                         \
             else                                                        \
-                ++LASSERT_data_.succeededTestsInCurrentCase;             \
+                ++LASSERT_data_.succeededTestsInCurrentCase;            \
 	}								\
     }
 
-#define EQ_EPS(VAL1,VAL2, EPS,...)                                      \
-    if((VAL2) - (EPS) > (VAL1) || (VAL1) - (EPS) > (VAL2)){             \
-        REQUIRE((VAL1) == (VAL2),__VA_ARGS__);                          \
-    }else{								\
-	REQUIRE(1);							\
+#define EQ_EPS(VAL1,VAL2, EPS,...)                              \
+    if((VAL2) - (EPS) > (VAL1) || (VAL1) - (EPS) > (VAL2)){     \
+        REQUIRE((VAL1) == (VAL2),__VA_ARGS__);                  \
+    }else{                                                      \
+	REQUIRE(1);                                             \
     }
 
 #define EQ(VAL1,VAL2,...) EQ_EPS(VAL1, VAL2, LASSERT_data_.epsilon, ##__VA_ARGS__)
@@ -711,14 +715,14 @@ void LAssert_alloc(int disable){
 #  define PERFORMANCE(timeout)                                          \
     if(*_old_flag < __LINE__){						\
         _size_of_tab = fork();                                          \
-        LASSERT_data_.perfoLine = __LINE__;                              \
+        LASSERT_data_.perfoLine = __LINE__;                             \
     }else{                                                              \
         _size_of_tab = -2;                                              \
     }                                                                   \
     if(_size_of_tab == -1){                                             \
         printf("%s--- PERFORMANCE COULD NOT BE RUN (fork failure)\n"    \
                "\tError message: %s%s\n", LASSERT_RED_, strerror(errno), \
-               LASSERT_NORMAL_);                                         \
+               LASSERT_NORMAL_);                                        \
     }else if(_size_of_tab > 0){                                         \
         sleep(timeout);                                                 \
         int i = kill(_size_of_tab, SIGTERM);                            \
@@ -726,22 +730,22 @@ void LAssert_alloc(int disable){
             waitpid(_size_of_tab, &i, 0);                               \
             if(WIFEXITED(i)){                                           \
                 if(WEXITSTATUS(i)){                                     \
-                    if(LASSERT_data_.nbRunInCase){                       \
+                    if(LASSERT_data_.nbRunInCase){                      \
                         LASSERT_REQUIRE_CASE_failed_("timeout reached in PERFORMANCE block", \
                                                      __LINE__, LASSERT_name_of_test_); \
                     }else{                                              \
                         LASSERT_REQUIRE_failed_("timeout reached in PERFORMANCE block", __LINE__); \
                     }                                                   \
-                }else if(!LASSERT_data_.nbRunInCase)                     \
-                    ++LASSERT_data_.succeededCases;                      \
+                }else if(!LASSERT_data_.nbRunInCase)                    \
+                    ++LASSERT_data_.succeededCases;                     \
             }else{                                                      \
                 printf("%s--- PERFORMANCE FAILED TO GET OUTPUT%s\n",    \
-                       LASSERT_YELLOW_, LASSERT_NORMAL_);                 \
+                       LASSERT_YELLOW_, LASSERT_NORMAL_);               \
             }                                                           \
         }else{                                                          \
             printf("%s--- PERFORMANCE COULD NOT BE KILLED ON TIMEOUT\n" \
                    "\tError message: %s%s\n", LASSERT_RED_, strerror(errno), \
-                   LASSERT_NORMAL_);                                     \
+                   LASSERT_NORMAL_);                                    \
         }                                                               \
     }else if(_size_of_tab == 0 && ((LASSERT_data_.inPerfoBlock = 1, signal(SIGTERM, LASSERT_signal_capture_)) || 1))
 
@@ -758,11 +762,11 @@ int main(){
 }
 #  ifdef LASSERT_WINDOWS
 #    ifdef __cplusplus
-#      define LASSERT_AUTOCALL_HANDLER_(fname) ;                         \
+#      define LASSERT_AUTOCALL_HANDLER_(fname) ;                        \
     struct fname##_t_ { fname##_t_(void) { fname(); } }; static fname##_t_ fname##_;
 #    else
 #      pragma section(".CRT$XCU", read)
-#      define LASSERT_AUTOCALL_SUB_HANDLER_(fname, p) ;                  \
+#      define LASSERT_AUTOCALL_SUB_HANDLER_(fname, p) ;                 \
     __declspec(allocate(".CRT$XCU")) void (*fname##_)(void) = fname;    \
     __pragma(comment(linker, "/include:" p #fname "_"))
 #      ifdef _WIN64
@@ -784,81 +788,81 @@ int main(){
 #define TEST_SECTION(name)						\
     void _test_##name##_lassert( char *,int *, int, int*, int*, int *); \
     static int _call_test_##name##_lassert(void)                        \
-	LASSERT_AUTOCALL_HANDLER_(_call_test_##name##_lassert)           \
+	LASSERT_AUTOCALL_HANDLER_(_call_test_##name##_lassert)          \
         static int _call_test_##name##_lassert(void){                   \
 	char s[512] = {0};						\
 	LASSERT_TIME_TYPE_ start = LASSERT_TIME_NULL_, end = LASSERT_TIME_NULL_; \
 	int id = -1, i = 1, old = 0;					\
         int failed, succeeded;                                          \
         double result;                                                  \
-        LASSERT_data_.testCaseOpened = 0;                                \
+        LASSERT_data_.testCaseOpened = 0;                               \
                                                                         \
 	LASSERT_PRINT_("%s------------------------------------------------------------\n" \
-                      "BEGIN OF SECTION %s %s\n",LASSERT_BLUE_, #name, LASSERT_NORMAL_); \
+                       "BEGIN OF SECTION %s %s\n",LASSERT_BLUE_, #name, LASSERT_NORMAL_); \
                                                                         \
-	LASSERT_data_.succeededCases = 0;                                \
+	LASSERT_data_.succeededCases = 0;                               \
 	LASSERT_data_.notNullFailedCases = 0;				\
-        LASSERT_data_.failedCases = 0;                                   \
+        LASSERT_data_.failedCases = 0;                                  \
                                                                         \
-        if(LASSERT_parameters_.output == LASSERT_xml_output)             \
-            LASSERT_XML_PRINT_("\t<testsuite name=" #name ">");          \
-	if(LASSERT_parameters_.timer == LASSERT_section_time)            \
+        if(LASSERT_parameters_.output == LASSERT_xml_output)            \
+            LASSERT_XML_PRINT_("\t<testsuite name=" #name ">");         \
+	if(LASSERT_parameters_.timer == LASSERT_section_time)           \
 	    start = LASSERT_time_used_();                               \
 	while(i){							\
 	    i = 0;							\
 	    _test_##name##_lassert(s,&id,0,0,&i, &old);                 \
 	    old = i;							\
 	}								\
-	if(LASSERT_parameters_.timer == LASSERT_section_time)            \
+	if(LASSERT_parameters_.timer == LASSERT_section_time)           \
 	    end = LASSERT_time_used_();                                 \
-        if(LASSERT_parameters_.output == LASSERT_xml_output){            \
-            if(LASSERT_data_.testCaseOpened)                             \
-                LASSERT_XML_PRINT_("\t\t</testcase>");                   \
-            LASSERT_XML_PRINT_("\t</testsuite>");                        \
+        if(LASSERT_parameters_.output == LASSERT_xml_output){           \
+            if(LASSERT_data_.testCaseOpened)                            \
+                LASSERT_XML_PRINT_("\t\t</testcase>");                  \
+            LASSERT_XML_PRINT_("\t</testsuite>");                       \
         }                                                               \
                                                                         \
-        if(LASSERT_parameters_.output == LASSERT_small_output){          \
+        if(LASSERT_parameters_.output == LASSERT_small_output){         \
             failed = LASSERT_data_.notNullFailedCases + LASSERT_data_.failedCases; \
-            succeeded = LASSERT_data_.succeededCases;                    \
+            succeeded = LASSERT_data_.succeededCases;                   \
             if(failed + succeeded){                                     \
                 result = (double)succeeded / ((double)failed + succeeded) * 100; \
                 printf("%sPercentage of test cases succeeded in section " \
                        #name ": %s%f%%%s\n\n\n",                        \
                        LASSERT_BLUE_, LASSERT_get_color_result_(result), \
-                       result, LASSERT_NORMAL_);                         \
+                       result, LASSERT_NORMAL_);                        \
             }else{                                                      \
                 printf("%sSection " #name " empty%s\n\n\n",             \
-                       LASSERT_BLUE_, LASSERT_NORMAL_);                   \
+                       LASSERT_BLUE_, LASSERT_NORMAL_);                 \
             }                                                           \
         }                                                               \
                                                                         \
         LASSERT_PRINT_("\n%sEND OF SECTION %s %s\n", LASSERT_BLUE_, #name, LASSERT_NORMAL_); \
-        if (LASSERT_parameters_.timer == LASSERT_section_time)           \
-            LASSERT_PRINT_("%sExecuting section took : %fs%s\n",         \
-                          LASSERT_CYAN_, LASSERT_TIME_INTERVAL_(start, end), LASSERT_NORMAL_); \
-        if(LASSERT_data_.failedCases)                                    \
-            LASSERT_PRINT_("%sFailed : %llu test_case(s)%s\n",           \
-                          LASSERT_RED_,LASSERT_data_.failedCases,LASSERT_NORMAL_); \
-        if(LASSERT_data_.succeededCases)                                 \
-            LASSERT_PRINT_("%sSucceeded : %llu test_case(s)%s\n",        \
-                          LASSERT_GREEN_,LASSERT_data_.succeededCases,LASSERT_NORMAL_); \
-        if(LASSERT_data_.notNullFailedCases)                             \
+        if (LASSERT_parameters_.timer == LASSERT_section_time)          \
+            LASSERT_PRINT_("%sExecuting section took : %fs%s\n",        \
+                           LASSERT_CYAN_, LASSERT_TIME_INTERVAL_(start, end), LASSERT_NORMAL_); \
+        if(LASSERT_data_.failedCases)                                   \
+            LASSERT_PRINT_("%sFailed : %llu test_case(s)%s\n",          \
+                           LASSERT_RED_,LASSERT_data_.failedCases,LASSERT_NORMAL_); \
+        if(LASSERT_data_.succeededCases)                                \
+            LASSERT_PRINT_("%sSucceeded : %llu test_case(s)%s\n",       \
+                           LASSERT_GREEN_,LASSERT_data_.succeededCases,LASSERT_NORMAL_); \
+        if(LASSERT_data_.notNullFailedCases)                            \
             LASSERT_PRINT_("%sStopped due to NULL pointer : %llu test_case(s)%s\n", \
-                          LASSERT_YELLOW_,LASSERT_data_.notNullFailedCases,LASSERT_NORMAL_); \
-        if(!LASSERT_data_.succeededCases && !LASSERT_data_.failedCases)   \
+                           LASSERT_YELLOW_,LASSERT_data_.notNullFailedCases,LASSERT_NORMAL_); \
+        if(!LASSERT_data_.succeededCases && !LASSERT_data_.failedCases) \
             LASSERT_PRINT_("%sEMPTY TEST SECTION%s\n",LASSERT_CYAN_, LASSERT_NORMAL_); \
         LASSERT_PRINT_("%s------------------------------------------------------------%s\n\n", \
-                      LASSERT_BLUE_,LASSERT_NORMAL_);                     \
+                       LASSERT_BLUE_,LASSERT_NORMAL_);                  \
                                                                         \
         id = 0;                                                         \
-        if(LASSERT_data_.failedCases)                                    \
+        if(LASSERT_data_.failedCases)                                   \
             id = 1;                                                     \
-        else if(LASSERT_data_.notNullFailedCases)                        \
+        else if(LASSERT_data_.notNullFailedCases)                       \
             id = 2;                                                     \
         if(id)                                                          \
-            ++LASSERT_data_.failed;                                      \
+            ++LASSERT_data_.failed;                                     \
         else                                                            \
-            ++LASSERT_data_.passed;                                      \
+            ++LASSERT_data_.passed;                                     \
                                                                         \
         return id;                                                      \
     }									\
@@ -869,11 +873,11 @@ int main(){
 
 #ifndef LASSERT_MANUAL_MAIN
 #  ifdef LASSERT_UNIX
-void LASSERT_PARAMETERS_INIT(int argc, char** argv) __attribute__((constructor));
+    void LASSERT_PARAMETERS_INIT(int argc, char** argv) __attribute__((constructor));
 #  else
 void LASSERT_PARAMETERS_INIT(int argc, char** argv);
 static void LASSERT_PARAMETERS_SUB_INIT(void) LASSERT_AUTOCALL_HANDLER_(LASSERT_PARAMETERS_SUB_INIT)
-static void LASSERT_PARAMETERS_SUB_INIT(void) {
+    static void LASSERT_PARAMETERS_SUB_INIT(void) {
     int argc;
     LPWSTR * tmpArgv;
     char ** argv = NULL;

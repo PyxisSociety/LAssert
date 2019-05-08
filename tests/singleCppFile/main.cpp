@@ -1,10 +1,22 @@
 #define LASSERT_SECTION_TIME
-#include "../LAssert.h"
+#include "../../LAssert.h"
 
 TEST_SECTION(noTestCase_noFailure){
     REQUIRE(1);
     REQUIRE(1);
     REQUIRE(1);
+}
+
+TEST_SECTION(checkTests){
+    CHECK(0);
+    puts("Should be printed (outside case)");
+
+    TEST_CASE(inCase){
+        CHECK(0);
+        puts("Should be printed (inside case)");
+    }
+
+    CHECK(1, "Should not be printed");
 }
 
 TEST_SECTION(testCasesMixedUp){
