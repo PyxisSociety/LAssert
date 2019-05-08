@@ -1,4 +1,6 @@
 # LAssert
+
+[![pipeline status](https://gitlab.com/BaptistePR/LAssert/badges/master/pipeline.svg)](https://gitlab.com/BaptistePR/LAssert/commits/master)
 Unary test library in C for Linux
 
 ## Notes
