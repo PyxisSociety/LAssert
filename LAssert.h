@@ -82,56 +82,66 @@
 	LASSERT_log_message_(ptr, "" __VA_ARGS__);                      \
 	puts(LASSERT_NORMAL_);                                          \
     }
+#ifdef LASSERT_MAIN
+#  define LASSERT_EXTERN_
+#else
+#  define LASSERT_EXTERN_ extern
+#endif
 
 
 
 /*-------------------------------------------
  * Global datas
  */
-enum LASSERT_OUTPUT_OPTION{
+typedef enum{
     LASSERT_normal_output,
     LASSERT_small_output,
     LASSERT_minimized_output,
     LASSERT_xml_output
-};
-enum LASSERT_COLOR_OPTION{
+}LASSERT_OUTPUT_OPTION_;
+typedef enum{
     LASSERT_color,
     LASSERT_no_color
-};
-enum LASSERT_SECTION_TIME_OPTION{
+}LASSERT_COLOR_OPTION_;
+typedef enum{
     LASSERT_no_section_time,
     LASSERT_section_time
-};
+}LASSERT_SECTION_TIME_OPTION_;
     
-struct{
-    enum LASSERT_OUTPUT_OPTION output;
-    enum LASSERT_COLOR_OPTION color;
-    enum LASSERT_SECTION_TIME_OPTION timer;
-} LASSERT_parameters_ = {
-#ifdef LASSERT_MINIMIZED_OUTPUT
+typedef struct{
+    LASSERT_OUTPUT_OPTION_ output;
+    LASSERT_COLOR_OPTION_ color;
+    LASSERT_SECTION_TIME_OPTION_ timer;
+} LASSERT_PARAMETERS_;
+LASSERT_EXTERN_ LASSERT_PARAMETERS_ LASSERT_parameters_
+#ifdef LASSERT_MAIN
+= {
+# ifdef LASSERT_MINIMIZED_OUTPUT
     LASSERT_minimized_output,
-#elif defined(LASSERT_SMALL_OUTPUT)
+# elif defined(LASSERT_SMALL_OUTPUT)
     LASSERT_small_output,
-#elif defined(LASSERT_XML_OUTPUT)
+# elif defined(LASSERT_XML_OUTPUT)
     LASSERT_xml_output,
-#else
+# else
     LASSERT_normal_output,
-#endif
+# endif
 
-#ifdef LASSERT_NO_COLOR
+# ifdef LASSERT_NO_COLOR
     LASSERT_no_color,
-#else
+# else
     LASSERT_color,
-#endif
+# endif
 
-#ifdef LASSERT_SECTION_TIME
+# ifdef LASSERT_SECTION_TIME
     LASSERT_section_time
-#else
+# else
     LASSERT_no_section_time
+# endif
+}
 #endif
-};
+;
 
-struct{
+typedef struct{
     char tmpFileNames[2][sizeof(LASSERT_TMP_NAME_)];
 #ifdef LASSERT_WINDOWS
     FILE * fdTmpFile[2];
@@ -152,7 +162,10 @@ struct{
     unsigned long long failedCases;
     unsigned long long succeededCases;
     unsigned long long notNullFailedCases;
-} LASSERT_data_ = {
+} LASSERT_DATA_;
+LASSERT_EXTERN_ LASSERT_DATA_ LASSERT_data_
+#ifdef LASSERT_MAIN
+= {
     {"", ""}, // tmpFileNames
     {0, 0}, // fdTmpFile
     LASSERT_EPSILON, // epsilon
@@ -169,7 +182,9 @@ struct{
     0, // failedCases
     0, // succeededCases
     0 // notNullFailedCases
-};
+}
+#endif
+;
 /*-------------------------------------------*/
 
 
@@ -181,6 +196,30 @@ struct{
     if(LASSERT_parameters_.output == LASSERT_normal_output)     \
         printf(__VA_ARGS__)
 
+LASSERT_EXTERN_ char * LASSERT_get_color_(int i);
+LASSERT_EXTERN_ void LASSERT_init_rand_(int force);
+LASSERT_EXTERN_ void LASSERT_REQUIRE_CASE_failed_(const char * statement, int line, const char * name_of_test);
+LASSERT_EXTERN_ void LASSERT_REQUIRE_CASE_not_null_failed_(const char * ptr, int line, const char * name_of_test);
+LASSERT_EXTERN_ void LASSERT_REQUIRE_failed_(const char * statement, int line);
+LASSERT_EXTERN_ void LASSERT_REQUIRE_not_null_failed_(const char * statement, int line);
+LASSERT_EXTERN_ void LASSERT_generate_tab_(const char * name_of_case,int * _id_flag,int * begin,int * end, unsigned size, const char * attributes, ... );
+LASSERT_EXTERN_ void LASSERT_next_rand_tab_(int * tab, int * begin, int * end, unsigned size);
+LASSERT_EXTERN_ void LASSERT_generate_range_(const char * name_of_case,int * _id_flag,int * tab,int * begin, int * end,int * step, unsigned size, const char * attributes, ...);
+LASSERT_EXTERN_ int LASSERT_next_range_(int * tab, int * begin, int * end, int * step, size_t size);
+LASSERT_EXTERN_ LASSERT_TIME_TYPE_ LASSERT_time_used_(void);
+LASSERT_EXTERN_ void LASSERT_log_message_(const char * useless, ...);
+LASSERT_EXTERN_ int LASSERT_va_arg_not_empty_(const char * va_arg_str);
+LASSERT_EXTERN_ char * LASSERT_get_color_result_(double result);
+LASSERT_EXTERN_ void LASSERT_deactivate_output_(void);
+LASSERT_EXTERN_ void LASSERT_activate_output_(void);
+LASSERT_EXTERN_ void LASSERT_XML_PRINT_(const char * s, ...);
+LASSERT_EXTERN_ void LASSERT_PRINT_OUTPUT_(void);
+LASSERT_EXTERN_ void LASSERT_set_epsilon(double epsilon);
+LASSERT_EXTERN_ void LASSERT_init_seed(unsigned seed);
+LASSERT_EXTERN_ void LASSERT_set_rand_function(int (*random)(void));
+LASSERT_EXTERN_ void LASSERT_signal_capture_(int sig);
+
+#ifdef LASSERT_MAIN
 char * LASSERT_get_color_(int i){
     static char s[7][10] = {"\x1B[0m","\x1B[31m","\x1B[32m","\x1B[33m","\x1B[34m","\x1B[35m","\x1B[36m"};
     static int is_init = 0;
@@ -378,15 +417,15 @@ char * LASSERT_get_color_result_(double result){
 void LASSERT_deactivate_output_(void){
     int i;
     size_t size = sizeof(LASSERT_TMP_NAME_);
-#ifdef LASSERT_WINDOWS
+# ifdef LASSERT_WINDOWS
     static int num = 0;
     FILE * stdCopy[2] = {NULL, NULL};
-#else
+# else
     int stdCopy[2];
-#endif
+# endif
     
     for(i = 0; i < 2; ++i){
-#ifdef LASSERT_WINDOWS
+# ifdef LASSERT_WINDOWS
         for(int j = 0; j < sizeof(LASSERT_TMP_NAME_); ++j){
             LASSERT_data_.tmpFileNames[i][j] = 0;
         }
@@ -397,11 +436,11 @@ void LASSERT_deactivate_output_(void){
         LASSERT_data_.fdTmpFile[i] = NULL;
         fopen_s(&(LASSERT_data_.fdTmpFile[i]), LASSERT_data_.tmpFileNames[i], "w");
         if(!LASSERT_data_.fdTmpFile[i])
-#else
+# else
             LASSERT_STRCPY_(LASSERT_data_.tmpFileNames[i], size - 1, LASSERT_TMP_NAME_);
         LASSERT_data_.fdTmpFile[i] = mkstemp(LASSERT_data_.tmpFileNames[i]);
         if(LASSERT_data_.fdTmpFile[i] == -1)
-#endif
+# endif
             return;
     }
 
@@ -420,11 +459,11 @@ void LASSERT_deactivate_output_(void){
 void LASSERT_activate_output_(void){
     int i;
     for(i = 0; i < 2; ++i){
-#ifdef LASSERT_WINDOWS
+# ifdef LASSERT_WINDOWS
         if(!LASSERT_data_.fdTmpFile[i])
-#else
+# else
             if(LASSERT_data_.fdTmpFile[i] == -1)
-#endif
+# endif
                 return;
     }
     
@@ -491,6 +530,7 @@ void LASSERT_signal_capture_(int sig){
         exit(1);
     }
 }
+#endif
 
 
 
@@ -548,6 +588,8 @@ void LASSERT_signal_capture_(int sig){
  * @brief Lock/unlock allocation functions. Locked functions always return NULL
  * @param disable: flag to tell whether or not allocation functions should be locked
  */
+LASSERT_EXTERN_ void LAssert_alloc(int disable);
+#  ifdef LASSERT_MAIN
 void LAssert_alloc(int disable){
     LASSERT_LIB_TYPE lib = dlopen(LASSERT_LOCK_LIBRARY, RTLD_NOW);
     DECLARE_RESOURCE(lock);
@@ -559,6 +601,7 @@ void LAssert_alloc(int disable){
         print_error("--- Failed to open LAssert lock library (" LASSERT_LOCK_LIBRARY ")");
     }
 }
+#  endif
 #  undef print_error
 #  undef DECLARE_RESOURCE
 #  undef HANDLE_RESOURCE
@@ -780,10 +823,12 @@ void LAssert_alloc(int disable){
 
     
 #ifndef LASSERT_MANUAL_MAIN
+#  ifdef LASSERT_MAIN
 int main(){
     LASSERT_PRINT_OUTPUT_();
     return LASSERT_data_.failed;
 }
+#  endif
 #  ifdef LASSERT_WINDOWS
 #    ifdef __cplusplus
 #      define LASSERT_AUTOCALL_HANDLER_(fname) ;                        \
@@ -903,9 +948,10 @@ int main(){
 
 #ifndef LASSERT_MANUAL_MAIN
 #  ifdef LASSERT_UNIX
-    void LASSERT_PARAMETERS_INIT(int argc, char** argv) __attribute__((constructor));
+LASSERT_EXTERN_ void LASSERT_PARAMETERS_INIT(int argc, char** argv) __attribute__((constructor));
 #  else
-void LASSERT_PARAMETERS_INIT(int argc, char** argv);
+LASSERT_EXTERN_ void LASSERT_PARAMETERS_INIT(int argc, char** argv);
+#    ifdef LASSERT_MAIN
 static void LASSERT_PARAMETERS_SUB_INIT(void) LASSERT_AUTOCALL_HANDLER_(LASSERT_PARAMETERS_SUB_INIT)
     static void LASSERT_PARAMETERS_SUB_INIT(void) {
     int argc;
@@ -942,8 +988,12 @@ static void LASSERT_PARAMETERS_SUB_INIT(void) LASSERT_AUTOCALL_HANDLER_(LASSERT_
         free(argv);
     }
 }
+#    endif
 #  endif
+#else
+LASSERT_EXTERN_ void LASSERT_PARAMETERS_INIT(int argc, char ** argv);
 #endif
+#ifdef LASSERT_MAIN
 void LASSERT_PARAMETERS_INIT(int argc, char ** argv){
     int help = 0;
     int i = 1;
@@ -1013,8 +1063,8 @@ void LASSERT_PARAMETERS_INIT(int argc, char ** argv){
         }
     }
 
-#define LASSERT_STRINGIFY_IMPL(S) #S
-#define LASSERT_STRINGIFY(S) LASSERT_STRINGIFY_IMPL(S)
+#  define LASSERT_STRINGIFY_IMPL(S) #S
+#  define LASSERT_STRINGIFY(S) LASSERT_STRINGIFY_IMPL(S)
     if(help){
         puts("You can parametrize LASSERT to (de)activate some functionalities. All options starting with an n means to deactivate the same option without this letter.\n"
              "Here are all the available options:\n"
@@ -1031,8 +1081,8 @@ void LASSERT_PARAMETERS_INIT(int argc, char ** argv){
             );
         exit(1);
     }
-#undef LASSERT_STRINGIFY
-#undef LASSERT_STRINGIFY_IMPL
+#  undef LASSERT_STRINGIFY
+#  undef LASSERT_STRINGIFY_IMPL
 
     if(LASSERT_parameters_.output == LASSERT_xml_output){
         puts("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
@@ -1040,6 +1090,7 @@ void LASSERT_PARAMETERS_INIT(int argc, char ** argv){
         LASSERT_deactivate_output_();
     }
 }
+#endif
 
 #ifdef LASSERT_WINDOWS
 #  undef isatty
