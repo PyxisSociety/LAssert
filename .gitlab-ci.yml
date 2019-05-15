@@ -10,7 +10,7 @@ test_cc:
 
 test_clang:
   script:
-    - apt-get install -y "^clang-[0-9]+(\\.[0-9]+)*$"
+    - apt-get install -y "^clang(-[0-9]+(\\.[0-9]+)*)?$"
     - ./run_all.sh clang clang++
   stage: test
 
