@@ -54,7 +54,8 @@
 #  define LASSERT_TIME_(start) LASSERT_TIME_TYPE_ start = GetTickCount64()
 #  define LASSERT_TIME_INTERVAL_(start,end)                             \
     ((end >= start) ? (double)(end - start) : (double)((LASSERT_TIME_TYPE_)-1 - start + end)) / 1000
-#  define isatty(a) _isatty(a)
+#  define isatty(a) 0 
+//_isatty(a)
 #  define LASSERT_STRCPY_ strcpy_s
 #  define dup(a) _fdopen(_dup(_fileno(a)), "w")
 #  define dup2(a, b) _dup2(_fileno(a), _fileno(b))

@@ -15,21 +15,13 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\main.c">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
-    <ClCompile Include="..\sub.c">
+    <ClCompile Include="..\..\main.c">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\LAssert.h">
+    <ClInclude Include="..\..\..\..\LAssert.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\..\README.md">
-      <Filter>Fichiers de ressources</Filter>
-    </None>
   </ItemGroup>
 </Project>
