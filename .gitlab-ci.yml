@@ -1,19 +1,17 @@
 image: gcc
 
+before_script:
+  - make
+  - cd tests
+
 test_cc:
-  script:
-    - cd tests
-    - ./run_all.sh cc cc
+  script: ./run_all.sh cc cc
   stage: test
 
 test_clang:
-  script:
-    - cd tests
-    - ./run_all.sh clang clang++
+  script: ./run_all.sh clang clang++
   stage: test
 
 test_gcc:
-  script:
-    - cd tests
-    - ./run_all.sh gcc g++
+  script: ./run_all.sh gcc g++
   stage: test
