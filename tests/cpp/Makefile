@@ -13,7 +13,7 @@ CC?=g++
 
 
 all: clean
-	@cp ../singleCfile/main.c ./main.cpp
+	@cp ../c/main.c ./main.cpp
 	@make $(EXEC) --no-print-directory
 
 $(EXEC):main.o

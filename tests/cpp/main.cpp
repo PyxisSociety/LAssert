@@ -1,7 +1,7 @@
 #define LASSERT_SECTION_TIME
 #include "../../LAssert.h"
 
-TEST_SECTION(noTestCase_noFailure){
+TEST_SECTION("no test case, no failure"){
     REQUIRE(1);
     REQUIRE(1);
     REQUIRE(1);
@@ -11,9 +11,10 @@ TEST_SECTION(checkTests){
     CHECK(0);
     puts("Should be printed (outside case)");
 
-    TEST_CASE(inCase){
+    TEST_CASE("in case"){
         CHECK(0);
         puts("Should be printed (inside case)");
+        REQUIRE(1);
     }
 
     CHECK(1, "Should not be printed");
@@ -47,27 +48,40 @@ TEST_SECTION(testCasesMixedUp){
 TEST_SECTION(empty_section){
 }
 
+int myRand(void){
+    return 0;
+}
+
 TEST_SECTION(random_test){
     RAND_CASE(first_random,tab,3,3,1,10,10,100){
 	puts("BEEEEGIN");
 	for(unsigned i = 0;i < 3; ++i){
-	    printf("%d\n",tab[i]);
+#ifdef DEBUG
+            printf("%d\n", tab[i]);
+#endif
 	    REQUIRE(tab[i]);
 	}
 	putchar('\n');
     }
     
-    RAND_CASE(bad_parameters,tab2,5,5,1){
+    RAND_CASE("bad parameters",tab2,5,5,1){
     }
 
     RAND_CASE(fail_on_0, tab3, 4, 4, 0, 3){
+#ifdef DEBUG
 	for(unsigned i = 0; i < 4; ++i)
 	    REQUIRE(tab3[i]);
+#endif
+    }
+
+    LASSERT_set_rand_function(myRand);
+    RAND_CASE(selfDefineRandFunction, tab4, 1, 5, 0, 1000){
+        REQUIRE(!*tab4);
     }
 }
 
 TEST_SECTION(range_test){
-    RANGE_CASE(should_succeed,tab,3,1,3,1){
+    RANGE_CASE("should succeed",tab,3,1,3,1){
 	for(unsigned i = 0; i < 3; ++i)
 	    printf("%d ",tab[i]);
 	putchar('\n');
@@ -167,4 +181,3 @@ TEST_SECTION(time_test){
 	for(unsigned i = 0; i < 100; ++i)
 	    factorial(100000);
 }
-

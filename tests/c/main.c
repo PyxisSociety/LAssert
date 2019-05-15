@@ -56,7 +56,9 @@ TEST_SECTION(random_test){
     RAND_CASE(first_random,tab,3,3,1,10,10,100){
 	puts("BEEEEGIN");
 	for(unsigned i = 0;i < 3; ++i){
-	    printf("%d\n",tab[i]);
+#ifdef DEBUG
+            printf("%d\n", tab[i]);
+#endif
 	    REQUIRE(tab[i]);
 	}
 	putchar('\n');
@@ -66,8 +68,10 @@ TEST_SECTION(random_test){
     }
 
     RAND_CASE(fail_on_0, tab3, 4, 4, 0, 3){
+#ifdef DEBUG
 	for(unsigned i = 0; i < 4; ++i)
 	    REQUIRE(tab3[i]);
+#endif
     }
 
     LASSERT_set_rand_function(myRand);
