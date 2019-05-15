@@ -34,3 +34,15 @@ shallow_clone: true
 platform:
  - x86
  - x64
+ 
+ 
+
+#---------------------------------#
+#       tests configuration       #
+#---------------------------------#
+before_test:
+ - cd c:\projects\lassert\tests\c\classert\debug
+
+test_script:
+ - CLAssert.exe -nt > out.txt
+ - echo N | comp out.txt ..\..\..\win_ref.txt
