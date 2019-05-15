@@ -11,6 +11,7 @@ Some functionalities are not available on windows:
 * making allocation functions return always `NULL`
 * the `COPY` macro (works on windows if compiled in C++)
 * the `PERFORMANCE` macro
+* Having multiple files for one program
 
 ## How to use it
 
