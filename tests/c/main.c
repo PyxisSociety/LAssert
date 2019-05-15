@@ -125,6 +125,7 @@ TEST_SECTION(equal_test){
     EQ_EPS(.7, .6, .2);
 }
 
+#ifndef LASSERT_WINDOWS
 TEST_SECTION(perfo_test){
     TEST_CASE(inside_case_ok){
         PERFORMANCE(1){
@@ -157,7 +158,6 @@ TEST_SECTION(perfo_test){
     }
 }
 
-#ifndef LASSERT_WINDOWS
 TEST_SECTION(malloc_disable){
     LAssert_alloc(1);
     int * i = (int*)malloc(sizeof(*i));

@@ -382,7 +382,8 @@ LASSERT_TIME_TYPE_ LASSERT_time_used_(void){
         LASSERT_TIME_(start);
         return (LASSERT_TIME_TYPE_)start;
     }else{
-        return LASSERT_TIME_NULL_;
+		LASSERT_TIME_TYPE_ empty = LASSERT_TIME_NULL_;
+        return empty;
     }
 }
 void LASSERT_log_message_(const char * useless, ...){
