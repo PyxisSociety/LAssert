@@ -14,7 +14,7 @@ CC?=gcc
 
 all: clean $(EXEC)
 
-$(EXEC):main.o
+$(EXEC):main.o sub.o
 	$(CC) $^ -o $@ $(LDFLAGS)
 
 %.o:%.c

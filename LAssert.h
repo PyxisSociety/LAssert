@@ -857,7 +857,7 @@ int main(){
 #define TEST_SECTION(name) LASSERT_SUB_TEST_SECTION_(name, __COUNTER__)
 #define LASSERT_SUB_TEST_SECTION_(name, number) LASSERT_TEST_SECTION_(name, number)
 #define LASSERT_TEST_SECTION_(name, number)                             \
-    void _test_##number##_lassert( char *,int *, int, int*, int*, int *); \
+    static void _test_##number##_lassert( char *,int *, int, int*, int*, int *); \
     static int _call_test_##number##_lassert(void)                      \
 	LASSERT_AUTOCALL_HANDLER_(_call_test_##number##_lassert)        \
         static int _call_test_##number##_lassert(void){                 \
@@ -941,7 +941,7 @@ int main(){
                                                                         \
         return id;                                                      \
     }									\
-    void _test_##number##_lassert(char * LASSERT_name_of_test_, int * _id_flag, int _size_of_tab,int * _tab_lassert, int * _has_to_quit, int * _old_flag)
+    static void _test_##number##_lassert(char * LASSERT_name_of_test_, int * _id_flag, int _size_of_tab,int * _tab_lassert, int * _has_to_quit, int * _old_flag)
 
 
 

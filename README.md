@@ -48,6 +48,7 @@ __NOTES:__
 ### <a id="markdown-header-Simple-macros"></a>Simple macros
 The code below show all the simple macros you can use in LAssert :
 ```c
+#define LASSERT_MAIN
 #include "LAssert.h"
 
 #include <stdio.h>
@@ -99,6 +100,7 @@ int main(){
 #endif
 ```
 Here is what each macro means in case you did not guess :
+* **LASSERT_MAIN**: specify that the current file is the main file. You need one and only one file from all those compiled in the program to have this macro before `LAssert.h` inclusion.
 * **TEST_SECTION**: define a section of test which can contain test cases
 * **TEST_CASE**: define a test case
 * **REQUIRE**: end the test case or test section in which it was called on fail
@@ -116,6 +118,7 @@ _WARNING:_ On contrary to printf first argument, it has to be a string constant,
 ### <a id="markdown-header-Advanced-macros"></a>Advanced macros
 The code below show all the other macros you can use in LAssert :
 ```c
+#include LASSERT_MAIN
 #include "LAssert.h"
 
 TEST_SECTION(random_test){
@@ -223,6 +226,7 @@ __NOTES:__
 
 You can run an algorithm with a timeout (in seconds). If the timeout is reached before the algorithm ends, the test is considered as failing. You can do as follow:
 ```c
+#include LASSERT_MAIN
 #include "LAssert.h"
 
 TEST_SECTION(perfo_test){

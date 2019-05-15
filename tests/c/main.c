@@ -1,3 +1,4 @@
+#define LASSERT_MAIN
 #define LASSERT_SECTION_TIME
 #include "../../LAssert.h"
 

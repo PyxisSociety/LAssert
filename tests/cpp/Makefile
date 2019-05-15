@@ -14,9 +14,10 @@ CC?=g++
 
 all: clean
 	@cp ../c/main.c ./main.cpp
+	@cp ../c/sub.c ./sub.cpp
 	@make $(EXEC) --no-print-directory
 
-$(EXEC):main.o
+$(EXEC):main.o sub.o
 	$(CC) $^ -o $@ $(LDFLAGS)
 
 %.o:%.cpp
