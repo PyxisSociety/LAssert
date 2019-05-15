@@ -42,7 +42,7 @@ platform:
 #---------------------------------#
 before_test:
  - cd tests\c\classert
- - if exist debug (cd debug) else (cd x64)
+ - if exist debug (cd debug) else (cd x64\debug)
 
 test_script:
  - CLAssert.exe -nt > out.txt || set errorlevel=0
