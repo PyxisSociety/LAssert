@@ -44,5 +44,6 @@ before_test:
  - cd c:\projects\lassert\tests\c\classert\debug
 
 test_script:
- - CLAssert.exe -nt > out.txt
+ - CLAssert.exe -nt > out.txt || set errorlevel=0
+ - set errorlevel=
  - echo N | comp out.txt ..\..\..\win_ref.txt
