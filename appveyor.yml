@@ -1,0 +1,36 @@
+#---------------------------------#
+#      general configuration      #
+#---------------------------------#
+version: 1.0.{build}-{branch}
+
+# branches to build
+branches:
+  # whitelist
+  # only:
+  #   - master
+  # blacklist
+  except:
+    - gh-pages
+
+
+
+#---------------------------------#
+#    environment configuration    #
+#---------------------------------#
+# Build worker image (VM template)
+image: Visual Studio 2015
+
+# clone directory
+clone_folder: c:\projects\lassert
+
+# fetch repository as zip archive
+shallow_clone: true
+
+
+
+#---------------------------------#
+#       build configuration       #
+#---------------------------------#
+platform:
+ - x86
+ - x64
