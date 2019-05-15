@@ -1,5 +1,7 @@
 # LAssert
 
+[![unix tests](https://gitlab.com/BaptistePR/LAssert/badges/master/pipeline.svg)](https://gitlab.com/BaptistePR/LAssert/commits/master)
+
 Unary test library in C, greatly inspired by [Catch2](https://github.com/catchorg/Catch2).
 
 ## Notes
