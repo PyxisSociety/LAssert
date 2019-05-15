@@ -9,7 +9,9 @@ test_cc:
   stage: test
 
 test_clang:
-  script: ./run_all.sh clang clang++
+  script:
+    - sudo apt-get install "^clang-[0-9]+(\\.[0-9]+)*$"
+    - ./run_all.sh clang clang++
   stage: test
 
 test_gcc:
