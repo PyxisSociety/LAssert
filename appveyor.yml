@@ -54,4 +54,4 @@ test_script:
  - type c:\projects\lassert\tests\win_ref.txt
  - ps: compare-object (get-content out.txt) (get-content c:\projects\lassert\tests\win_ref.txt) | format-list | Out-File empty.txt
  - echo "" > ref.txt
- - comp ref.txt empty.txt
+ - echo N | comp ref.txt empty.txt
