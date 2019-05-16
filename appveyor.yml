@@ -52,4 +52,4 @@ test_script:
  - echo ++++++++++++++++++++++++++++++++++++++++
  - echo ++++++++++++++++++++++++++++++++++++++++
  - type c:\projects\lassert\tests\win_ref.txt
- - echo N | comp /a out.txt c:\projects\lassert\tests\win_ref.txt
+ - ps: compare-object (get-content out.txt) (get-content c:\projects\lassert\tests\win_ref.txt) | format-list
