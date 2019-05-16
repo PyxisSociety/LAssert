@@ -46,6 +46,10 @@ before_test:
 
 test_script:
  - CLAssert.exe -nt > out.txt || type out.txt
- - for %I in (c:\projects\lassert\tests\win_ref.txt) do @echo %~zI
- - for %I in (out.txt) do @echo %~zI
+ - echo ++++++++++++++++++++++++++++++++++++++++
+ - echo ++++++++++++++++++++++++++++++++++++++++
+ - echo ++++++++++++++++++++++++++++++++++++++++
+ - echo ++++++++++++++++++++++++++++++++++++++++
+ - echo ++++++++++++++++++++++++++++++++++++++++
+ - type c:\projects\lassert\tests\win_ref.txt
  - echo N | comp /a out.txt c:\projects\lassert\tests\win_ref.txt
