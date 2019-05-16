@@ -801,7 +801,7 @@ inside_case_ko test_case :
 	Failed statement case line 144 :
 		0 
 
-Failed statement outside a test case line 150 :
+Failed statement outside a test case line 151 :
 	timeout reached in PERFORMANCE block 
 
 END OF SECTION perfo_test 
