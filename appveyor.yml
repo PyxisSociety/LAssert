@@ -45,6 +45,5 @@ before_test:
  - if exist debug (cd debug) else (cd x64\debug)
 
 test_script:
- - CLAssert.exe -nt > out.txt || set errorlevel=0
- - set errorlevel=
+ - CLAssert.exe -nt > out.txt || type out.txt
  - echo N | comp out.txt c:\projects\lassert\tests\win_ref.txt
