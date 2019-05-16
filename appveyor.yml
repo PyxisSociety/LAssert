@@ -46,4 +46,4 @@ before_test:
 
 test_script:
  - CLAssert.exe -nt > out.txt || type out.txt
- - echo N | comp out.txt c:\projects\lassert\tests\win_ref.txt
+ - echo N | comp /a out.txt c:\projects\lassert\tests\win_ref.txt
