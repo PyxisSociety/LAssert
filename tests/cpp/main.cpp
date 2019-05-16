@@ -1,3 +1,4 @@
+#define LASSERT_MAIN
 #define LASSERT_SECTION_TIME
 #include "../../LAssert.h"
 
@@ -124,6 +125,7 @@ TEST_SECTION(equal_test){
     EQ_EPS(.7, .6, .2);
 }
 
+#ifndef LASSERT_WINDOWS
 TEST_SECTION(perfo_test){
     TEST_CASE(inside_case_ok){
         PERFORMANCE(1){
@@ -156,7 +158,6 @@ TEST_SECTION(perfo_test){
     }
 }
 
-#ifndef LASSERT_WINDOWS
 TEST_SECTION(malloc_disable){
     LAssert_alloc(1);
     int * i = (int*)malloc(sizeof(*i));
@@ -180,4 +181,42 @@ TEST_SECTION(time_test){
     for(unsigned i = 0; i < 100; ++i)
 	for(unsigned i = 0; i < 100; ++i)
 	    factorial(100000);
+}
+
+void event_begin_name(const char * name){
+    printf("begin %s\n", name);
+}
+void event_end_name(const char * name){
+    printf("end %s\n", name);
+}
+void event_failure(char isInCase, const char * name){
+    printf("Failure in %s --- is in case ? %d\n", name, isInCase);
+}
+TEST_SECTION("set event init"){
+    LASSERT_on_section_begin(event_begin_name);
+}
+TEST_SECTION("redefined event behavior"){
+    LASSERT_on_section_begin(NULL);
+    LASSERT_on_section_end(event_end_name);
+    LASSERT_on_case_begin(event_begin_name);
+    LASSERT_on_case_end(event_end_name);
+    LASSERT_on_assertion_failure(event_failure);
+
+    TEST_CASE("test case"){
+        REQUIRE(0);
+    }
+
+    RAND_CASE("rand case", tab1, 1, 1, 1, 10){
+    }
+
+    RANGE_CASE("range case", tab2, 1, 0, 1, 1){
+    }
+
+    REQUIRE(0);
+}
+TEST_SECTION("set event deinit"){
+    LASSERT_on_section_end(NULL);
+    LASSERT_on_case_begin(NULL);
+    LASSERT_on_case_end(NULL);
+    LASSERT_on_assertion_failure(NULL);
 }

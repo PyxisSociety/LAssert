@@ -824,6 +824,46 @@ EMPTY TEST SECTION
 ------------------------------------------------------------
 
 ------------------------------------------------------------
+BEGIN OF SECTION "set event init" 
+
+END OF SECTION "set event init" 
+EMPTY TEST SECTION
+------------------------------------------------------------
+
+------------------------------------------------------------
+BEGIN OF SECTION "redefined event behavior" 
+begin "redefined event behavior"
+begin "test case"
+Failure in "test case" --- is in case ? 1
+
+"test case" test_case :
+	0 test(s) passed
+	Failed statement case line 206 :
+		0 
+end "test case"
+begin "rand case"
+end "rand case"
+begin "range case"
+Failure in "redefined event behavior" --- is in case ? 0
+
+Failed statement outside a test case line 215 :
+	0 
+end "range case"
+end "redefined event behavior"
+
+END OF SECTION "redefined event behavior" 
+Failed : 2 test_case(s)
+Succeeded : 1 test_case(s)
+------------------------------------------------------------
+
+------------------------------------------------------------
+BEGIN OF SECTION "set event deinit" 
+
+END OF SECTION "set event deinit" 
+EMPTY TEST SECTION
+------------------------------------------------------------
+
+------------------------------------------------------------
 BEGIN OF SECTION pouloulou 
 2
 
