@@ -1,4 +1,4 @@
-------------------------------------------------------------
+rm------------------------------------------------------------
 BEGIN OF SECTION "no test case, no failure" 
 
 END OF SECTION "no test case, no failure" 
