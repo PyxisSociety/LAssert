@@ -378,13 +378,13 @@ After this line, "1" should be printed
 
 inside_case_ko test_case :
 	0 test(s) passed
-	Failed statement case line 137 :
+	Failed statement case line 138 :
 		timeout reached in PERFORMANCE block 
 1
 
 inside_case_ko test_case :
 	1 test(s) passed
-	Failed statement case line 143 :
+	Failed statement case line 144 :
 		0 
 ------------------------------------------------------------
 BEGIN OF SECTION "no test case, no failure" 
@@ -515,13 +515,13 @@ After this line, "1" should be printed
 
 inside_case_ko test_case :
 	0 test(s) passed
-	Failed statement case line 137 :
+	Failed statement case line 138 :
 		timeout reached in PERFORMANCE block 
 1
 
 inside_case_ko test_case :
 	1 test(s) passed
-	Failed statement case line 143 :
+	Failed statement case line 144 :
 		0 
 ------------------------------------------------------------
 BEGIN OF SECTION "no test case, no failure" 
@@ -652,16 +652,16 @@ After this line, "1" should be printed
 
 inside_case_ko test_case :
 	0 test(s) passed
-	Failed statement case line 137 :
+	Failed statement case line 138 :
 		timeout reached in PERFORMANCE block 
 1
 
 inside_case_ko test_case :
 	1 test(s) passed
-	Failed statement case line 143 :
+	Failed statement case line 144 :
 		0 
 
-Failed statement outside a test case line 150 :
+Failed statement outside a test case line 151 :
 	timeout reached in PERFORMANCE block 
 ------------------------------------------------------------
 BEGIN OF SECTION "no test case, no failure" 
