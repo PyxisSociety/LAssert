@@ -46,7 +46,6 @@ before_test:
 
 test_script:
  - CLAssert.exe -nt > out.txt || type out.txt
- - set REFFILE=c:\projects\lassert\tests\win_ref.txt
- - for %I in (%REFFILE%) do @echo %~zI
+ - for %I in (c:\projects\lassert\tests\win_ref.txt) do @echo %~zI
  - for %I in (out.txt) do @echo %~zI
- - echo N | comp /a out.txt %REFFILE%
+ - echo N | comp /a out.txt c:\projects\lassert\tests\win_ref.txt
