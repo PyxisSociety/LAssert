@@ -22,7 +22,7 @@
 #define LASSERT_MAGENTA_ LASSERT_get_color_(5)
 #define LASSERT_CYAN_ LASSERT_get_color_(6)
 
-#if defined(unix) || defined(__unix) || defined(__unix__) || defined(__APPLE__) || defined(__MACH__)
+#if defined(unix) || defined(__unix) || defined(__unix__) || defined(__APPLE__) || defined(__MACH__) || defined(__GNUC__)
 #  define LASSERT_UNIX
 #  define LASSERT_TMP_NAME_ "/tmp/LASSERT_XXXXXX"
 #  include <sys/types.h>
