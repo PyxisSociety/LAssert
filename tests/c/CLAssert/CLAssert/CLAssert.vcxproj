@@ -116,6 +116,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\main.c" />
+    <ClCompile Include="..\..\sub.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\LAssert.h" />
