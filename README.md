@@ -14,14 +14,19 @@ Some functionalities are not available on windows:
 * the `PERFORMANCE` macro
 * Having multiple files for one program
 
+
+
 ## How to use it
 
 Here is a small tutorial devided in few steps:
 * [Configuration of this tool](#markdown-header-Configuration) and some remarks
 * [Simple macros](#markdown-header-Simple-macros) you can use
 * [Advanced macros](#markdown-header-Advanced-macros) you can use
+* [Events](#markdown-header-events) that you can define
 * [Disabling allocation functions](#markdown-header-Disabling-allocation) to make them return `NULL` (not on Windows)
 * [Performance testing](#markdown-header-Performance) (not on Windows)
+
+
 
 ### <a id="markdown-header-Configuration"></a>Configuration and remarks
 Some functionalities can be (de)activated by macros only (that need to be put before including LAssert) such as:
@@ -48,6 +53,8 @@ __NOTES:__
 * In manual main mode, each call to `RUN_SECTION` returns 1 if the section failed due to an error, 2 if it failed due to a `NULL` pointer (call of `REQUIRE_NOT_NULL`) or 0 if all went well.
 * In manual main and minimized output mode, you need to call `LASSERT_PRINT_OUTPUT()` to show the result. If you call this function in another mode, it will simply do nothing so you should call it either way.
 * In XML output mode, all user call to write things in standard and error outputs are locked. Forcedly unlocking will make this option unusable. 
+
+
 
 ### <a id="markdown-header-Simple-macros"></a>Simple macros
 The code below show all the simple macros you can use in LAssert :
@@ -182,6 +189,25 @@ TEST_SECTION(copy_test){
 	REQUIRE(i);
     }
 }
+
+TEST_SECTION(logs){
+    INFO("COUCOU %s", "johnny");
+
+    CHECK(0);
+
+    TEST_CASE("warning case"){
+        CHECK(0);
+        WARNING("be careful");
+        REQUIRE(0);
+        INFO("should not be printed");
+    }
+
+    ERROR("oups");
+
+    CHECK(0);
+
+    REQUIRE(0);
+}
 ```
 Here is what each macro means in case you did not guess :
 * **RAND_CASE** : special test case which will be run with random numbers, its parameters are<br/>
@@ -197,8 +223,69 @@ Here is what each macro means in case you did not guess :
 * **COPY** : copy a variable of a section in a test case so that the modifications brought by the test case will only be effective in it (not available on `msvc` but available on `msvc++`)
 * **ONCE** : prevent a code inside a section but outside a test case to be called more than once<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This problem can occure when you mix up test cases and code not inside test cases
+* **INFO**, **WARNING** and **ERROR**: Add a message to be printed (as info, warning or error) each time a failure occure in the section / case. If those macros are called in a test case, they are effective only inside, else they are effective everywhere in the section. Two macros help configure this tool:
+  * **LASSERT_MAX_INFOS**: maximum number of times those macros can be called in a section (called in a test case count as called in the section in this case, for optimization purposes)
+  * **LASSERT_MAX_INFO_LENGTH**: maximum length of the message which can be put in those macros, once it has been formated.
 
-__NOTE:__ You can set the random function using `LASSERT_set_rand_function`. The function needs to have the following prototype `int (*) (void)`.
+__NOTES:__
+* You can set the random function using `LASSERT_set_rand_function`. The function needs to have the following prototype `int (*) (void)`.
+* **INFO**, **ERROR** and **WARNING** format the string on call, and not on assertion failure.
+
+
+
+### <a id="markdown-header-events"></a>Events
+
+You can use five functions to catch five events and do something accordingly using those functions:
+* `void LASSERT_on_section_begin(void (*)(const char * sectionName))`: call each time a section begin
+* `void LASSERT_on_section_end(void (*)(const char * sectionName))`: call each time a section ends
+* `void LASSERT_on_case_begin(void (*)(const char * caseName))`: call each time a case begin
+* `void LASSERT_on_case_end(void (*)(const char * caseName))`: call each time a section ends
+* `void LASSERT_on_assertion_failure((void (*)(char isInCase, const char * caseOrSectionName))` calls each time an assertion fails
+
+```c
+#define LASSERT_MAIN
+#include "../../LAssert.h"
+
+void event_begin_name(const char * name){
+    printf("begin %s\n", name);
+}
+void event_end_name(const char * name){
+    printf("end %s\n", name);
+}
+void event_failure(char isInCase, const char * name){
+    printf("Failure in %s --- is in case ? %d\n", name, isInCase);
+}
+TEST_SECTION("set event init"){
+    LASSERT_on_section_begin(event_begin_name);
+}
+TEST_SECTION("redefined event behavior"){
+    LASSERT_on_section_begin(NULL);
+    LASSERT_on_section_end(event_end_name);
+    LASSERT_on_case_begin(event_begin_name);
+    LASSERT_on_case_end(event_end_name);
+    LASSERT_on_assertion_failure(event_failure);
+
+    TEST_CASE("test case"){
+        REQUIRE(0);
+    }
+
+    RAND_CASE("rand case", tab1, 1, 1, 1, 10){
+    }
+
+    RANGE_CASE("range case", tab2, 1, 0, 1, 1){
+    }
+
+    REQUIRE(0);
+}
+TEST_SECTION("set event deinit"){
+    LASSERT_on_section_end(NULL);
+    LASSERT_on_case_begin(NULL);
+    LASSERT_on_case_end(NULL);
+    LASSERT_on_assertion_failure(NULL);
+}
+```
+
+
 
 ### <a id="markdown-header-Disabling-allocation"></a>Disabling allocation
 
@@ -225,6 +312,8 @@ TEST_SECTION(alloc_disabled){
 __NOTES:__
 * If `LASSERT_CUSTOM_ALLOC` is not defined, you do not need all this set up.
 * You can use your own dynamic library to override allocation functions by defining the macro __LASSERT_LOCK_LIBRARY__ with a constant string containing the name of your library.
+
+
 
 ### <a id="markdown-header-Performance"></a> Performance testing
 

@@ -10,8 +10,24 @@
 #include <errno.h>
 #include <signal.h>
 
+
+
+
 #ifndef LASSERT_LOCK_LIBRARY
 #  define LASSERT_LOCK_LIBRARY "libLAssert_alloc.so"
+#endif
+#define LASSERT_DEFAULT_EPSILON_ 1e-6
+#ifndef LASSERT_EPSILON
+#  define LASSERT_EPSILON LASSERT_DEFAULT_EPSILON_
+#endif
+#ifndef LASSERT_SEED_
+#  define LASSERT_SEED -1
+#endif
+#ifndef LASSERT_MAX_INFOS
+#  define LASSERT_MAX_INFOS 256
+#endif
+#ifndef LASSERT_MAX_INFO_LENGTH
+#  define LASSERT_MAX_INFO_LENGTH 4096
 #endif
 
 #define LASSERT_NORMAL_ LASSERT_get_color_(0)
@@ -41,6 +57,8 @@
     start = (long)_timecheck_lassert.tv_sec * 1000 + (long)_timecheck_lassert.tv_usec / 1000
 #  define LASSERT_TIME_INTERVAL_(start,end) (double)((end) - (start)) / 1000
 #  define LASSERT_STRCPY_(a, b, c) strncpy(a, c, b)
+#  define LASSERT_STRCAT_(a, b, c) strncat(a, c, b)
+#  define LASSERT_SPRINTF_(a, b, c, ...) snprintf(a, b, c, ##__VA_ARGS__)
 #  define COPY(type,var) type var = var
 #else
 #  define LASSERT_WINDOWS
@@ -57,6 +75,8 @@
 #  define isatty(a) 0 
 //_isatty(a)
 #  define LASSERT_STRCPY_ strcpy_s
+#  define LASSERT_STRCAT_ strcat_s
+#  define LASSERT_SPRINTF_ sprintf_s
 #  define dup(a) _fdopen(_dup(_fileno(a)), "w")
 #  define dup2(a, b) _dup2(_fileno(a), _fileno(b))
 #  define STDOUT_FILENO stdout
@@ -67,14 +87,6 @@
 #  else
 #    define COPY(type, var)
 #  endif
-#endif
-
-#define LASSERT_DEFAULT_EPSILON_ 1e-6
-#ifndef LASSERT_EPSILON
-#  define LASSERT_EPSILON LASSERT_DEFAULT_EPSILON_
-#endif
-#ifndef LASSERT_SEED
-#  define LASSERT_SEED -1
 #endif
 
 #define LASSERT_LOG_MESSAGE_(ptr, ...)					\
@@ -88,6 +100,13 @@
 #else
 #  define LASSERT_EXTERN_ extern
 #endif
+#define LASSERT_PRINT_LOGS_(old_line) {                                 \
+        unsigned long long i;                                           \
+        for(i = 0; i < LASSERT_logs_.nbMsgs; ++i){                      \
+            if(!LASSERT_logs_.msgs[i].inCase || (old_line) < LASSERT_logs_.msgs[i].line) \
+                LASSERT_PUTS_(LASSERT_logs_.msgs[i].msg);               \
+        }                                                               \
+    }
 
 
 
@@ -201,6 +220,21 @@ LASSERT_EXTERN_ LASSERT_EVENTS_ LASSERT_events_
 = {NULL, NULL, NULL, NULL, NULL}
 #endif
 ;
+
+typedef struct{
+    char msg[LASSERT_MAX_INFO_LENGTH + 20];
+    char inCase;
+    unsigned long long line;
+} LASSERT_LOG_INFO_;
+typedef struct{
+    LASSERT_LOG_INFO_ msgs[LASSERT_MAX_INFOS];
+    unsigned long long nbMsgs;
+}LASSERT_LOGS_;
+LASSERT_EXTERN_ LASSERT_LOGS_ LASSERT_logs_
+#if defined(LASSERT_MAIN) || defined(LASSERT_WINDOWS)
+= {{{0}}, 0}
+#endif
+;
 /*-------------------------------------------*/
 
 
@@ -211,13 +245,16 @@ LASSERT_EXTERN_ LASSERT_EVENTS_ LASSERT_events_
 #define LASSERT_PRINT_(...)                                     \
     if(LASSERT_parameters_.output == LASSERT_normal_output)     \
         printf(__VA_ARGS__)
+#define LASSERT_PUTS_(s)                                        \
+    if(LASSERT_parameters_.output == LASSERT_normal_output)     \
+        puts(s)
 
 LASSERT_EXTERN_ char * LASSERT_get_color_(int i);
 LASSERT_EXTERN_ void LASSERT_init_rand_(int force);
-LASSERT_EXTERN_ void LASSERT_REQUIRE_CASE_failed_(const char * statement, int line, const char * name_of_test);
-LASSERT_EXTERN_ void LASSERT_REQUIRE_CASE_not_null_failed_(const char * ptr, int line, const char * name_of_test);
-LASSERT_EXTERN_ void LASSERT_REQUIRE_failed_(const char * statement, int line);
-LASSERT_EXTERN_ void LASSERT_REQUIRE_not_null_failed_(const char * statement, int line);
+LASSERT_EXTERN_ void LASSERT_REQUIRE_CASE_failed_(const char * statement, int line, int old_line, const char * name_of_test);
+LASSERT_EXTERN_ void LASSERT_REQUIRE_CASE_not_null_failed_(const char * ptr, int line, int old_line, const char * name_of_test);
+LASSERT_EXTERN_ void LASSERT_REQUIRE_failed_(const char * statement, int line, int old_line);
+LASSERT_EXTERN_ void LASSERT_REQUIRE_not_null_failed_(const char * statement, int line, int old_line);
 LASSERT_EXTERN_ void LASSERT_generate_tab_(const char * name_of_case,int * _id_flag,int * begin,int * end, unsigned size, const char * attributes, ... );
 LASSERT_EXTERN_ void LASSERT_next_rand_tab_(int * tab, int * begin, int * end, unsigned size);
 LASSERT_EXTERN_ void LASSERT_generate_range_(const char * name_of_case,int * _id_flag,int * tab,int * begin, int * end,int * step, unsigned size, const char * attributes, ...);
@@ -266,8 +303,9 @@ void LASSERT_init_rand_(int force){
         }
     }
 }
-void LASSERT_REQUIRE_CASE_failed_(const char * statement, int line, const char * name_of_test){
+void LASSERT_REQUIRE_CASE_failed_(const char * statement, int line, int old_line, const char * name_of_test){
     LASSERT_PRINT_("\n%s%s test_case :%s\n",LASSERT_MAGENTA_,name_of_test,LASSERT_NORMAL_);
+    LASSERT_PRINT_LOGS_(old_line);
     LASSERT_PRINT_("\t%s%llu test(s) passed%s\n",LASSERT_GREEN_, LASSERT_data_.succeededTestsInCurrentCase,LASSERT_NORMAL_);
     if(statement){
 	LASSERT_PRINT_("\t%sFailed statement case line %d :\n\t\t%s %s\n",LASSERT_RED_, line, statement,LASSERT_NORMAL_);
@@ -279,8 +317,9 @@ void LASSERT_REQUIRE_CASE_failed_(const char * statement, int line, const char *
         LASSERT_data_.currentCaseFailed = 1;
     }
 }
-void LASSERT_REQUIRE_CASE_not_null_failed_(const char * ptr, int line, const char * name_of_test){
+void LASSERT_REQUIRE_CASE_not_null_failed_(const char * ptr, int line, int old_line, const char * name_of_test){
     LASSERT_PRINT_("\n%s%s test_case :%s\n",LASSERT_MAGENTA_,name_of_test,LASSERT_NORMAL_);
+    LASSERT_PRINT_LOGS_(old_line);
     LASSERT_PRINT_("\t%s%llu test(s) passed%s\n",LASSERT_GREEN_, LASSERT_data_.succeededTestsInCurrentCase,LASSERT_NORMAL_);
     if(ptr){
 	LASSERT_PRINT_("\t%sFailed to allocate a pointer line %d :\n\t\t%s %s\n",LASSERT_YELLOW_, line, ptr,LASSERT_NORMAL_);
@@ -289,14 +328,20 @@ void LASSERT_REQUIRE_CASE_not_null_failed_(const char * ptr, int line, const cha
     }
     ++LASSERT_data_.notNullFailedCases;
 }
-void LASSERT_REQUIRE_failed_(const char * statement, int line){
-    if(statement)
-	LASSERT_PRINT_("\n%sFailed statement outside a test case line %d :\n\t%s %s\n", LASSERT_RED_, line, statement,LASSERT_NORMAL_);
+void LASSERT_REQUIRE_failed_(const char * statement, int line, int old_line){
+    if(statement){
+        LASSERT_PUTS_("\n");
+        LASSERT_PRINT_LOGS_(old_line);
+	LASSERT_PRINT_("%sFailed statement outside a test case line %d :\n\t%s %s\n", LASSERT_RED_, line, statement,LASSERT_NORMAL_);
+    }
     ++LASSERT_data_.failedCases;
 }
-void LASSERT_REQUIRE_not_null_failed_(const char * statement, int line){
-    if(statement)
-	LASSERT_PRINT_("\n%sFailed to allocate outside a test case line %d :\n\t%s %s\n",LASSERT_YELLOW_, line, statement,LASSERT_NORMAL_);
+void LASSERT_REQUIRE_not_null_failed_(const char * statement, int line, int old_line){
+    if(statement){
+        LASSERT_PUTS_("\n");
+        LASSERT_PRINT_LOGS_(old_line);
+	LASSERT_PRINT_("%sFailed to allocate outside a test case line %d :\n\t%s %s\n",LASSERT_YELLOW_, line, statement,LASSERT_NORMAL_);
+    }
     ++LASSERT_data_.notNullFailedCases;
 }
 void LASSERT_generate_tab_(const char * name_of_case,int * _id_flag,int * begin,int * end, unsigned size, const char * attributes, ... ){
@@ -649,6 +694,39 @@ void LAssert_alloc(int disable){
 #  endif
 #endif
 
+
+
+
+
+#define LASSERT_GENERIC_LOG_(COLOR, message, ...)                       \
+    if(*_old_flag < __LINE__){                                          \
+        if(LASSERT_logs_.nbMsgs < LASSERT_MAX_INFOS){                   \
+            char _tmp_msg_[LASSERT_MAX_INFO_LENGTH] = {0};              \
+            LASSERT_STRCPY_(_tmp_msg_, LASSERT_MAX_INFO_LENGTH, COLOR); \
+            LASSERT_STRCAT_(_tmp_msg_, LASSERT_MAX_INFO_LENGTH, message); \
+            LASSERT_SPRINTF_(LASSERT_logs_.msgs[LASSERT_logs_.nbMsgs].msg, \
+                             LASSERT_MAX_INFO_LENGTH, _tmp_msg_,        \
+                             ##__VA_ARGS__);                            \
+            LASSERT_STRCAT_(LASSERT_logs_.msgs[LASSERT_logs_.nbMsgs].msg, \
+                            LASSERT_MAX_INFO_LENGTH, LASSERT_NORMAL_);  \
+            LASSERT_logs_.msgs[LASSERT_logs_.nbMsgs].inCase = LASSERT_data_.nbRunInCase; \
+            LASSERT_logs_.msgs[LASSERT_logs_.nbMsgs].line = __LINE__;   \
+            ++LASSERT_logs_.nbMsgs;                                     \
+        }else{                                                          \
+            printf("%s WARNING too many logs already registered, the "  \
+                   "following will be ignored:%s\n\t", LASSERT_YELLOW_, \
+                   LASSERT_NORMAL_);                                    \
+            printf(message, ##__VA_ARGS__);                             \
+            putchar('\n');                                              \
+        }                                                               \
+    }
+
+#define INFO(message, ...) LASSERT_GENERIC_LOG_(LASSERT_CYAN_, "INFO " message, ##__VA_ARGS__)
+
+#define WARNING(message, ...) LASSERT_GENERIC_LOG_(LASSERT_YELLOW_, "WARNING " message, ##__VA_ARGS__)
+
+#define ERROR(message, ...) LASSERT_GENERIC_LOG_(LASSERT_RED_, "ERROR " message, ##__VA_ARGS__)
+
 #define ONCE if(*_old_flag < __LINE__ && (LASSERT_data_.nbRunInCase = 1)) while(LASSERT_data_.nbRunInCase--)
 
 #define TEST_CASE(NAME_OF_TEST)                                         \
@@ -758,7 +836,7 @@ void LAssert_alloc(int disable){
                 }                                                       \
 		if(LASSERT_data_.nbRunInCase){				\
 		    if(blocking) *_has_to_quit = __LINE__;              \
-		    LASSERT_REQUIRE_CASE_failed_(#bool, __LINE__, LASSERT_name_of_test_); \
+		    LASSERT_REQUIRE_CASE_failed_(#bool, __LINE__, *_old_flag, LASSERT_name_of_test_); \
 		    if(_tab_lassert){					\
 			LASSERT_PRINT_("\t%sFailed on this sequence :\n\t\t",LASSERT_RED_); \
 			for(long _id = 0; _id < _size_of_tab; ++_id)    \
@@ -767,7 +845,7 @@ void LAssert_alloc(int disable){
 		    }							\
 		    if(blocking) LASSERT_data_.nbRunInCase = 0;         \
 		}else							\
-		    LASSERT_REQUIRE_failed_(#bool, __LINE__);           \
+		    LASSERT_REQUIRE_failed_(#bool, __LINE__, *_old_flag); \
                 if(blocking) *_id_flag = 1;                             \
                 if(LASSERT_parameters_.output == LASSERT_xml_output){   \
                     LASSERT_XML_PRINT_("\t\t\t<failure>");              \
@@ -809,11 +887,11 @@ void LAssert_alloc(int disable){
                 }                                                       \
 		if(LASSERT_data_.nbRunInCase){				\
 		    *_has_to_quit = __LINE__;				\
-		    LASSERT_REQUIRE_CASE_not_null_failed_(#ptr, __LINE__, LASSERT_name_of_test_); \
+		    LASSERT_REQUIRE_CASE_not_null_failed_(#ptr, __LINE__, *_old_flag, LASSERT_name_of_test_); \
 		    LASSERT_data_.nbRunInCase = 0;                      \
 		    *_id_flag = 2;					\
 		}else							\
-		    LASSERT_REQUIRE_not_null_failed_(#ptr, __LINE__);   \
+		    LASSERT_REQUIRE_not_null_failed_(#ptr, __LINE__, *_old_flag); \
                 if(LASSERT_parameters_.output == LASSERT_xml_output){   \
                     LASSERT_XML_PRINT_("\t\t\t<failure>");              \
                     LASSERT_XML_PRINT_("Error on line %d, for expression " #ptr, __LINE__); \
@@ -860,9 +938,9 @@ void LAssert_alloc(int disable){
                 if(WEXITSTATUS(i)){                                     \
                     if(LASSERT_data_.nbRunInCase){                      \
                         LASSERT_REQUIRE_CASE_failed_("timeout reached in PERFORMANCE block", \
-                                                     __LINE__, LASSERT_name_of_test_); \
+                                                     __LINE__, *_old_flag, LASSERT_name_of_test_); \
                     }else{                                              \
-                        LASSERT_REQUIRE_failed_("timeout reached in PERFORMANCE block", __LINE__); \
+                        LASSERT_REQUIRE_failed_("timeout reached in PERFORMANCE block", __LINE__, *_old_flag); \
                     }                                                   \
                 }else if(!LASSERT_data_.nbRunInCase)                    \
                     ++LASSERT_data_.succeededCases;                     \
@@ -930,6 +1008,7 @@ int main(){
         double result;                                                  \
         LASSERT_data_.testCaseOpened = 0;                               \
         LASSERT_data_.sectionName = name_of_section;                    \
+        LASSERT_logs_.nbMsgs = 0;                                       \
                                                                         \
 	LASSERT_PRINT_("%s------------------------------------------------------------\n" \
                        "BEGIN OF SECTION " #name " %s\n",LASSERT_BLUE_, LASSERT_NORMAL_); \

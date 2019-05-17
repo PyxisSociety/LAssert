@@ -220,3 +220,25 @@ TEST_SECTION("set event deinit"){
     LASSERT_on_case_end(NULL);
     LASSERT_on_assertion_failure(NULL);
 }
+
+TEST_SECTION(logs){
+    INFO("COUCOU %s", "johnny");
+
+    CHECK(0);
+
+    TEST_CASE("warning case"){
+        CHECK(0);
+        WARNING("be careful");
+        REQUIRE(0);
+        INFO("should not be printed");
+    }
+
+    ERROR("oups");
+
+    CHECK(0);
+
+    REQUIRE(0);
+}
+TEST_SECTION("no logs"){
+    REQUIRE(0);
+}

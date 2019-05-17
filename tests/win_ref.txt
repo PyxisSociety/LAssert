@@ -167,3 +167,51 @@ END OF SECTION "set event deinit"
 EMPTY TEST SECTION
 ------------------------------------------------------------
 
+------------------------------------------------------------
+BEGIN OF SECTION logs 
+
+
+INFO COUCOU johnny
+Failed statement outside a test case line 227 :
+	0 
+
+"warning case" test_case :
+INFO COUCOU johnny
+	0 test(s) passed
+	Failed statement case line 230 :
+		0 
+
+"warning case" test_case :
+INFO COUCOU johnny
+WARNING be careful
+	0 test(s) passed
+	Failed statement case line 232 :
+		0 
+
+
+INFO COUCOU johnny
+ERROR oups
+Failed statement outside a test case line 238 :
+	0 
+
+
+INFO COUCOU johnny
+ERROR oups
+Failed statement outside a test case line 240 :
+	0 
+
+END OF SECTION logs 
+Failed : 4 test_case(s)
+------------------------------------------------------------
+
+------------------------------------------------------------
+BEGIN OF SECTION "no logs" 
+
+
+Failed statement outside a test case line 243 :
+	0 
+
+END OF SECTION "no logs" 
+Failed : 1 test_case(s)
+------------------------------------------------------------
+
