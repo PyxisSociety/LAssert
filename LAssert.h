@@ -142,6 +142,11 @@ LASSERT_DISABLE_WARNING_(sign-compare, sign-compare, 425)
             if(!LASSERT_logs_.msgs[i].inCase || (old_line) < LASSERT_logs_.msgs[i].line) \
                 LASSERT_PUTS_(LASSERT_logs_.msgs[i].msg);               \
         }                                                               \
+        for(i = 0; i < LASSERT_logs_.nbMsgsOnce; ++i){                  \
+            if(!LASSERT_logs_.msgsOnce[i].inCase || (old_line) < LASSERT_logs_.msgsOnce[i].line) \
+                LASSERT_PUTS_(LASSERT_logs_.msgsOnce[i].msg);           \
+        }                                                               \
+            
     }
 
 
@@ -273,7 +278,7 @@ LASSERT_EXTERN_ LASSERT_LOGS_ LASSERT_logs_
 = {
     {{{0}, 0, 0}}, // msgs
     {{{0}, 0, 0}}, // msgsOnce
-    0, nbMsgs
+    0, // nbMsgs
     0 // nbMsgsOnce
 }
 #endif
@@ -741,7 +746,7 @@ void LAssert_alloc(int disable){
 
 
 
-#define LASSERT_GENERIC_LOG_(COLOR, message, ...)                       \
+#define LASSERT_GENERIC_LOG_(COLOR, msgs, nbMsgs, message, ...)         \
     if(*_old_flag < __LINE__){                                          \
         if(LASSERT_logs_.nbMsgs < LASSERT_MAX_INFOS){                   \
             char _tmp_msg_[LASSERT_MAX_INFO_LENGTH] = {0};              \
@@ -764,11 +769,23 @@ void LAssert_alloc(int disable){
         }                                                               \
     }
 
-#define INFO(message, ...) LASSERT_GENERIC_LOG_(LASSERT_CYAN_, "INFO " message, ##__VA_ARGS__)
+#define INFO(message, ...) \
+    LASSERT_GENERIC_LOG_(LASSERT_CYAN_, msgs, nbMsgs, "INFO " message, ##__VA_ARGS__)
 
-#define WARNING(message, ...) LASSERT_GENERIC_LOG_(LASSERT_YELLOW_, "WARNING " message, ##__VA_ARGS__)
+#define WARNING(message, ...) \
+    LASSERT_GENERIC_LOG_(LASSERT_YELLOW_, msgs, nbMsgs, "WARNING " message, ##__VA_ARGS__)
 
-#define ERROR(message, ...) LASSERT_GENERIC_LOG_(LASSERT_RED_, "ERROR " message, ##__VA_ARGS__)
+#define ERROR(message, ...) \
+    LASSERT_GENERIC_LOG_(LASSERT_RED_, msgs, nbMsgs, "ERROR " message, ##__VA_ARGS__)
+
+#define INFO_ONCE(message, ...) \
+    LASSERT_GENERIC_LOG_(LASSERT_CYAN_, msgsOnce, nbMsgsOnce, "INFO " message, ##__VA_ARGS__)
+
+#define WARNING_ONCE(message, ...) \
+    LASSERT_GENERIC_LOG_(LASSERT_YELLOW_, msgsOnce, nbMsgsOnce, "WARNING " message, ##__VA_ARGS__)
+
+#define ERROR_ONCE(message, ...) \
+    LASSERT_GENERIC_LOG_(LASSERT_RED_, msgsOnce, nbMsgsOnce, "ERROR " message, ##__VA_ARGS__)
 
 #define ONCE if(*_old_flag < __LINE__ && (LASSERT_data_.nbRunInCase = 1)) while(LASSERT_data_.nbRunInCase--)
 
