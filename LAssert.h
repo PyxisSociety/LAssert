@@ -264,11 +264,18 @@ typedef struct{
 } LASSERT_LOG_INFO_;
 typedef struct{
     LASSERT_LOG_INFO_ msgs[LASSERT_MAX_INFOS];
+    LASSERT_LOG_INFO_ msgsOnce[LASSERT_MAX_INFOS];
     unsigned long long nbMsgs;
+    unsigned long long nbMsgsOnce;
 }LASSERT_LOGS_;
 LASSERT_EXTERN_ LASSERT_LOGS_ LASSERT_logs_
 #if defined(LASSERT_MAIN) || defined(LASSERT_WINDOWS)
-= {{{{0}, 0, 0}}, 0}
+= {
+    {{{0}, 0, 0}}, // msgs
+    {{{0}, 0, 0}}, // msgsOnce
+    0, nbMsgs
+    0 // nbMsgsOnce
+}
 #endif
 ;
 /*-------------------------------------------*/
