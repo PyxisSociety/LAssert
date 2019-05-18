@@ -180,7 +180,7 @@ typedef struct{
     LASSERT_SECTION_TIME_OPTION_ timer;
 } LASSERT_PARAMETERS_;
 LASSERT_EXTERN_ LASSERT_PARAMETERS_ LASSERT_parameters_
-#if defined(LASSERT_MAIN) || defined(LASSERT_WINDOWS)
+#ifdef LASSERT_MAIN
 = {
 # ifdef LASSERT_MINIMIZED_OUTPUT
     LASSERT_minimized_output,
@@ -231,7 +231,7 @@ typedef struct{
     unsigned long long notNullFailedCases;
 } LASSERT_DATA_;
 LASSERT_EXTERN_ LASSERT_DATA_ LASSERT_data_
-#if defined(LASSERT_MAIN) || defined(LASSERT_WINDOWS)
+#ifdef LASSERT_MAIN
 = {
     {"", ""}, // tmpFileNames
     {0, 0}, // fdTmpFile
@@ -262,7 +262,7 @@ typedef struct{
     void (*assertionFailure)(char, const char *);
 }LASSERT_EVENTS_;
 LASSERT_EXTERN_ LASSERT_EVENTS_ LASSERT_events_
-#if defined(LASSERT_MAIN) || defined(LASSERT_WINDOWS)
+#ifdef LASSERT_MAIN
 = {NULL, NULL, NULL, NULL, NULL}
 #endif
 ;
@@ -280,7 +280,7 @@ typedef struct{
     unsigned long long nbMsgsOnce;
 }LASSERT_LOGS_;
 LASSERT_EXTERN_ LASSERT_LOGS_ LASSERT_logs_
-#if defined(LASSERT_MAIN) || defined(LASSERT_WINDOWS)
+#ifdef LASSERT_MAIN
 = {
     {{{0}, 0, 0, 0}}, // msgs
     {{{0}, 0, 0, 0}}, // msgsOnce
@@ -331,7 +331,7 @@ LASSERT_EXTERN_ void LASSERT_on_case_begin(void (*behavior)(const char * name));
 LASSERT_EXTERN_ void LASSERT_on_case_end(void (*behavior)(const char * name));
 LASSERT_EXTERN_ void LASSERT_on_assertion_failure(void (*behavior)(char isInCase, const char * name));
 
-#if defined(LASSERT_MAIN) || defined(LASSERT_WINDOWS)
+#ifdef LASSERT_MAIN
 char * LASSERT_get_color_(int i){
 #ifdef LASSERT_LINUX
     static char s[7][10] = {"\x1B[0m","\x1B[31m","\x1B[32m","\x1B[33m","\x1B[34m","\x1B[35m","\x1B[36m"};
@@ -764,7 +764,7 @@ void LASSERT_on_assertion_failure(void (*behavior)(char isInCase, const char * n
  * @param disable: flag to tell whether or not allocation functions should be locked
  */
 LASSERT_EXTERN_ void LAssert_alloc(int disable);
-#  if defined(LASSERT_MAIN) || defined(LASSERT_WINDOWS)
+#  ifdef LASSERT_MAIN
 void LAssert_alloc(int disable){
     LASSERT_LIB_TYPE lib = dlopen(LASSERT_LOCK_LIBRARY, RTLD_NOW);
     DECLARE_RESOURCE(lock);
@@ -1072,7 +1072,7 @@ printf("%s", LASSERT_YELLOW_);\
 
     
 #ifndef LASSERT_MANUAL_MAIN
-#  if defined(LASSERT_MAIN) || defined(LASSERT_WINDOWS)
+#  ifdef LASSERT_MAIN
 int main(){
     LASSERT_PRINT_OUTPUT_();
     return LASSERT_data_.failed;
@@ -1103,13 +1103,13 @@ int main(){
 
 
 
-#define TEST_SECTION(name) LASSERT_SUB_TEST_SECTION_(name, __COUNTER__)
-#define LASSERT_SUB_TEST_SECTION_(name, number) LASSERT_TEST_SECTION_(name, number)
-#define LASSERT_TEST_SECTION_(name, number)                             \
-    static void _test_##number##_lassert( char *,int *, int, int*, int*, int *); \
-    static int _call_test_##number##_lassert(void)                      \
-	LASSERT_AUTOCALL_HANDLER_(_call_test_##number##_lassert)        \
-        static int _call_test_##number##_lassert(void){                 \
+#define TEST_SECTION(name) LASSERT_SUB_TEST_SECTION_(name, __COUNTER__, __LINE__)
+#define LASSERT_SUB_TEST_SECTION_(name, number, line) LASSERT_TEST_SECTION_(name, number, line)
+#define LASSERT_TEST_SECTION_(name, number, line)                             \
+    static void _test_##number##_##line##_lassert( char *,int *, int, int*, int*, int *); \
+    static int _call_test_##number##_##line##_lassert(void)                      \
+	LASSERT_AUTOCALL_HANDLER_(_call_test_##number##_##line##_lassert)        \
+        static int _call_test_##number##_##line##_lassert(void){                 \
 	char s[512] = {0};						\
         char * name_of_section = (char*)#name;                          \
 	LASSERT_TIME_TYPE_ start = LASSERT_TIME_NULL_, end = LASSERT_TIME_NULL_; \
@@ -1137,7 +1137,7 @@ int main(){
 	    start = LASSERT_time_used_();                               \
 	while(i){							\
 	    i = 0;							\
-	    _test_##number##_lassert(s,&id,0,0,&i, &old);               \
+	    _test_##number##_##line##_lassert(s,&id,0,0,&i, &old);               \
             if(!id){                                                    \
                 ++LASSERT_data_.succeededCases;                         \
             }                                                           \
@@ -1213,7 +1213,7 @@ int main(){
                                                                         \
         return id;                                                      \
     }									\
-    static void _test_##number##_lassert(char * LASSERT_name_of_test_, int * _id_flag, int _size_of_tab,int * _tab_lassert, int * _has_to_quit, int * _old_flag)
+    static void _test_##number##_##line##_lassert(char * LASSERT_name_of_test_, int * _id_flag, int _size_of_tab,int * _tab_lassert, int * _has_to_quit, int * _old_flag)
 
 
 
@@ -1265,7 +1265,7 @@ static void LASSERT_PARAMETERS_SUB_INIT(void) LASSERT_AUTOCALL_HANDLER_(LASSERT_
 #else
 LASSERT_EXTERN_ void LASSERT_PARAMETERS_INIT(int argc, char ** argv);
 #endif
-#if defined(LASSERT_MAIN) || defined(LASSERT_WINDOWS)
+#ifdef LASSERT_MAIN
 void LASSERT_PARAMETERS_INIT(int argc, char ** argv){
     int help = 0;
     int i = 1;
