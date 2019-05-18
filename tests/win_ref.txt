@@ -191,6 +191,7 @@ WARNING be careful
 
 INFO COUCOU johnny
 ERROR oups
+ERROR Only once
 Failed statement outside a test case line 238 :
 	0 
 
