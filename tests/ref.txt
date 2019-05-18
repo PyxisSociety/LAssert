@@ -1,12 +1,16 @@
+
 ------------------------------------------------------------
 BEGIN OF SECTION "no test case, no failure" 
+
 
 END OF SECTION "no test case, no failure" 
 Succeeded : 3 test_case(s)
 ------------------------------------------------------------
 
+
 ------------------------------------------------------------
 BEGIN OF SECTION checkTests 
+
 
 
 Failed statement outside a test case line 12 :
@@ -17,6 +21,7 @@ Should be printed (outside case)
 	0 test(s) passed
 	Failed statement case line 16 :
 		0 
+
 Should be printed (inside case)
 
 END OF SECTION checkTests 
@@ -24,13 +29,16 @@ Failed : 2 test_case(s)
 Succeeded : 2 test_case(s)
 ------------------------------------------------------------
 
+
 ------------------------------------------------------------
 BEGIN OF SECTION testCasesMixedUp 
+
 
 failing test_case :
 	1 test(s) passed
 	Failed statement case line 30 :
 		i == 0 
+
 
 failingNotNull test_case :
 	0 test(s) passed
@@ -45,15 +53,19 @@ Succeeded : 2 test_case(s)
 Stopped due to NULL pointer : 1 test_case(s)
 ------------------------------------------------------------
 
+
 ------------------------------------------------------------
 BEGIN OF SECTION empty_section 
+
 
 END OF SECTION empty_section 
 EMPTY TEST SECTION
 ------------------------------------------------------------
 
+
 ------------------------------------------------------------
 BEGIN OF SECTION random_test 
+
 BEEEEGIN
 
 BEEEEGIN
@@ -72,8 +84,10 @@ Failed : 1 test_case(s)
 Succeeded : 3 test_case(s)
 ------------------------------------------------------------
 
+
 ------------------------------------------------------------
 BEGIN OF SECTION range_test 
+
 1 1 1 
 1 1 2 
 1 2 1 
@@ -94,8 +108,10 @@ Failed : 1 test_case(s)
 Succeeded : 1 test_case(s)
 ------------------------------------------------------------
 
+
 ------------------------------------------------------------
 BEGIN OF SECTION copy_test 
+
 Display twice if problem not solved
 A block displayed only once
 
@@ -104,35 +120,45 @@ should_failed test_case :
 	Failed statement case line 114 :
 		i 
 
+
 END OF SECTION copy_test 
 Failed : 1 test_case(s)
 Succeeded : 1 test_case(s)
 ------------------------------------------------------------
 
+
 ------------------------------------------------------------
 BEGIN OF SECTION equal_test 
+
 
 should_failed test_case :
 	0 test(s) passed
 	Failed statement case line 122 :
 		(.7) == (.6) 
 
+
 END OF SECTION equal_test 
 Failed : 1 test_case(s)
 Succeeded : 2 test_case(s)
 ------------------------------------------------------------
 
+
 ------------------------------------------------------------
 BEGIN OF SECTION perfo_test 
+
+
 ------------------------------------------------------------
 BEGIN OF SECTION "no test case, no failure" 
+
 
 END OF SECTION "no test case, no failure" 
 Succeeded : 3 test_case(s)
 ------------------------------------------------------------
 
+
 ------------------------------------------------------------
 BEGIN OF SECTION checkTests 
+
 
 
 Failed statement outside a test case line 12 :
@@ -143,6 +169,7 @@ Should be printed (outside case)
 	0 test(s) passed
 	Failed statement case line 16 :
 		0 
+
 Should be printed (inside case)
 
 END OF SECTION checkTests 
@@ -150,13 +177,16 @@ Failed : 2 test_case(s)
 Succeeded : 2 test_case(s)
 ------------------------------------------------------------
 
+
 ------------------------------------------------------------
 BEGIN OF SECTION testCasesMixedUp 
+
 
 failing test_case :
 	1 test(s) passed
 	Failed statement case line 30 :
 		i == 0 
+
 
 failingNotNull test_case :
 	0 test(s) passed
@@ -171,15 +201,19 @@ Succeeded : 2 test_case(s)
 Stopped due to NULL pointer : 1 test_case(s)
 ------------------------------------------------------------
 
+
 ------------------------------------------------------------
 BEGIN OF SECTION empty_section 
+
 
 END OF SECTION empty_section 
 EMPTY TEST SECTION
 ------------------------------------------------------------
 
+
 ------------------------------------------------------------
 BEGIN OF SECTION random_test 
+
 BEEEEGIN
 
 BEEEEGIN
@@ -198,8 +232,10 @@ Failed : 1 test_case(s)
 Succeeded : 3 test_case(s)
 ------------------------------------------------------------
 
+
 ------------------------------------------------------------
 BEGIN OF SECTION range_test 
+
 1 1 1 
 1 1 2 
 1 2 1 
@@ -220,8 +256,10 @@ Failed : 1 test_case(s)
 Succeeded : 1 test_case(s)
 ------------------------------------------------------------
 
+
 ------------------------------------------------------------
 BEGIN OF SECTION copy_test 
+
 Display twice if problem not solved
 A block displayed only once
 
@@ -230,174 +268,46 @@ should_failed test_case :
 	Failed statement case line 114 :
 		i 
 
-END OF SECTION copy_test 
-Failed : 1 test_case(s)
-Succeeded : 1 test_case(s)
-------------------------------------------------------------
-
-------------------------------------------------------------
-BEGIN OF SECTION equal_test 
-
-should_failed test_case :
-	0 test(s) passed
-	Failed statement case line 122 :
-		(.7) == (.6) 
-
-END OF SECTION equal_test 
-Failed : 1 test_case(s)
-Succeeded : 2 test_case(s)
-------------------------------------------------------------
-
-------------------------------------------------------------
-BEGIN OF SECTION perfo_test 
-After this line, "1" should be printed
-------------------------------------------------------------
-BEGIN OF SECTION "no test case, no failure" 
-
-END OF SECTION "no test case, no failure" 
-Succeeded : 3 test_case(s)
-------------------------------------------------------------
-
-------------------------------------------------------------
-BEGIN OF SECTION checkTests 
-
-
-Failed statement outside a test case line 12 :
-	0 
-Should be printed (outside case)
-
-"in case" test_case :
-	0 test(s) passed
-	Failed statement case line 16 :
-		0 
-Should be printed (inside case)
-
-END OF SECTION checkTests 
-Failed : 2 test_case(s)
-Succeeded : 2 test_case(s)
-------------------------------------------------------------
-
-------------------------------------------------------------
-BEGIN OF SECTION testCasesMixedUp 
-
-failing test_case :
-	1 test(s) passed
-	Failed statement case line 30 :
-		i == 0 
-
-failingNotNull test_case :
-	0 test(s) passed
-	Failed to allocate a pointer line 45 :
-		NULL 
-	log message :
-oups, null pointer
-
-END OF SECTION testCasesMixedUp 
-Failed : 1 test_case(s)
-Succeeded : 2 test_case(s)
-Stopped due to NULL pointer : 1 test_case(s)
-------------------------------------------------------------
-
-------------------------------------------------------------
-BEGIN OF SECTION empty_section 
-
-END OF SECTION empty_section 
-EMPTY TEST SECTION
-------------------------------------------------------------
-
-------------------------------------------------------------
-BEGIN OF SECTION random_test 
-BEEEEGIN
-
-BEEEEGIN
-
-BEEEEGIN
-
-
-"bad parameters" test_case :
-	0 test(s) passed
-	Bad parameter in a RAND_CASE :
-		1
-		Size of list should be even
-
-END OF SECTION random_test 
-Failed : 1 test_case(s)
-Succeeded : 3 test_case(s)
-------------------------------------------------------------
-
-------------------------------------------------------------
-BEGIN OF SECTION range_test 
-1 1 1 
-1 1 2 
-1 2 1 
-1 2 2 
-2 1 1 
-2 1 2 
-2 2 1 
-2 2 2 
-
-bad_parameters test_case :
-	0 test(s) passed
-	Bad parameter in a RANGE_CASE :
-		1
-		Size of list should be a multiple of 3
-
-END OF SECTION range_test 
-Failed : 1 test_case(s)
-Succeeded : 1 test_case(s)
-------------------------------------------------------------
-
-------------------------------------------------------------
-BEGIN OF SECTION copy_test 
-Display twice if problem not solved
-A block displayed only once
-
-should_failed test_case :
-	0 test(s) passed
-	Failed statement case line 114 :
-		i 
 
 END OF SECTION copy_test 
 Failed : 1 test_case(s)
 Succeeded : 1 test_case(s)
 ------------------------------------------------------------
 
+
 ------------------------------------------------------------
 BEGIN OF SECTION equal_test 
+
 
 should_failed test_case :
 	0 test(s) passed
 	Failed statement case line 122 :
 		(.7) == (.6) 
 
+
 END OF SECTION equal_test 
 Failed : 1 test_case(s)
 Succeeded : 2 test_case(s)
 ------------------------------------------------------------
 
+
 ------------------------------------------------------------
 BEGIN OF SECTION perfo_test 
+
 After this line, "1" should be printed
 
-inside_case_ko test_case :
-	0 test(s) passed
-	Failed statement case line 138 :
-		timeout reached in PERFORMANCE block 
-1
-
-inside_case_ko test_case :
-	1 test(s) passed
-	Failed statement case line 144 :
-		0 
 ------------------------------------------------------------
 BEGIN OF SECTION "no test case, no failure" 
+
 
 END OF SECTION "no test case, no failure" 
 Succeeded : 3 test_case(s)
 ------------------------------------------------------------
 
+
 ------------------------------------------------------------
 BEGIN OF SECTION checkTests 
+
 
 
 Failed statement outside a test case line 12 :
@@ -408,6 +318,7 @@ Should be printed (outside case)
 	0 test(s) passed
 	Failed statement case line 16 :
 		0 
+
 Should be printed (inside case)
 
 END OF SECTION checkTests 
@@ -415,13 +326,16 @@ Failed : 2 test_case(s)
 Succeeded : 2 test_case(s)
 ------------------------------------------------------------
 
+
 ------------------------------------------------------------
 BEGIN OF SECTION testCasesMixedUp 
+
 
 failing test_case :
 	1 test(s) passed
 	Failed statement case line 30 :
 		i == 0 
+
 
 failingNotNull test_case :
 	0 test(s) passed
@@ -436,15 +350,19 @@ Succeeded : 2 test_case(s)
 Stopped due to NULL pointer : 1 test_case(s)
 ------------------------------------------------------------
 
+
 ------------------------------------------------------------
 BEGIN OF SECTION empty_section 
+
 
 END OF SECTION empty_section 
 EMPTY TEST SECTION
 ------------------------------------------------------------
 
+
 ------------------------------------------------------------
 BEGIN OF SECTION random_test 
+
 BEEEEGIN
 
 BEEEEGIN
@@ -463,8 +381,10 @@ Failed : 1 test_case(s)
 Succeeded : 3 test_case(s)
 ------------------------------------------------------------
 
+
 ------------------------------------------------------------
 BEGIN OF SECTION range_test 
+
 1 1 1 
 1 1 2 
 1 2 1 
@@ -485,8 +405,10 @@ Failed : 1 test_case(s)
 Succeeded : 1 test_case(s)
 ------------------------------------------------------------
 
+
 ------------------------------------------------------------
 BEGIN OF SECTION copy_test 
+
 Display twice if problem not solved
 A block displayed only once
 
@@ -495,26 +417,32 @@ should_failed test_case :
 	Failed statement case line 114 :
 		i 
 
+
 END OF SECTION copy_test 
 Failed : 1 test_case(s)
 Succeeded : 1 test_case(s)
 ------------------------------------------------------------
 
+
 ------------------------------------------------------------
 BEGIN OF SECTION equal_test 
+
 
 should_failed test_case :
 	0 test(s) passed
 	Failed statement case line 122 :
 		(.7) == (.6) 
 
+
 END OF SECTION equal_test 
 Failed : 1 test_case(s)
 Succeeded : 2 test_case(s)
 ------------------------------------------------------------
 
+
 ------------------------------------------------------------
 BEGIN OF SECTION perfo_test 
+
 After this line, "1" should be printed
 
 inside_case_ko test_case :
@@ -527,15 +455,20 @@ inside_case_ko test_case :
 	1 test(s) passed
 	Failed statement case line 144 :
 		0 
+
+
 ------------------------------------------------------------
 BEGIN OF SECTION "no test case, no failure" 
+
 
 END OF SECTION "no test case, no failure" 
 Succeeded : 3 test_case(s)
 ------------------------------------------------------------
 
+
 ------------------------------------------------------------
 BEGIN OF SECTION checkTests 
+
 
 
 Failed statement outside a test case line 12 :
@@ -546,6 +479,7 @@ Should be printed (outside case)
 	0 test(s) passed
 	Failed statement case line 16 :
 		0 
+
 Should be printed (inside case)
 
 END OF SECTION checkTests 
@@ -553,13 +487,16 @@ Failed : 2 test_case(s)
 Succeeded : 2 test_case(s)
 ------------------------------------------------------------
 
+
 ------------------------------------------------------------
 BEGIN OF SECTION testCasesMixedUp 
+
 
 failing test_case :
 	1 test(s) passed
 	Failed statement case line 30 :
 		i == 0 
+
 
 failingNotNull test_case :
 	0 test(s) passed
@@ -574,15 +511,19 @@ Succeeded : 2 test_case(s)
 Stopped due to NULL pointer : 1 test_case(s)
 ------------------------------------------------------------
 
+
 ------------------------------------------------------------
 BEGIN OF SECTION empty_section 
+
 
 END OF SECTION empty_section 
 EMPTY TEST SECTION
 ------------------------------------------------------------
 
+
 ------------------------------------------------------------
 BEGIN OF SECTION random_test 
+
 BEEEEGIN
 
 BEEEEGIN
@@ -601,8 +542,10 @@ Failed : 1 test_case(s)
 Succeeded : 3 test_case(s)
 ------------------------------------------------------------
 
+
 ------------------------------------------------------------
 BEGIN OF SECTION range_test 
+
 1 1 1 
 1 1 2 
 1 2 1 
@@ -623,8 +566,10 @@ Failed : 1 test_case(s)
 Succeeded : 1 test_case(s)
 ------------------------------------------------------------
 
+
 ------------------------------------------------------------
 BEGIN OF SECTION copy_test 
+
 Display twice if problem not solved
 A block displayed only once
 
@@ -633,26 +578,32 @@ should_failed test_case :
 	Failed statement case line 114 :
 		i 
 
+
 END OF SECTION copy_test 
 Failed : 1 test_case(s)
 Succeeded : 1 test_case(s)
 ------------------------------------------------------------
 
+
 ------------------------------------------------------------
 BEGIN OF SECTION equal_test 
+
 
 should_failed test_case :
 	0 test(s) passed
 	Failed statement case line 122 :
 		(.7) == (.6) 
 
+
 END OF SECTION equal_test 
 Failed : 1 test_case(s)
 Succeeded : 2 test_case(s)
 ------------------------------------------------------------
 
+
 ------------------------------------------------------------
 BEGIN OF SECTION perfo_test 
+
 After this line, "1" should be printed
 
 inside_case_ko test_case :
@@ -665,19 +616,185 @@ inside_case_ko test_case :
 	1 test(s) passed
 	Failed statement case line 144 :
 		0 
+
+
+------------------------------------------------------------
+BEGIN OF SECTION "no test case, no failure" 
+
+
+END OF SECTION "no test case, no failure" 
+Succeeded : 3 test_case(s)
+------------------------------------------------------------
+
+
+------------------------------------------------------------
+BEGIN OF SECTION checkTests 
+
+
+
+Failed statement outside a test case line 12 :
+	0 
+Should be printed (outside case)
+
+"in case" test_case :
+	0 test(s) passed
+	Failed statement case line 16 :
+		0 
+
+Should be printed (inside case)
+
+END OF SECTION checkTests 
+Failed : 2 test_case(s)
+Succeeded : 2 test_case(s)
+------------------------------------------------------------
+
+
+------------------------------------------------------------
+BEGIN OF SECTION testCasesMixedUp 
+
+
+failing test_case :
+	1 test(s) passed
+	Failed statement case line 30 :
+		i == 0 
+
+
+failingNotNull test_case :
+	0 test(s) passed
+	Failed to allocate a pointer line 45 :
+		NULL 
+	log message :
+oups, null pointer
+
+END OF SECTION testCasesMixedUp 
+Failed : 1 test_case(s)
+Succeeded : 2 test_case(s)
+Stopped due to NULL pointer : 1 test_case(s)
+------------------------------------------------------------
+
+
+------------------------------------------------------------
+BEGIN OF SECTION empty_section 
+
+
+END OF SECTION empty_section 
+EMPTY TEST SECTION
+------------------------------------------------------------
+
+
+------------------------------------------------------------
+BEGIN OF SECTION random_test 
+
+BEEEEGIN
+
+BEEEEGIN
+
+BEEEEGIN
+
+
+"bad parameters" test_case :
+	0 test(s) passed
+	Bad parameter in a RAND_CASE :
+		1
+		Size of list should be even
+
+END OF SECTION random_test 
+Failed : 1 test_case(s)
+Succeeded : 3 test_case(s)
+------------------------------------------------------------
+
+
+------------------------------------------------------------
+BEGIN OF SECTION range_test 
+
+1 1 1 
+1 1 2 
+1 2 1 
+1 2 2 
+2 1 1 
+2 1 2 
+2 2 1 
+2 2 2 
+
+bad_parameters test_case :
+	0 test(s) passed
+	Bad parameter in a RANGE_CASE :
+		1
+		Size of list should be a multiple of 3
+
+END OF SECTION range_test 
+Failed : 1 test_case(s)
+Succeeded : 1 test_case(s)
+------------------------------------------------------------
+
+
+------------------------------------------------------------
+BEGIN OF SECTION copy_test 
+
+Display twice if problem not solved
+A block displayed only once
+
+should_failed test_case :
+	0 test(s) passed
+	Failed statement case line 114 :
+		i 
+
+
+END OF SECTION copy_test 
+Failed : 1 test_case(s)
+Succeeded : 1 test_case(s)
+------------------------------------------------------------
+
+
+------------------------------------------------------------
+BEGIN OF SECTION equal_test 
+
+
+should_failed test_case :
+	0 test(s) passed
+	Failed statement case line 122 :
+		(.7) == (.6) 
+
+
+END OF SECTION equal_test 
+Failed : 1 test_case(s)
+Succeeded : 2 test_case(s)
+------------------------------------------------------------
+
+
+------------------------------------------------------------
+BEGIN OF SECTION perfo_test 
+
+After this line, "1" should be printed
+
+inside_case_ko test_case :
+	0 test(s) passed
+	Failed statement case line 138 :
+		timeout reached in PERFORMANCE block 
+1
+
+inside_case_ko test_case :
+	1 test(s) passed
+	Failed statement case line 144 :
+		0 
+
 
 
 Failed statement outside a test case line 151 :
 	timeout reached in PERFORMANCE block 
+
 ------------------------------------------------------------
 BEGIN OF SECTION "no test case, no failure" 
+
 
 END OF SECTION "no test case, no failure" 
 Succeeded : 3 test_case(s)
 ------------------------------------------------------------
 
+
 ------------------------------------------------------------
 BEGIN OF SECTION checkTests 
+
 
 
 Failed statement outside a test case line 12 :
@@ -688,6 +805,7 @@ Should be printed (outside case)
 	0 test(s) passed
 	Failed statement case line 16 :
 		0 
+
 Should be printed (inside case)
 
 END OF SECTION checkTests 
@@ -695,13 +813,16 @@ Failed : 2 test_case(s)
 Succeeded : 2 test_case(s)
 ------------------------------------------------------------
 
+
 ------------------------------------------------------------
 BEGIN OF SECTION testCasesMixedUp 
+
 
 failing test_case :
 	1 test(s) passed
 	Failed statement case line 30 :
 		i == 0 
+
 
 failingNotNull test_case :
 	0 test(s) passed
@@ -716,15 +837,19 @@ Succeeded : 2 test_case(s)
 Stopped due to NULL pointer : 1 test_case(s)
 ------------------------------------------------------------
 
+
 ------------------------------------------------------------
 BEGIN OF SECTION empty_section 
+
 
 END OF SECTION empty_section 
 EMPTY TEST SECTION
 ------------------------------------------------------------
 
+
 ------------------------------------------------------------
 BEGIN OF SECTION random_test 
+
 BEEEEGIN
 
 BEEEEGIN
@@ -743,8 +868,10 @@ Failed : 1 test_case(s)
 Succeeded : 3 test_case(s)
 ------------------------------------------------------------
 
+
 ------------------------------------------------------------
 BEGIN OF SECTION range_test 
+
 1 1 1 
 1 1 2 
 1 2 1 
@@ -765,8 +892,10 @@ Failed : 1 test_case(s)
 Succeeded : 1 test_case(s)
 ------------------------------------------------------------
 
+
 ------------------------------------------------------------
 BEGIN OF SECTION copy_test 
+
 Display twice if problem not solved
 A block displayed only once
 
@@ -775,26 +904,32 @@ should_failed test_case :
 	Failed statement case line 114 :
 		i 
 
+
 END OF SECTION copy_test 
 Failed : 1 test_case(s)
 Succeeded : 1 test_case(s)
 ------------------------------------------------------------
 
+
 ------------------------------------------------------------
 BEGIN OF SECTION equal_test 
+
 
 should_failed test_case :
 	0 test(s) passed
 	Failed statement case line 122 :
 		(.7) == (.6) 
 
+
 END OF SECTION equal_test 
 Failed : 1 test_case(s)
 Succeeded : 2 test_case(s)
 ------------------------------------------------------------
 
+
 ------------------------------------------------------------
 BEGIN OF SECTION perfo_test 
+
 After this line, "1" should be printed
 
 inside_case_ko test_case :
@@ -807,6 +942,7 @@ inside_case_ko test_case :
 	1 test(s) passed
 	Failed statement case line 144 :
 		0 
+
 
 
 Failed statement outside a test case line 151 :
@@ -817,29 +953,37 @@ Failed : 2 test_case(s)
 Succeeded : 3 test_case(s)
 ------------------------------------------------------------
 
+
 ------------------------------------------------------------
 BEGIN OF SECTION malloc_disable 
+
 
 END OF SECTION malloc_disable 
 Succeeded : 2 test_case(s)
 ------------------------------------------------------------
 
+
 ------------------------------------------------------------
 BEGIN OF SECTION time_test 
+
 
 END OF SECTION time_test 
 EMPTY TEST SECTION
 ------------------------------------------------------------
 
+
 ------------------------------------------------------------
 BEGIN OF SECTION "set event init" 
+
 
 END OF SECTION "set event init" 
 EMPTY TEST SECTION
 ------------------------------------------------------------
 
+
 ------------------------------------------------------------
 BEGIN OF SECTION "redefined event behavior" 
+
 begin "redefined event behavior"
 begin "test case"
 Failure in "test case" --- is in case ? 1
@@ -848,6 +992,7 @@ Failure in "test case" --- is in case ? 1
 	0 test(s) passed
 	Failed statement case line 206 :
 		0 
+
 end "test case"
 begin "rand case"
 end "rand case"
@@ -865,15 +1010,19 @@ Failed : 2 test_case(s)
 Succeeded : 1 test_case(s)
 ------------------------------------------------------------
 
+
 ------------------------------------------------------------
 BEGIN OF SECTION "set event deinit" 
+
 
 END OF SECTION "set event deinit" 
 EMPTY TEST SECTION
 ------------------------------------------------------------
 
+
 ------------------------------------------------------------
 BEGIN OF SECTION logs 
+
 
 
 INFO COUCOU johnny
@@ -886,12 +1035,14 @@ INFO COUCOU johnny
 	Failed statement case line 230 :
 		0 
 
+
 "warning case" test_case :
 INFO COUCOU johnny
 WARNING be careful
 	0 test(s) passed
 	Failed statement case line 232 :
 		0 
+
 
 
 INFO COUCOU johnny
@@ -910,8 +1061,10 @@ END OF SECTION logs
 Failed : 4 test_case(s)
 ------------------------------------------------------------
 
+
 ------------------------------------------------------------
 BEGIN OF SECTION "no logs" 
+
 
 
 Failed statement outside a test case line 243 :
@@ -921,8 +1074,10 @@ END OF SECTION "no logs"
 Failed : 1 test_case(s)
 ------------------------------------------------------------
 
+
 ------------------------------------------------------------
 BEGIN OF SECTION pouloulou 
+
 2
 
 END OF SECTION pouloulou 
