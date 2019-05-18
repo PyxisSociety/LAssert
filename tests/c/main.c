@@ -234,7 +234,7 @@ TEST_SECTION(logs){
     }
 
     ERROR("oups");
-
+    ERROR_ONCE("Only once");
     CHECK(0);
 
     REQUIRE(0);
