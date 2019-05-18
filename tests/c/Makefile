@@ -6,7 +6,7 @@ PWD=$(shell pwd)
 LIB_PATH=$(PWD)/../..
 LIB=$(LIB_PATH)/libLAssert_alloc.so
 LDFLAGS=-g -ldl -Wl,-rpath,$(LIB_PATH) -L$(LIB_PATH) -lLAssert_alloc
-CFLAGS=-DLASSERT_CUSTOM_ALLOC
+CFLAGS=-DLASSERT_CUSTOM_ALLOC -Wall -Wextra -pedantic
 
 CC?=gcc
 

@@ -10,6 +10,42 @@
 #include <errno.h>
 #include <signal.h>
 
+/* -------------- WARNING REMOVAL --------------- */
+/* got here: https://stackoverflow.com/a/36175016 */
+#define LASSERT_DIAG_STR_(s) #s
+#define LASSERT_DIAG_JOINSTR_(x,y) LASSERT_DIAG_STR_(x ## y)
+#ifdef _MSC_VER
+#  define LASSERT_DIAG_DO_PRAGMA_(x) __pragma (#x)
+#  define LASSERT_DIAG_PRAGMA_(compiler,x) LASSERT_DIAG_DO_PRAGMA_(warning(x))
+#else
+#  define LASSERT_DIAG_DO_PRAGMA_(x) _Pragma (#x)
+#  define LASSERT_DIAG_PRAGMA_(compiler,x) LASSERT_DIAG_DO_PRAGMA_(compiler diagnostic x)
+#endif
+#if defined(__clang__)
+#  define LASSERT_DISABLE_WARNING_(gcc_unused,clang_option,msvc_unused) LASSERT_DIAG_PRAGMA_(clang,push) LASSERT_DIAG_PRAGMA_(clang,ignored LASSERT_DIAG_JOINSTR_(-W,clang_option))
+#  define LASSERT_ENABLE_WARNING_(gcc_unused,clang_option,msvc_unused) LASSERT_DIAG_PRAGMA_(clang,pop)
+#elif defined(_MSC_VER)
+#  define LASSERT_DISABLE_WARNING_(gcc_unused,clang_unused,msvc_errorcode) LASSERT_DIAG_PRAGMA_(msvc,push) LASSERT_DIAG_DO_PRAGMA_(warning(disable:##msvc_errorcode))
+#  define LASSERT_ENABLE_WARNING_(gcc_unused,clang_unused,msvc_errorcode) LASSERT_DIAG_PRAGMA_(msvc,pop)
+#elif defined(__GNUC__)
+#  if ((__GNUC__ * 100) + __GNUC_MINOR__) >= 406
+#    define LASSERT_DISABLE_WARNING_(gcc_option,clang_unused,msvc_unused) LASSERT_DIAG_PRAGMA_(GCC,push) LASSERT_DIAG_PRAGMA_(GCC,ignored LASSERT_DIAG_JOINSTR_(-W,gcc_option))
+#    define LASSERT_ENABLE_WARNING_(gcc_option,clang_unused,msvc_unused) LASSERT_DIAG_PRAGMA_(GCC,pop)
+#  else
+#    define LASSERT_DISABLE_WARNING_(gcc_option,clang_unused,msvc_unused) LASSERT_DIAG_PRAGMA_(GCC,ignored LASSERT_DIAG_JOINSTR_(-W,gcc_option))
+#    define LASSERT_ENABLE_WARNING_(gcc_option,clang_option,msvc_unused) LASSERT_DIAG_PRAGMA_(GCC,warning LASSERT_DIAG_JOINSTR_(-W,gcc_option))
+#  endif
+#else
+#  define LASSERT_DISABLE_WARNING_(a, b, c)
+#  define LASSERT_ENABLE_WARNING_(a, b, c)
+#endif
+
+LASSERT_DISABLE_WARNING_(unused-parameter, unused-parameter, 425)
+LASSERT_DISABLE_WARNING_(format-security, format-security, 425)
+LASSERT_DISABLE_WARNING_(unused-but-set-parameter, gnu-zero-variadic-macro-arguments, 425)
+LASSERT_DISABLE_WARNING_(sign-compare, sign-compare, 425)
+/* ---------------------------------------------- */
+
 
 
 
@@ -232,7 +268,7 @@ typedef struct{
 }LASSERT_LOGS_;
 LASSERT_EXTERN_ LASSERT_LOGS_ LASSERT_logs_
 #if defined(LASSERT_MAIN) || defined(LASSERT_WINDOWS)
-= {{{0}}, 0}
+= {{{{0}, 0, 0}}, 0}
 #endif
 ;
 /*-------------------------------------------*/
