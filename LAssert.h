@@ -333,7 +333,7 @@ LASSERT_EXTERN_ void LASSERT_on_assertion_failure(void (*behavior)(char isInCase
 
 #ifdef LASSERT_MAIN
 char * LASSERT_get_color_(int i){
-#ifdef LASSERT_LINUX
+#ifdef LASSERT_UNIX
     static char s[7][10] = {"\x1B[0m","\x1B[31m","\x1B[32m","\x1B[33m","\x1B[34m","\x1B[35m","\x1B[36m"};
     static int is_init = 0;
     unsigned j;
