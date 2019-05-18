@@ -15,7 +15,7 @@
 #define LASSERT_DIAG_STR_(s) #s
 #define LASSERT_DIAG_JOINSTR_(x,y) LASSERT_DIAG_STR_(x ## y)
 #ifdef _MSC_VER
-#  define LASSERT_DIAG_DO_PRAGMA_(x) __pragma (#x)
+#  define LASSERT_DIAG_DO_PRAGMA_(x) __pragma (x)
 #  define LASSERT_DIAG_PRAGMA_(compiler,x) LASSERT_DIAG_DO_PRAGMA_(warning(x))
 #else
 #  define LASSERT_DIAG_DO_PRAGMA_(x) _Pragma (#x)
@@ -41,10 +41,10 @@
 #  define LASSERT_ENABLE_WARNING_(a, b, c)
 #endif
 
-LASSERT_DISABLE_WARNING_(unused-parameter, unused-parameter, 425)
-LASSERT_DISABLE_WARNING_(format-security, format-security, 425)
-LASSERT_DISABLE_WARNING_(unused-but-set-parameter, gnu-zero-variadic-macro-arguments, 425)
-LASSERT_DISABLE_WARNING_(sign-compare, sign-compare, 425)
+LASSERT_DISABLE_WARNING_(unused-parameter, unused-parameter, 244)
+LASSERT_DISABLE_WARNING_(format-security, format-security, 244)
+LASSERT_DISABLE_WARNING_(unused-but-set-parameter, gnu-zero-variadic-macro-arguments, 244)
+LASSERT_DISABLE_WARNING_(sign-compare, sign-compare, 244)
 /* ---------------------------------------------- */
 
 
@@ -775,6 +775,9 @@ void LAssert_alloc(int disable){
 #define WARNING(message, ...) \
     LASSERT_GENERIC_LOG_(LASSERT_YELLOW_, msgs, nbMsgs, "WARNING " message, ##__VA_ARGS__)
 
+#ifdef ERROR // visual studio warning
+#  undef ERROR
+#endif
 #define ERROR(message, ...) \
     LASSERT_GENERIC_LOG_(LASSERT_RED_, msgs, nbMsgs, "ERROR " message, ##__VA_ARGS__)
 
