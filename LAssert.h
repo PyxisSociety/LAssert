@@ -28,6 +28,7 @@
 #  define LASSERT_DISABLE_WARNING_(gcc_unused,clang_unused,msvc_errorcode) LASSERT_DIAG_PRAGMA_(msvc,push) LASSERT_DIAG_DO_PRAGMA_(warning(disable:##msvc_errorcode))
 #  define LASSERT_ENABLE_WARNING_(gcc_unused,clang_unused,msvc_errorcode) LASSERT_DIAG_PRAGMA_(msvc,pop)
 #elif defined(__GNUC__)
+#pragma GCC system_header
 #  if ((__GNUC__ * 100) + __GNUC_MINOR__) >= 406
 #    define LASSERT_DISABLE_WARNING_(gcc_option,clang_unused,msvc_unused) LASSERT_DIAG_PRAGMA_(GCC,push) LASSERT_DIAG_PRAGMA_(GCC,ignored LASSERT_DIAG_JOINSTR_(-W,gcc_option))
 #    define LASSERT_ENABLE_WARNING_(gcc_option,clang_unused,msvc_unused) LASSERT_DIAG_PRAGMA_(GCC,pop)
@@ -146,7 +147,6 @@ LASSERT_DISABLE_WARNING_(sign-compare, sign-compare, 425)
             if(!LASSERT_logs_.msgsOnce[i].inCase || (old_line) < LASSERT_logs_.msgsOnce[i].line) \
                 LASSERT_PUTS_(LASSERT_logs_.msgsOnce[i].msg);           \
         }                                                               \
-            
     }
 
 
@@ -920,6 +920,7 @@ void LAssert_alloc(int disable){
                 ++LASSERT_data_.succeededCases;                         \
             }else                                                       \
                 ++LASSERT_data_.succeededTestsInCurrentCase;            \
+            LASSERT_logs_.nbMsgsOnce = 0;                               \
 	}								\
     }
 
@@ -965,6 +966,7 @@ void LAssert_alloc(int disable){
                 ++LASSERT_data_.succeededCases;                         \
             else                                                        \
                 ++LASSERT_data_.succeededTestsInCurrentCase;            \
+            LASSERT_logs_.nbMsgsOnce = 0;                               \
 	}								\
     }
 
