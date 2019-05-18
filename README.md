@@ -8,7 +8,6 @@ Unary test library in C, greatly inspired by [Catch2](https://github.com/catchor
 ## Notes
 
 Some functionalities are not available on windows:
-* text color in console output
 * making allocation functions return always `NULL`
 * the `COPY` macro (works on windows if compiled in C++)
 * the `PERFORMANCE` macro
@@ -39,7 +38,7 @@ The resulting program can have predefined parameters described bellow. If you us
 Default options are: -nt -c -out=consol -epsilon=1e-6
 Some other functionalities can be (de)activated by macros _and_ parameters such as:
 * __-\[n]t__ or __LASSERT_SECTION_TIME__: (de)activate timer functionality for sections
-* __-\[n]c__ or __LASSERT_NO_COLOR__: (de)activate color in input (only available for UNIX systems and in consol output)
+* __-\[n]c__ or __LASSERT_NO_COLOR__: (de)activate color in input
 * __-out=\[option]__ or : set the output format. \[option] can be one of the following:
   - **consol** (default behavior): standard output console with information about all test cases in all section
   - **small** or __LASSERT_MINIMIZED_OUTPUT__: smaller output giving only information about sections and not details about their test cases
