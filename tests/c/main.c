@@ -95,13 +95,13 @@ TEST_SECTION(range_test){
 TEST_SECTION(copy_test){
     unsigned i = 0;
 
-#ifndef LASSERT_WINDOWS
+
     TEST_CASE(should_succeed){
 	COPY(unsigned,i);
 	i = 2;
 	REQUIRE(i);
     }
-#endif
+
 
     // ONCE has to be put if there are test cases AND code not inside a test_case for the last one not to be done more than once
     ONCE puts("Display twice if problem not solved");
