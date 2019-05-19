@@ -9,7 +9,6 @@ Unary test library in C, greatly inspired by [Catch2](https://github.com/catchor
 
 Some functionalities are not available on windows:
 * making allocation functions return always `NULL`
-* the `COPY` macro (works on windows if compiled in C++)
 * the `PERFORMANCE` macro
 
 
