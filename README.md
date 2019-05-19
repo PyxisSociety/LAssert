@@ -48,7 +48,7 @@ Some other functionalities can be (de)activated by macros _and_ parameters such 
 __NOTES:__
 * In auto main mode, the program will return the number of section on failure.
 * In manual main mode, each call to `RUN_SECTION` returns 1 if the section failed due to an error, 2 if it failed due to a `NULL` pointer (call of `REQUIRE_NOT_NULL`) or 0 if all went well.
-* In manual main and minimized output mode, you need to call `LASSERT_PRINT_OUTPUT()` to show the result. If you call this function in another mode, it will simply do nothing so you should call it either way.
+* In manual main and minimized (or xml) output mode, you need to call `LASSERT_PRINT_OUTPUT()` to show the result. If you call this function in another mode, it will simply do nothing so you should call it either way.
 * In XML output mode, all user call to write things in standard and error outputs are locked. Forcedly unlocking will make this option unusable. 
 
 
@@ -292,6 +292,7 @@ With those tools, you can render allocation functions to return `NULL` whenever 
 * You need to link `libLAssert_alloc.so` shared library (built using `make` in the main LAssert folder) and using `-Wl,-rpath,/path/to/folder/containing/libLAssert_alloc.so -L/same/path -lLAssert_alloc -ldl`
 
 ```c
+#define LASSERT_MAIN
 #define LASSERT_CUSTOM_ALLOC
 #include "LAssert.h"
 
