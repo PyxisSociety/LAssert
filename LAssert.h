@@ -861,6 +861,31 @@ printf("%s", LASSERT_YELLOW_);\
     }                                                                   \
     while(*_old_flag < __LINE__ && --LASSERT_data_.nbRunInCase)
 
+#define VALUES_CASE(NAME_OF_TEST, type, variable, array)                \
+    if(*_old_flag < __LINE__){                                          \
+        if(!*_id_flag)                                                  \
+            ++LASSERT_data_.succeededCases;                             \
+        if(*LASSERT_name_of_test_ && LASSERT_events_.caseEnd)           \
+            LASSERT_events_.caseEnd(LASSERT_name_of_test_);             \
+        LASSERT_data_.succeededTestsInCurrentCase = 0;                  \
+        LASSERT_data_.currentCaseFailed = 0;                            \
+        if(LASSERT_parameters_.output == LASSERT_xml_output){           \
+            if(LASSERT_data_.testCaseOpened){                           \
+                LASSERT_XML_PRINT_("\t\t</testcase>");                  \
+            }else                                                       \
+                LASSERT_data_.testCaseOpened = 1;                       \
+            LASSERT_XML_PRINT_("\t\t<testcase name="                    \
+                               #NAME_OF_TEST ">");                      \
+        }                                                               \
+	_tab_lassert = NULL;                                            \
+	LASSERT_STRCPY_(LASSERT_name_of_test_, 512, #NAME_OF_TEST);     \
+	LASSERT_data_.nbRunInCase = sizeof(array) / sizeof(type) + 1;   \
+	*_id_flag = 0;                                                  \
+        if(LASSERT_events_.caseBegin)                                   \
+            LASSERT_events_.caseBegin(#NAME_OF_TEST);                   \
+    }                                                                   \
+    for(type variable = array[0]; *_old_flag < __LINE__ && --LASSERT_data_.nbRunInCase; variable = array[sizeof(array) / sizeof(type) - LASSERT_data_.nbRunInCase + 1])
+
 #define RAND_CASE(NAME_OF_TEST,var_name,nb_of_values,nb_of_time,...)    \
     int var_name[nb_of_values] = {0};					\
     int var_name##begin[nb_of_values] = {0};				\
@@ -945,12 +970,12 @@ printf("%s", LASSERT_YELLOW_);\
 		    if(blocking) *_has_to_quit = __LINE__;              \
 		    LASSERT_REQUIRE_CASE_failed_(#bool, __LINE__, *_old_flag, LASSERT_name_of_test_); \
 		    if(_tab_lassert){					\
-		LASSERT_PRINT_("%s", LASSERT_RED_);\
+                        LASSERT_PRINT_("%s", LASSERT_RED_);             \
 			LASSERT_PRINT_("\tFailed on this sequence :\n\t\t"); \
 			for(long _id = 0; _id < _size_of_tab; ++_id)    \
 			    LASSERT_PRINT_("%d ",_tab_lassert[_id]);    \
 		    }							\
-		LASSERT_PRINT_("%s\n", LASSERT_NORMAL_);\
+                    LASSERT_PRINT_("%s\n", LASSERT_NORMAL_);            \
 		    if(blocking) LASSERT_data_.nbRunInCase = 0;         \
 		}else							\
 		    LASSERT_REQUIRE_failed_(#bool, __LINE__, *_old_flag); \

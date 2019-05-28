@@ -92,6 +92,31 @@ TEST_SECTION(range_test){
     }
 }
 
+#ifdef __cplusplus
+class I{
+  public:
+  I(int i):i(i){}
+    int i;
+    I& operator=(int i){this->i = i; return *this;}
+    operator int(){return i;}
+};
+#else
+typedef int I;
+#endif
+TEST_SECTION("values test"){
+    I i[] = {1, 2, 3, 4};
+
+    VALUES_CASE("should succeed", I, var, i){
+        REQUIRE(var, "failed with value %d\n", (int)var);
+    }
+    
+    i[3] = 0;
+
+    VALUES_CASE("should fail", I, var, i){
+        REQUIRE(var, "failed with value %d\n", (int)var);
+    }
+}
+
 TEST_SECTION(copy_test){
     unsigned i = 0;
 
@@ -234,7 +259,7 @@ TEST_SECTION(logs){
     }
 
     ERROR("oups");
-
+    ERROR_ONCE("Only once");
     CHECK(0);
 
     REQUIRE(0);

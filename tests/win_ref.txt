@@ -110,6 +110,25 @@ Succeeded : 1 test_case(s)
 
 
 ------------------------------------------------------------
+BEGIN OF SECTION "values test" 
+
+
+"should fail" test_case :
+	3 test(s) passed
+	Failed statement case line 116 :
+		var 
+
+	log message :
+failed with value 0
+
+
+END OF SECTION "values test" 
+Failed : 1 test_case(s)
+Succeeded : 1 test_case(s)
+------------------------------------------------------------
+
+
+------------------------------------------------------------
 BEGIN OF SECTION copy_test 
 
 Display twice if problem not solved

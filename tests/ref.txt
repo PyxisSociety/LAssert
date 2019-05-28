@@ -110,6 +110,25 @@ Succeeded : 1 test_case(s)
 
 
 ------------------------------------------------------------
+BEGIN OF SECTION "values test" 
+
+
+"should fail" test_case :
+	3 test(s) passed
+	Failed statement case line 116 :
+		var 
+
+	log message :
+failed with value 0
+
+
+END OF SECTION "values test" 
+Failed : 1 test_case(s)
+Succeeded : 1 test_case(s)
+------------------------------------------------------------
+
+
+------------------------------------------------------------
 BEGIN OF SECTION copy_test 
 
 Display twice if problem not solved
@@ -117,7 +136,7 @@ A block displayed only once
 
 should_failed test_case :
 	0 test(s) passed
-	Failed statement case line 114 :
+	Failed statement case line 139 :
 		i 
 
 
@@ -133,7 +152,7 @@ BEGIN OF SECTION equal_test
 
 should_failed test_case :
 	0 test(s) passed
-	Failed statement case line 122 :
+	Failed statement case line 147 :
 		(.7) == (.6) 
 
 
@@ -258,6 +277,25 @@ Succeeded : 1 test_case(s)
 
 
 ------------------------------------------------------------
+BEGIN OF SECTION "values test" 
+
+
+"should fail" test_case :
+	3 test(s) passed
+	Failed statement case line 116 :
+		var 
+
+	log message :
+failed with value 0
+
+
+END OF SECTION "values test" 
+Failed : 1 test_case(s)
+Succeeded : 1 test_case(s)
+------------------------------------------------------------
+
+
+------------------------------------------------------------
 BEGIN OF SECTION copy_test 
 
 Display twice if problem not solved
@@ -265,7 +303,7 @@ A block displayed only once
 
 should_failed test_case :
 	0 test(s) passed
-	Failed statement case line 114 :
+	Failed statement case line 139 :
 		i 
 
 
@@ -281,7 +319,7 @@ BEGIN OF SECTION equal_test
 
 should_failed test_case :
 	0 test(s) passed
-	Failed statement case line 122 :
+	Failed statement case line 147 :
 		(.7) == (.6) 
 
 
@@ -407,6 +445,25 @@ Succeeded : 1 test_case(s)
 
 
 ------------------------------------------------------------
+BEGIN OF SECTION "values test" 
+
+
+"should fail" test_case :
+	3 test(s) passed
+	Failed statement case line 116 :
+		var 
+
+	log message :
+failed with value 0
+
+
+END OF SECTION "values test" 
+Failed : 1 test_case(s)
+Succeeded : 1 test_case(s)
+------------------------------------------------------------
+
+
+------------------------------------------------------------
 BEGIN OF SECTION copy_test 
 
 Display twice if problem not solved
@@ -414,7 +471,7 @@ A block displayed only once
 
 should_failed test_case :
 	0 test(s) passed
-	Failed statement case line 114 :
+	Failed statement case line 139 :
 		i 
 
 
@@ -430,7 +487,7 @@ BEGIN OF SECTION equal_test
 
 should_failed test_case :
 	0 test(s) passed
-	Failed statement case line 122 :
+	Failed statement case line 147 :
 		(.7) == (.6) 
 
 
@@ -447,13 +504,13 @@ After this line, "1" should be printed
 
 inside_case_ko test_case :
 	0 test(s) passed
-	Failed statement case line 138 :
+	Failed statement case line 163 :
 		timeout reached in PERFORMANCE block 
 1
 
 inside_case_ko test_case :
 	1 test(s) passed
-	Failed statement case line 144 :
+	Failed statement case line 169 :
 		0 
 
 
@@ -568,6 +625,25 @@ Succeeded : 1 test_case(s)
 
 
 ------------------------------------------------------------
+BEGIN OF SECTION "values test" 
+
+
+"should fail" test_case :
+	3 test(s) passed
+	Failed statement case line 116 :
+		var 
+
+	log message :
+failed with value 0
+
+
+END OF SECTION "values test" 
+Failed : 1 test_case(s)
+Succeeded : 1 test_case(s)
+------------------------------------------------------------
+
+
+------------------------------------------------------------
 BEGIN OF SECTION copy_test 
 
 Display twice if problem not solved
@@ -575,7 +651,7 @@ A block displayed only once
 
 should_failed test_case :
 	0 test(s) passed
-	Failed statement case line 114 :
+	Failed statement case line 139 :
 		i 
 
 
@@ -591,7 +667,7 @@ BEGIN OF SECTION equal_test
 
 should_failed test_case :
 	0 test(s) passed
-	Failed statement case line 122 :
+	Failed statement case line 147 :
 		(.7) == (.6) 
 
 
@@ -608,13 +684,13 @@ After this line, "1" should be printed
 
 inside_case_ko test_case :
 	0 test(s) passed
-	Failed statement case line 138 :
+	Failed statement case line 163 :
 		timeout reached in PERFORMANCE block 
 1
 
 inside_case_ko test_case :
 	1 test(s) passed
-	Failed statement case line 144 :
+	Failed statement case line 169 :
 		0 
 
 
@@ -729,6 +805,25 @@ Succeeded : 1 test_case(s)
 
 
 ------------------------------------------------------------
+BEGIN OF SECTION "values test" 
+
+
+"should fail" test_case :
+	3 test(s) passed
+	Failed statement case line 116 :
+		var 
+
+	log message :
+failed with value 0
+
+
+END OF SECTION "values test" 
+Failed : 1 test_case(s)
+Succeeded : 1 test_case(s)
+------------------------------------------------------------
+
+
+------------------------------------------------------------
 BEGIN OF SECTION copy_test 
 
 Display twice if problem not solved
@@ -736,7 +831,7 @@ A block displayed only once
 
 should_failed test_case :
 	0 test(s) passed
-	Failed statement case line 114 :
+	Failed statement case line 139 :
 		i 
 
 
@@ -752,7 +847,7 @@ BEGIN OF SECTION equal_test
 
 should_failed test_case :
 	0 test(s) passed
-	Failed statement case line 122 :
+	Failed statement case line 147 :
 		(.7) == (.6) 
 
 
@@ -769,18 +864,18 @@ After this line, "1" should be printed
 
 inside_case_ko test_case :
 	0 test(s) passed
-	Failed statement case line 138 :
+	Failed statement case line 163 :
 		timeout reached in PERFORMANCE block 
 1
 
 inside_case_ko test_case :
 	1 test(s) passed
-	Failed statement case line 144 :
+	Failed statement case line 169 :
 		0 
 
 
 
-Failed statement outside a test case line 151 :
+Failed statement outside a test case line 176 :
 	timeout reached in PERFORMANCE block 
 
 ------------------------------------------------------------
@@ -894,6 +989,25 @@ Succeeded : 1 test_case(s)
 
 
 ------------------------------------------------------------
+BEGIN OF SECTION "values test" 
+
+
+"should fail" test_case :
+	3 test(s) passed
+	Failed statement case line 116 :
+		var 
+
+	log message :
+failed with value 0
+
+
+END OF SECTION "values test" 
+Failed : 1 test_case(s)
+Succeeded : 1 test_case(s)
+------------------------------------------------------------
+
+
+------------------------------------------------------------
 BEGIN OF SECTION copy_test 
 
 Display twice if problem not solved
@@ -901,7 +1015,7 @@ A block displayed only once
 
 should_failed test_case :
 	0 test(s) passed
-	Failed statement case line 114 :
+	Failed statement case line 139 :
 		i 
 
 
@@ -917,7 +1031,7 @@ BEGIN OF SECTION equal_test
 
 should_failed test_case :
 	0 test(s) passed
-	Failed statement case line 122 :
+	Failed statement case line 147 :
 		(.7) == (.6) 
 
 
@@ -934,18 +1048,18 @@ After this line, "1" should be printed
 
 inside_case_ko test_case :
 	0 test(s) passed
-	Failed statement case line 138 :
+	Failed statement case line 163 :
 		timeout reached in PERFORMANCE block 
 1
 
 inside_case_ko test_case :
 	1 test(s) passed
-	Failed statement case line 144 :
+	Failed statement case line 169 :
 		0 
 
 
 
-Failed statement outside a test case line 151 :
+Failed statement outside a test case line 176 :
 	timeout reached in PERFORMANCE block 
 
 END OF SECTION perfo_test 
@@ -990,7 +1104,7 @@ Failure in "test case" --- is in case ? 1
 
 "test case" test_case :
 	0 test(s) passed
-	Failed statement case line 206 :
+	Failed statement case line 231 :
 		0 
 
 end "test case"
@@ -1000,7 +1114,7 @@ begin "range case"
 Failure in "redefined event behavior" --- is in case ? 0
 
 
-Failed statement outside a test case line 215 :
+Failed statement outside a test case line 240 :
 	0 
 end "range case"
 end "redefined event behavior"
@@ -1026,13 +1140,13 @@ BEGIN OF SECTION logs
 
 
 INFO COUCOU johnny
-Failed statement outside a test case line 227 :
+Failed statement outside a test case line 252 :
 	0 
 
 "warning case" test_case :
 INFO COUCOU johnny
 	0 test(s) passed
-	Failed statement case line 230 :
+	Failed statement case line 255 :
 		0 
 
 
@@ -1040,7 +1154,7 @@ INFO COUCOU johnny
 INFO COUCOU johnny
 WARNING be careful
 	0 test(s) passed
-	Failed statement case line 232 :
+	Failed statement case line 257 :
 		0 
 
 
@@ -1048,13 +1162,13 @@ WARNING be careful
 INFO COUCOU johnny
 ERROR oups
 ERROR Only once
-Failed statement outside a test case line 238 :
+Failed statement outside a test case line 263 :
 	0 
 
 
 INFO COUCOU johnny
 ERROR oups
-Failed statement outside a test case line 240 :
+Failed statement outside a test case line 265 :
 	0 
 
 END OF SECTION logs 
@@ -1067,7 +1181,7 @@ BEGIN OF SECTION "no logs"
 
 
 
-Failed statement outside a test case line 243 :
+Failed statement outside a test case line 268 :
 	0 
 
 END OF SECTION "no logs" 
