@@ -320,14 +320,46 @@ LASSERT_EXTERN_ void LASSERT_deactivate_output_(void);
 LASSERT_EXTERN_ void LASSERT_activate_output_(void);
 LASSERT_EXTERN_ void LASSERT_XML_PRINT_(const char * s, ...);
 LASSERT_EXTERN_ void LASSERT_PRINT_OUTPUT_(void);
+/**
+ * @brief Set the epsilon value to be used by `EQ` macro
+ * @param epsilon: new epsilon value used for floating point comparison
+ */
 LASSERT_EXTERN_ void LASSERT_set_epsilon(double epsilon);
+/**
+ * @brief Set the random seed to be used (initialize standard random generator)
+ * @param seed: new seed to be used with the standard random generator
+ */
 LASSERT_EXTERN_ void LASSERT_init_seed(unsigned seed);
+/**
+ * @brief Set the random function to be used
+ * @param random: new function to be used to get random numbers
+ */
 LASSERT_EXTERN_ void LASSERT_set_rand_function(int (*random)(void));
 LASSERT_EXTERN_ void LASSERT_signal_capture_(int sig);
+/**
+ * @brief Subscribe a function to the "SECTION begin" event
+ * @param behavior: behavior to be subscribed
+ */
 LASSERT_EXTERN_ void LASSERT_on_section_begin(void (*behavior)(const char * name));
+/**
+ * @brief Subscribe a function to the "SECTION end" event
+ * @param behavior: behavior to be subscribed
+ */
 LASSERT_EXTERN_ void LASSERT_on_section_end(void (*behavior)(const char * name));
+/**
+ * @brief Subscribe a function to the "CASE begin" event
+ * @param behavior: behavior to be subscribed
+ */
 LASSERT_EXTERN_ void LASSERT_on_case_begin(void (*behavior)(const char * name));
+/**
+ * @brief Subscribe a function to the "CASE end" event
+ * @param behavior: behavior to be subscribed
+ */
 LASSERT_EXTERN_ void LASSERT_on_case_end(void (*behavior)(const char * name));
+/**
+ * @brief Subscribe a function to the "assertion failure" event
+ * @param behavior: behavior to be subscribed
+ */
 LASSERT_EXTERN_ void LASSERT_on_assertion_failure(void (*behavior)(char isInCase, const char * name));
 
 #ifdef LASSERT_MAIN
@@ -759,7 +791,7 @@ void LASSERT_on_assertion_failure(void (*behavior)(char isInCase, const char * n
     }
 #  endif
 /**
- * @brief Lock/unlock allocation functions. Locked functions always return NULL
+ * @brief Lock/unlock allocation functions. Locked functions always return NULL (only on windows)
  * @param disable: flag to tell whether or not allocation functions should be locked
  */
 LASSERT_EXTERN_ void LAssert_alloc(int disable);
@@ -812,35 +844,71 @@ printf("%s", LASSERT_YELLOW_);\
         }                                                               \
     }
 
+/**
+ * @brief Info to be shawn on test failure
+ * @param message, ...: same parameters as fo a `printf` call
+ */
 #define INFO(message, ...) \
     LASSERT_GENERIC_LOG_(6, msgs, nbMsgs, "INFO " message, ##__VA_ARGS__)
 
+/**
+ * @brief Warning to be shawn on test failure
+ * @param message, ...: same parameters as fo a `printf` call
+ */
 #define WARNING(message, ...) \
     LASSERT_GENERIC_LOG_(3, msgs, nbMsgs, "WARNING " message, ##__VA_ARGS__)
 
 #ifdef ERROR // visual studio warning
 #  undef ERROR
 #endif
+/**
+ * @brief Error to be shawn on test failure
+ * @param message, ...: same parameters as fo a `printf` call
+ */
 #define ERROR(message, ...) \
     LASSERT_GENERIC_LOG_(1, msgs, nbMsgs, "ERROR " message, ##__VA_ARGS__)
 
+/**
+ * @brief Info to be shawn if the next `REQUIRE` like macro fails
+ * @param message, ...: same parameters as fo a `printf` call
+ */
 #define INFO_ONCE(message, ...) \
     LASSERT_GENERIC_LOG_(6, msgsOnce, nbMsgsOnce, "INFO " message, ##__VA_ARGS__)
 
+/**
+ * @brief Warning to be shawn if the next `REQUIRE` like macro fails
+ * @param message, ...: same parameters as fo a `printf` call
+ */
 #define WARNING_ONCE(message, ...) \
     LASSERT_GENERIC_LOG_(3, msgsOnce, nbMsgsOnce, "WARNING " message, ##__VA_ARGS__)
 
+/**
+ * @brief Error to be shawn if the next `REQUIRE` like macro fails
+ * @param message, ...: same parameters as fo a `printf` call
+ */
 #define ERROR_ONCE(message, ...) \
     LASSERT_GENERIC_LOG_(1, msgsOnce, nbMsgsOnce, "ERROR " message, ##__VA_ARGS__)
 
+/**
+ * @brief Makes sure that all modifications on a variable in the scope containing this macro call are not repercuted on the same variable in all parent scopes
+ * @param type: type of the variable
+ * @param var: name of the variable
+ */
 #define COPY(type, var) LASSERT_SUB_COPY_(type, var, __COUNTER__)
 #define LASSERT_SUB_COPY_(type, var, n) LASSERT_COPY_(type, var, n)
 #define LASSERT_COPY_(type, var, n) \
     type _LASSERT_tmp_##var##_##n##_ = var; \
     type var = _LASSERT_tmp_##var##_##n##_
 
+/**
+ * @brief Make sure that the following line (ex: `ONCE puts("ok");`, `ONCE { puts("ok"); }`) is called only once even on test failure
+ */
 #define ONCE if(*_old_flag < __LINE__ && (LASSERT_data_.nbRunInCase = 1)) while(LASSERT_data_.nbRunInCase--)
 
+/**
+ * @brief Macro to declare a simple test case inside a test section
+ * @param NAME_OF_TEST: name of the test case
+ */
 #define TEST_CASE(NAME_OF_TEST)                                         \
     if(*_old_flag < __LINE__){                                          \
         if(!*_id_flag)                                                  \
@@ -866,6 +934,13 @@ printf("%s", LASSERT_YELLOW_);\
     }                                                                   \
     while(*_old_flag < __LINE__ && --LASSERT_data_.nbRunInCase)
 
+/**
+ * @brief Macro to declare a values test case inside a test section (will iterate on all values of an array)
+ * @param NAME_OF_TEST: name of the test case
+ * @param type: type of each items of the array
+ * @param variable: variable to store each items in
+ * @param array: static array (in a variable) that will be iterated through
+ */
 #define VALUES_CASE(NAME_OF_TEST, type, variable, array)                \
     if(*_old_flag < __LINE__){                                          \
         if(!*_id_flag)                                                  \
@@ -891,6 +966,11 @@ printf("%s", LASSERT_YELLOW_);\
     }                                                                   \
     for(type variable = array[0]; *_old_flag < __LINE__ && --LASSERT_data_.nbRunInCase; variable = array[sizeof(array) / sizeof(type) - LASSERT_data_.nbRunInCase + 1])
 
+/**
+ * @brief Macro to declare a simple random test case (integers) inside a test section
+ * @param NAME_OF_TEST: name of the test case
+ * @param var_name: array in which to store the random generated numbers
+ */
 #define RAND_CASE(NAME_OF_TEST,var_name,nb_of_values,nb_of_time,...)    \
     int var_name[nb_of_values] = {0};					\
     int var_name##begin[nb_of_values] = {0};				\
@@ -921,6 +1001,10 @@ printf("%s", LASSERT_YELLOW_);\
     }									\
     while(*_old_flag < __LINE__ && !*_id_flag && (LASSERT_next_rand_tab_(var_name,var_name##begin,var_name##end,nb_of_values), --LASSERT_data_.nbRunInCase > 0))
 
+/**
+ * @brief Macro to declare a simple test case inside a test section
+ * @param NAME_OF_TEST: name of the test case
+ */
 #define RANGE_CASE(NAME_OF_TEST,var_name,nb_of_values,...)              \
     int var_name[nb_of_values] = {0};					\
     int var_name##_begin[nb_of_values] = {0};				\
