@@ -1321,23 +1321,23 @@ void LASSERT_PARAMETERS_INIT(int argc, char ** argv){
         }else if(!strcmp("-nc", argv[i])){
             // -nc
             LASSERT_parameters_.color = LASSERT_no_color;
-        }else if(strlen(argv[i]) >= EPS_SIZE && !strncmp("-epsilon=", argv[i], EPS_SIZE)){
+        }else if(strlen(argv[i]) >= EPS_SIZE && !strncmp(epsilonStr, argv[i], EPS_SIZE)){
             // -epsilon=...
             epsilon = atof(argv[i] + EPS_SIZE);
             if(epsilon <= 0){
-				printf("%s", LASSERT_RED_);
+                printf("%s", LASSERT_RED_);
                 puts("EPSILON VALUE MUST BE STRICTLY POSITIVE");
-				printf("%s", LASSERT_YELLOW_);
-				printf("%s", "\tVALUE [ ");
-				printf("%s", LASSERT_NORMAL_);
-				printf("%s", argv[i] + EPS_SIZE);
-				printf("%s", LASSERT_YELLOW_);
-				printf("%s", " ] IGNORED\n\tDEFAULT VALUE KEPT [ ");
-				printf("%s", LASSERT_NORMAL_);
-				printf("%f", LASSERT_EPSILON);
-				printf("%s", LASSERT_YELLOW_);
-				printf("%s", " ]"); 
-				puts(LASSERT_NORMAL_);
+                printf("%s", LASSERT_YELLOW_);
+                printf("%s", "\tVALUE [ ");
+                printf("%s", LASSERT_NORMAL_);
+                printf("%s", argv[i] + EPS_SIZE);
+                printf("%s", LASSERT_YELLOW_);
+                printf("%s", " ] IGNORED\n\tDEFAULT VALUE KEPT [ ");
+                printf("%s", LASSERT_NORMAL_);
+                printf("%f", LASSERT_EPSILON);
+                printf("%s", LASSERT_YELLOW_);
+                printf("%s", " ]"); 
+                puts(LASSERT_NORMAL_);
             }else{
                 LASSERT_data_.epsilon = epsilon;
             }
@@ -1347,19 +1347,19 @@ void LASSERT_PARAMETERS_INIT(int argc, char ** argv){
             if(seed >= 0){
                 LASSERT_data_.seed = seed;
             }else{
-				printf("%s", LASSERT_RED_);
-				puts("SEED VALUE MUST BE AT LEAST ZERO");
-				printf("%s", LASSERT_YELLOW_);
-				printf("%s", "\tVALUE [ ");
-				printf("%s", LASSERT_NORMAL_);
-				printf("%s", argv[i] + SEED_SIZE);
-				printf("%s", LASSERT_YELLOW_);
-				printf("%s", " ] IGNORED\n\tDEFAULT VALUE KEPT [ ");
-				printf("%s", LASSERT_NORMAL_);
-				printf("%d", LASSERT_SEED);
-				printf("%s", LASSERT_YELLOW_);
-				printf("%s", " ]");
-				puts(LASSERT_NORMAL_);
+                printf("%s", LASSERT_RED_);
+                puts("SEED VALUE MUST BE AT LEAST ZERO");
+                printf("%s", LASSERT_YELLOW_);
+                printf("%s", "\tVALUE [ ");
+                printf("%s", LASSERT_NORMAL_);
+                printf("%s", argv[i] + SEED_SIZE);
+                printf("%s", LASSERT_YELLOW_);
+                printf("%s", " ] IGNORED\n\tDEFAULT VALUE KEPT [ ");
+                printf("%s", LASSERT_NORMAL_);
+                printf("%d", LASSERT_SEED);
+                printf("%s", LASSERT_YELLOW_);
+                printf("%s", " ]");
+                puts(LASSERT_NORMAL_);
             }
         }else if(strlen(argv[i]) >= OUT_SIZE && !strncmp(out, argv[i], OUT_SIZE)){
             // -out=...
@@ -1372,24 +1372,24 @@ void LASSERT_PARAMETERS_INIT(int argc, char ** argv){
             }else if(!strcmp("xml", argv[i] + OUT_SIZE)){
                 LASSERT_parameters_.output = LASSERT_xml_output;
             }else{
-				printf("%s", LASSERT_YELLOW_);
-				printf("%s", "UNKNOWN OUTPUT OPTION [ ");
-				printf("%s", LASSERT_NORMAL_);
-				printf("%s", argv[i] + OUT_SIZE);
-				printf("%s", LASSERT_YELLOW_);
-				printf("%s", " ] IGNORED");
-				puts(LASSERT_NORMAL_);
+                printf("%s", LASSERT_YELLOW_);
+                printf("%s", "UNKNOWN OUTPUT OPTION [ ");
+                printf("%s", LASSERT_NORMAL_);
+                printf("%s", argv[i] + OUT_SIZE);
+                printf("%s", LASSERT_YELLOW_);
+                printf("%s", " ] IGNORED");
+                puts(LASSERT_NORMAL_);
             }
         }else if(!strcmp("-h", argv[i])){
             help = 1;
         }else{
-			printf("%s", LASSERT_YELLOW_);
-			printf("%s", "UNKNOWN OUTPUT OPTION [ ");
-			printf("%s", LASSERT_NORMAL_);
-			printf("%s", argv[i] + OUT_SIZE);
-			printf("%s", LASSERT_YELLOW_);
-			printf("%s", " ] IGNORED");
-			puts(LASSERT_NORMAL_);
+            printf("%s", LASSERT_YELLOW_);
+            printf("%s", "UNKNOWN OPTION [ ");
+            printf("%s", LASSERT_NORMAL_);
+            printf("%s", argv[i]);
+            printf("%s", LASSERT_YELLOW_);
+            printf("%s", " ] IGNORED");
+            puts(LASSERT_NORMAL_);
         }
     }
 
