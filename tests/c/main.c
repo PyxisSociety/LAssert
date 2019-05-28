@@ -267,3 +267,4 @@ TEST_SECTION(logs){
 TEST_SECTION("no logs"){
     REQUIRE(0);
 }
+

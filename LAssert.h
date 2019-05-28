@@ -1060,6 +1060,8 @@ printf("%s", LASSERT_YELLOW_);\
 #ifndef LASSERT_WINDOWS
 #  define PERFORMANCE(timeout)                                          \
     if(*_old_flag < __LINE__){						\
+        fflush(stdout);                                                 \
+        fflush(stderr);                                                 \
         _size_of_tab = fork();                                          \
         LASSERT_data_.perfoLine = __LINE__;                             \
     }else{                                                              \
