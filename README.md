@@ -164,6 +164,20 @@ TEST_SECTION(range_test){
     }
 }
 
+TEST_SECTION("values test"){
+    int i[] = {1, 2, 3, 4};
+
+    VALUES_CASE("should succeed", int, var, i){
+        REQUIRE(var, "failed with value %d\n", var);
+    }
+    
+    i[3] = 0;
+
+    VALUES_CASE("should fail", int, var, i){
+        REQUIRE(var, "failed with value %d\n", var);
+    }
+}
+
 TEST_SECTION(copy_test){
     unsigned i = 0;
 
@@ -217,6 +231,11 @@ Here is what each macro means in case you did not guess :
   * the variable in which we want to store the random values (`int tab[]`) (WARNING : if you use more than one **RAND_CASE** or **RANGE_CASE** in the same section, variable names have to be different)
   * the size of tab
   * an unlimited number of ranges that have the form `begin, end, step`
+* **VALUES_CASE** : special test case which will be run for all values in an array, its parameters are<br/>
+  * the name of the test case
+  * the type of each items in the array
+  * the variable name which will store the value of the current item (it is copied)
+  * the array of values (it needs to be a variable of type static array)
 * **COPY** : copy a variable of a section in a test case so that the modifications brought by the test case will only be effective in it
 * **ONCE** : prevent a code inside a section but outside a test case to be called more than once<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This problem can occure when you mix up test cases and code not inside test cases
