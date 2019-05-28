@@ -8,7 +8,7 @@ Unary test library in C, greatly inspired by [Catch2](https://github.com/catchor
 ## Useful links
 
 From this "read-me", you can either go to:
-* the [Tutorial](Docs/Tutorial.md)
+* the [Tutorial](Readmes/Tutorial.md)
 * the [online documentation]()
 
 ## About the author
