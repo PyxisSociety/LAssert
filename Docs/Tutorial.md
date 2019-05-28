@@ -1,27 +1,12 @@
 # LAssert
 
-[![unix tests](https://gitlab.com/BaptistePR/LAssert/badges/master/pipeline.svg)](https://gitlab.com/BaptistePR/LAssert/commits/master)
-[![windows tests](https://ci.appveyor.com/api/projects/status/kuje45ncj05adc5a/branch/master?svg=true)](https://ci.appveyor.com/project/Klevh/lassert/branch/master)
-
 Unary test library in C, greatly inspired by [Catch2](https://github.com/catchorg/Catch2).
-  
-To see this read me file with a better display, you can go to [this project's
-website](https://klevh.github.io/LAssert/).
-
-## About the author
-
-## Useful links
-
-From this "read-me", you can either go to:
-* the [Tutorial](Docs/Tutorial.md)
-* the [online documentation]()
 
 ## Notes
 
 Some functionalities are not available on windows:
 * making allocation functions return always `NULL`
 * the `PERFORMANCE` macro
-
 
 ## How to use it
 
