@@ -22,7 +22,6 @@ Here is a small tutorial devided in few steps:
 
 ### <a id="markdown-header-Configuration"></a>Configuration and remarks
 Some functionalities can be (de)activated by macros only (that need to be put before including LAssert) such as:
-* **LASSERT_MANUAL_MAIN**: providing a self define main
 * **LASSERT_CUSTOM_ALLOC**: enabling (de)activation of allocation functions (making them work normally or always return `NULL`)
   
 The resulting program can have predefined parameters described bellow. If you used **LASSERT_MANUAL_MAIN**, you can still have this behavior by calling `LASSERT_PARAMETERS_INIT(argc, argv)`. Using `-h` option will show you all available parameters but will prevent the program from running the tests.
@@ -42,8 +41,6 @@ Some other functionalities can be (de)activated by macros _and_ parameters such 
   
 __NOTES:__
 * In auto main mode, the program will return the number of section on failure.
-* In manual main mode, each call to `RUN_SECTION` returns 1 if the section failed due to an error, 2 if it failed due to a `NULL` pointer (call of `REQUIRE_NOT_NULL`) or 0 if all went well.
-* In manual main and minimized (or xml) output mode, you need to call `LASSERT_PRINT_OUTPUT()` to show the result. If you call this function in another mode, it will simply do nothing so you should call it either way.
 * In XML output mode, all user call to write things in standard and error outputs are locked. Forcedly unlocking will make this option unusable. 
 
 
@@ -92,15 +89,6 @@ TEST_SECTION(equal_test){
 
     EQ_EPS(.7, .6, .2);
 }
-
-#ifdef LASSERT_MANUAL_MAIN
-int main(){
-    RUN_SECTION(Section1);
-    RUN_SECTION(Section2);
-
-    return 0;
-}
-#endif
 ```
 Here is what each macro means in case you did not guess :
 * **LASSERT_MAIN**: specify that the current file is the main file. You need one and only one file from all those compiled in the program to have this macro before `LAssert.h` inclusion.

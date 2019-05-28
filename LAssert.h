@@ -324,9 +324,6 @@ LASSERT_EXTERN_ char * LASSERT_get_color_result_(double result);
 LASSERT_EXTERN_ void LASSERT_deactivate_output_(void);
 LASSERT_EXTERN_ void LASSERT_activate_output_(void);
 LASSERT_EXTERN_ void LASSERT_XML_PRINT_(const char * s, ...);
-/**
- * @brief function to be called at the end of the main function when LASSERT_MANUAL_MAIN is defined
- */
 LASSERT_EXTERN_ void LASSERT_PRINT_OUTPUT_(void);
 /**
  * @brief Set the epsilon value to be used by `EQ` macro
@@ -1236,7 +1233,7 @@ printf("%s", LASSERT_YELLOW_);\
 
 
     
-#ifndef LASSERT_MANUAL_MAIN
+//#ifndef LASSERT_MANUAL_MAIN
 #  ifdef LASSERT_MAIN
 int main(){
     LASSERT_PRINT_OUTPUT_();
@@ -1261,14 +1258,10 @@ int main(){
 #  else
 #    define LASSERT_AUTOCALL_HANDLER_(fname) __attribute__((constructor));
 #  endif
-#else
-#  define LASSERT_AUTOCALL_HANDLER_(fname)
-/**
- * @brief if LASSERT_MANUAL_MAIN is defined, it enables to run a section with a certain name
- * @param name: name of the section
- */
-#  define RUN_SECTION(name) _call_test_##name##_lassert()
-#endif
+//#else
+//#  define LASSERT_AUTOCALL_HANDLER_(fname)
+//#  define RUN_SECTION(name) _call_test_##name##_lassert()
+//#endif
 
 
 
@@ -1391,7 +1384,7 @@ int main(){
 
 
 
-#ifndef LASSERT_MANUAL_MAIN
+//#ifndef LASSERT_MANUAL_MAIN
 #  ifdef LASSERT_UNIX
 LASSERT_EXTERN_ void LASSERT_PARAMETERS_INIT(int argc, char** argv) __attribute__((constructor));
 #  else
@@ -1435,14 +1428,9 @@ static void LASSERT_PARAMETERS_SUB_INIT(void) LASSERT_AUTOCALL_HANDLER_(LASSERT_
 }
 #    endif
 #  endif
-#else
-/**
- * @brief parameters parser for LAssert, manual use is needed *ONLY* if LASSERT_MANUAL_MAIN is defined
- * @param argc: same as argc main parameter
- * @param argv: same as argv main parameter
- */
+/*#else
 LASSERT_EXTERN_ void LASSERT_PARAMETERS_INIT(int argc, char ** argv);
-#endif
+#endif*/
 #ifdef LASSERT_MAIN
 void LASSERT_PARAMETERS_INIT(int argc, char ** argv){
     int help = 0;
