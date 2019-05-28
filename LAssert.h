@@ -95,7 +95,6 @@ LASSERT_DISABLE_WARNING_(sign-compare, sign-compare, 244)
 #  define LASSERT_TIME_INTERVAL_(start,end) (double)((end) - (start)) / 1000
 #  define LASSERT_STRCPY_(a, b, c) strncpy(a, c, b)
 #  define LASSERT_SPRINTF_(a, b, c, ...) snprintf(a, b, c, ##__VA_ARGS__)
-#  define COPY(type,var) type var = var
 #else
 #  define LASSERT_WINDOWS
 #  define LASSERT_TMP_DIR_ "C:\\Windows\\Temp\\"
@@ -833,6 +832,12 @@ printf("%s", LASSERT_YELLOW_);\
 
 #define ERROR_ONCE(message, ...) \
     LASSERT_GENERIC_LOG_(1, msgsOnce, nbMsgsOnce, "ERROR " message, ##__VA_ARGS__)
+
+#define COPY(type, var) LASSERT_SUB_COPY_(type, var, __COUNTER__)
+#define LASSERT_SUB_COPY_(type, var, n) LASSERT_COPY_(type, var, n)
+#define LASSERT_COPY_(type, var, n) \
+    type _LASSERT_tmp_##var##_##n##_ = var; \
+    type var = _LASSERT_tmp_##var##_##n##_
 
 #define ONCE if(*_old_flag < __LINE__ && (LASSERT_data_.nbRunInCase = 1)) while(LASSERT_data_.nbRunInCase--)
 

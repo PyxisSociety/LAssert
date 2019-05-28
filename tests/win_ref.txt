@@ -142,6 +142,7 @@ should_failed test_case :
 
 END OF SECTION copy_test 
 Failed : 1 test_case(s)
+Succeeded : 1 test_case(s)
 ------------------------------------------------------------
 
 

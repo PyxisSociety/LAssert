@@ -9,9 +9,7 @@ Unary test library in C, greatly inspired by [Catch2](https://github.com/catchor
 
 Some functionalities are not available on windows:
 * making allocation functions return always `NULL`
-* the `COPY` macro (works on windows if compiled in C++)
 * the `PERFORMANCE` macro
-* Having multiple files for one program
 
 
 
@@ -50,7 +48,7 @@ Some other functionalities can be (de)activated by macros _and_ parameters such 
 __NOTES:__
 * In auto main mode, the program will return the number of section on failure.
 * In manual main mode, each call to `RUN_SECTION` returns 1 if the section failed due to an error, 2 if it failed due to a `NULL` pointer (call of `REQUIRE_NOT_NULL`) or 0 if all went well.
-* In manual main and minimized output mode, you need to call `LASSERT_PRINT_OUTPUT()` to show the result. If you call this function in another mode, it will simply do nothing so you should call it either way.
+* In manual main and minimized (or xml) output mode, you need to call `LASSERT_PRINT_OUTPUT()` to show the result. If you call this function in another mode, it will simply do nothing so you should call it either way.
 * In XML output mode, all user call to write things in standard and error outputs are locked. Forcedly unlocking will make this option unusable. 
 
 
@@ -219,7 +217,7 @@ Here is what each macro means in case you did not guess :
   * the variable in which we want to store the random values (`int tab[]`) (WARNING : if you use more than one **RAND_CASE** or **RANGE_CASE** in the same section, variable names have to be different)
   * the size of tab
   * an unlimited number of ranges that have the form `begin, end, step`
-* **COPY** : copy a variable of a section in a test case so that the modifications brought by the test case will only be effective in it (not available on `msvc` but available on `msvc++`)
+* **COPY** : copy a variable of a section in a test case so that the modifications brought by the test case will only be effective in it
 * **ONCE** : prevent a code inside a section but outside a test case to be called more than once<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This problem can occure when you mix up test cases and code not inside test cases
 * **INFO**, **WARNING** and **ERROR**: Add a message to be printed (as info, warning or error) each time a failure occure in the section / case. If those macros are called in a test case, they are effective only inside, else they are effective everywhere in the section. Two macros help configure this tool:
@@ -294,6 +292,7 @@ With those tools, you can render allocation functions to return `NULL` whenever 
 * You need to link `libLAssert_alloc.so` shared library (built using `make` in the main LAssert folder) and using `-Wl,-rpath,/path/to/folder/containing/libLAssert_alloc.so -L/same/path -lLAssert_alloc -ldl`
 
 ```c
+#define LASSERT_MAIN
 #define LASSERT_CUSTOM_ALLOC
 #include "LAssert.h"
 
