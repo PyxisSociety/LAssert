@@ -131,9 +131,31 @@ Macros</h2></td></tr>
 <tr class="memitem:a7afbcd22f6153ec8a1c0d5b3a35d156c"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="LAssert_8h.html#a7afbcd22f6153ec8a1c0d5b3a35d156c">RANGE_CASE</a>(NAME_OF_TEST,  var_name,  nb_of_values, ...)</td></tr>
 <tr class="memdesc:a7afbcd22f6153ec8a1c0d5b3a35d156c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Macro to declare a simple test case inside a test section.  <a href="#a7afbcd22f6153ec8a1c0d5b3a35d156c">More...</a><br /></td></tr>
 <tr class="separator:a7afbcd22f6153ec8a1c0d5b3a35d156c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeccdc8cb41df685260aa68921dee93d9"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="LAssert_8h.html#aeccdc8cb41df685260aa68921dee93d9">REQUIRE</a>(bool, ...)&#160;&#160;&#160;LASSERT_INTERNAL_REQUIRE_(1, bool, ##__VA_ARGS__)</td></tr>
+<tr class="memdesc:aeccdc8cb41df685260aa68921dee93d9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Macro used inside a test section or a test case. Stop the test case / section if bool is false.  <a href="#aeccdc8cb41df685260aa68921dee93d9">More...</a><br /></td></tr>
+<tr class="separator:aeccdc8cb41df685260aa68921dee93d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acfd4dbaf9d105d5c057453a973eff004"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="LAssert_8h.html#acfd4dbaf9d105d5c057453a973eff004">CHECK</a>(bool, ...)&#160;&#160;&#160;LASSERT_INTERNAL_REQUIRE_(0, bool, ##__VA_ARGS__)</td></tr>
+<tr class="memdesc:acfd4dbaf9d105d5c057453a973eff004"><td class="mdescLeft">&#160;</td><td class="mdescRight">Macro used inside a test section or a test case. Does not stop the test case / section if bool is false but its case will still be considered as failed.  <a href="#acfd4dbaf9d105d5c057453a973eff004">More...</a><br /></td></tr>
+<tr class="separator:acfd4dbaf9d105d5c057453a973eff004"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acab634c19a1b997da41cd0875673c570"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="LAssert_8h.html#acab634c19a1b997da41cd0875673c570">REQUIRE_NOT_NULL</a>(ptr, ...)</td></tr>
+<tr class="memdesc:acab634c19a1b997da41cd0875673c570"><td class="mdescLeft">&#160;</td><td class="mdescRight">Macro used inside a test section or a test case. Stop the test case / section if ptr is NULL.  <a href="#acab634c19a1b997da41cd0875673c570">More...</a><br /></td></tr>
+<tr class="separator:acab634c19a1b997da41cd0875673c570"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a82c269d70894a14def7b33c09a3a2849"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="LAssert_8h.html#a82c269d70894a14def7b33c09a3a2849">EQ_EPS</a>(VAL1,  VAL2,  EPS, ...)</td></tr>
+<tr class="memdesc:a82c269d70894a14def7b33c09a3a2849"><td class="mdescLeft">&#160;</td><td class="mdescRight">Macro used inside a test section or a test case. Stop the test case / section if VAL1 != VAL2 (with a tolarated difference of EPS).  <a href="#a82c269d70894a14def7b33c09a3a2849">More...</a><br /></td></tr>
+<tr class="separator:a82c269d70894a14def7b33c09a3a2849"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abbdc23cf643b509c297724a7b3b9e006"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="LAssert_8h.html#abbdc23cf643b509c297724a7b3b9e006">EQ</a>(VAL1,  VAL2, ...)&#160;&#160;&#160;<a class="el" href="LAssert_8h.html#a82c269d70894a14def7b33c09a3a2849">EQ_EPS</a>(VAL1, VAL2, LASSERT_data_.epsilon, ##__VA_ARGS__)</td></tr>
+<tr class="memdesc:abbdc23cf643b509c297724a7b3b9e006"><td class="mdescLeft">&#160;</td><td class="mdescRight">Macro used inside a test section or a test case. Stop the test case / section if VAL1 != VAL2 (with a tolarated difference).  <a href="#abbdc23cf643b509c297724a7b3b9e006">More...</a><br /></td></tr>
+<tr class="separator:abbdc23cf643b509c297724a7b3b9e006"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2c1985c5072a36a282f3ff903061e25f"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="LAssert_8h.html#a2c1985c5072a36a282f3ff903061e25f">TEST_SECTION</a>(name)&#160;&#160;&#160;LASSERT_SUB_TEST_SECTION_(name, __COUNTER__, __LINE__)</td></tr>
+<tr class="memdesc:a2c1985c5072a36a282f3ff903061e25f"><td class="mdescLeft">&#160;</td><td class="mdescRight">main block of test (many can be defined for one test program)  <a href="#a2c1985c5072a36a282f3ff903061e25f">More...</a><br /></td></tr>
+<tr class="separator:a2c1985c5072a36a282f3ff903061e25f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:ac51de605c944a8dfddb4fbc58d0ff695"><td class="memItemLeft" align="right" valign="top"><a id="ac51de605c944a8dfddb4fbc58d0ff695"></a>
+LASSERT_EXTERN_ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="LAssert_8h.html#ac51de605c944a8dfddb4fbc58d0ff695">LASSERT_PRINT_OUTPUT_</a> (void)</td></tr>
+<tr class="memdesc:ac51de605c944a8dfddb4fbc58d0ff695"><td class="mdescLeft">&#160;</td><td class="mdescRight">function to be called at the end of the main function when LASSERT_MANUAL_MAIN is defined <br /></td></tr>
+<tr class="separator:ac51de605c944a8dfddb4fbc58d0ff695"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a83f90e78b324f8f398654abb7c2a58ed"><td class="memItemLeft" align="right" valign="top">LASSERT_EXTERN_ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="LAssert_8h.html#a83f90e78b324f8f398654abb7c2a58ed">LASSERT_set_epsilon</a> (double epsilon)</td></tr>
 <tr class="memdesc:a83f90e78b324f8f398654abb7c2a58ed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the epsilon value to be used by <code>EQ</code> macro.  <a href="#a83f90e78b324f8f398654abb7c2a58ed">More...</a><br /></td></tr>
 <tr class="separator:a83f90e78b324f8f398654abb7c2a58ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -162,6 +184,43 @@ Functions</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>header only Unitary Test Tools in C </p>
 </div><h2 class="groupheader">Macro Definition Documentation</h2>
+<a id="acfd4dbaf9d105d5c057453a973eff004"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acfd4dbaf9d105d5c057453a973eff004">&#9670;&nbsp;</a></span>CHECK</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define CHECK</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">bool, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>...</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td>&#160;&#160;&#160;LASSERT_INTERNAL_REQUIRE_(0, bool, ##__VA_ARGS__)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Macro used inside a test section or a test case. Does not stop the test case / section if bool is false but its case will still be considered as failed. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">bool</td><td>condition of the REQUIRE </td></tr>
+    <tr><td class="paramname">...</td><td>(optional): same format as printf parameters, shown on failure </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="a790bb66eba671d4d6ab645888b2f7482"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a790bb66eba671d4d6ab645888b2f7482">&#9670;&nbsp;</a></span>COPY <span class="overload">[1/2]</span></h2>
 
@@ -230,6 +289,101 @@ Functions</h2></td></tr>
   <table class="params">
     <tr><td class="paramname">type</td><td>type of the variable </td></tr>
     <tr><td class="paramname">var</td><td>name of the variable </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="abbdc23cf643b509c297724a7b3b9e006"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abbdc23cf643b509c297724a7b3b9e006">&#9670;&nbsp;</a></span>EQ</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define EQ</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">VAL1, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">VAL2, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>...</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td>&#160;&#160;&#160;<a class="el" href="LAssert_8h.html#a82c269d70894a14def7b33c09a3a2849">EQ_EPS</a>(VAL1, VAL2, LASSERT_data_.epsilon, ##__VA_ARGS__)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Macro used inside a test section or a test case. Stop the test case / section if VAL1 != VAL2 (with a tolarated difference). </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">VAL1</td><td>first value to be compared </td></tr>
+    <tr><td class="paramname">VAL2</td><td>second value to be compared </td></tr>
+    <tr><td class="paramname">...</td><td>(optional): same format as printf parameters, shown on failure </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a82c269d70894a14def7b33c09a3a2849"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a82c269d70894a14def7b33c09a3a2849">&#9670;&nbsp;</a></span>EQ_EPS</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define EQ_EPS</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">VAL1, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">VAL2, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">EPS, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>...</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<b>Value:</b><div class="fragment"><div class="line"><span class="keywordflow">if</span>((VAL2) - (EPS) &gt; (VAL1) || (VAL1) - (EPS) &gt; (VAL2)){     \</div><div class="line">        REQUIRE((VAL1) == (VAL2),__VA_ARGS__);                  \</div><div class="line">    }<span class="keywordflow">else</span>{                                                      \</div><div class="line">    REQUIRE(1);                                             \</div><div class="line">    }</div></div><!-- fragment -->
+<p>Macro used inside a test section or a test case. Stop the test case / section if VAL1 != VAL2 (with a tolarated difference of EPS). </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">VAL1</td><td>first value to be compared </td></tr>
+    <tr><td class="paramname">VAL2</td><td>second value to be compared </td></tr>
+    <tr><td class="paramname">EPS</td><td>tolarated difference between VAL1 and VAL2 </td></tr>
+    <tr><td class="paramname">...</td><td>(optional): same format as printf parameters, shown on failure </td></tr>
   </table>
   </dd>
 </dl>
@@ -429,6 +583,9 @@ Functions</h2></td></tr>
   <table class="params">
     <tr><td class="paramname">NAME_OF_TEST</td><td>name of the test case </td></tr>
     <tr><td class="paramname">var_name</td><td>array in which to store the random generated numbers </td></tr>
+    <tr><td class="paramname">nb_of_values</td><td>size of var_name </td></tr>
+    <tr><td class="paramname">nb_of_time</td><td>number of time the program should go through this test case with random values </td></tr>
+    <tr><td class="paramname">...</td><td>an even number of integers which can be grouped by pairs to form ranges of the values. At least one range is needed and at most nb_of_values ranges. If there are less ranges than nb_of_values, the last one is used for all other numbers. A number goes through begin to end - 1. </td></tr>
   </table>
   </dd>
 </dl>
@@ -477,6 +634,83 @@ Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">NAME_OF_TEST</td><td>name of the test case </td></tr>
+    <tr><td class="paramname">var_name</td><td>array in which to store the generated numbers </td></tr>
+    <tr><td class="paramname">nb_of_values</td><td>size of var_name </td></tr>
+    <tr><td class="paramname">...</td><td>a number of integers that is a multiple of 3 which can be grouped to form ranges of the values (begin, end, step). At least one range is needed and at most nb_of_values ranges. If there are less ranges than nb_of_values, the last one is used for all other numbers. A number goes through begin to end - 1. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="aeccdc8cb41df685260aa68921dee93d9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeccdc8cb41df685260aa68921dee93d9">&#9670;&nbsp;</a></span>REQUIRE</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define REQUIRE</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">bool, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>...</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td>&#160;&#160;&#160;LASSERT_INTERNAL_REQUIRE_(1, bool, ##__VA_ARGS__)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Macro used inside a test section or a test case. Stop the test case / section if bool is false. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">bool</td><td>condition of the REQUIRE </td></tr>
+    <tr><td class="paramname">...</td><td>(optional): same format as printf parameters, shown on failure </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="acab634c19a1b997da41cd0875673c570"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acab634c19a1b997da41cd0875673c570">&#9670;&nbsp;</a></span>REQUIRE_NOT_NULL</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define REQUIRE_NOT_NULL</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">ptr, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>...</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<b>Value:</b><div class="fragment"><div class="line">{                   \</div><div class="line">    if(*_old_flag &lt; __LINE__ &amp;&amp; !*_has_to_quit){                    \</div><div class="line">        if(!LASSERT_data_.nbRunInCase){                             \</div><div class="line">                if(!ptr &amp;&amp; LASSERT_parameters_.output == LASSERT_xml_output){ \</div><div class="line">                    if(LASSERT_data_.testCaseOpened){                   \</div><div class="line">                        LASSERT_XML_PRINT_(<span class="stringliteral">&quot;\t\t&lt;/testcase&gt;&quot;</span>);          \</div><div class="line">                    }else                                               \</div><div class="line">                        LASSERT_data_.testCaseOpened = 1;               \</div><div class="line">                    LASSERT_XML_PRINT_(<span class="stringliteral">&quot;\t\t&lt;testcase&gt;&quot;</span>);               \</div><div class="line">                }                                                       \</div><div class="line">            }                                                           \</div><div class="line">        if(!(ptr)){                         \</div><div class="line">                if(LASSERT_events_.assertionFailure){                   \</div><div class="line">                    if(LASSERT_data_.nbRunInCase)                       \</div><div class="line">                        LASSERT_events_.assertionFailure(1, LASSERT_name_of_test_); \</div><div class="line">                    else                                                \</div><div class="line">                        LASSERT_events_.assertionFailure(0, LASSERT_data_.sectionName); \</div><div class="line">                }                                                       \</div><div class="line">        if(LASSERT_data_.nbRunInCase){              \</div><div class="line">            *_has_to_quit = __LINE__;               \</div><div class="line">            LASSERT_REQUIRE_CASE_not_null_failed_(#ptr, __LINE__, *_old_flag, LASSERT_name_of_test_); \</div><div class="line">            LASSERT_data_.nbRunInCase = 0;                      \</div><div class="line">            *_id_flag = 2;                  \</div><div class="line">        }else                           \</div><div class="line">            LASSERT_REQUIRE_not_null_failed_(#ptr, __LINE__, *_old_flag); \</div><div class="line">                if(LASSERT_parameters_.output == LASSERT_xml_output){   \</div><div class="line">                    LASSERT_XML_PRINT_(<span class="stringliteral">&quot;\t\t\t&lt;failure&gt;&quot;</span>);              \</div><div class="line">                    LASSERT_XML_PRINT_(<span class="stringliteral">&quot;Error on line %d, for expression &quot;</span> #ptr, __LINE__); \</div><div class="line">                    LASSERT_XML_PRINT_(<span class="stringliteral">&quot;&quot;</span> __VA_ARGS__);                 \</div><div class="line">                    LASSERT_XML_PRINT_(<span class="stringliteral">&quot;\t\t\t&lt;/failure&gt;&quot;</span>);             \</div><div class="line">                }<span class="keywordflow">else</span>{                                                  \</div><div class="line">                    LASSERT_LOG_MESSAGE_(#ptr, ##__VA_ARGS__);      \</div><div class="line">                }                                                       \</div><div class="line">        return;                         \</div><div class="line">        }<span class="keywordflow">else</span> <span class="keywordflow">if</span>(!LASSERT_data_.nbRunInCase)                        \</div><div class="line">                ++LASSERT_data_.succeededCases;                         \</div><div class="line">            else                                                        \</div><div class="line">                ++LASSERT_data_.succeededTestsInCurrentCase;            \</div><div class="line">            LASSERT_logs_.nbMsgsOnce = 0;                               \</div><div class="line">    }                               \</div><div class="line">    }</div></div><!-- fragment -->
+<p>Macro used inside a test section or a test case. Stop the test case / section if ptr is NULL. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">ptr</td><td>pointer not to be NULL </td></tr>
+    <tr><td class="paramname">...</td><td>(optional): same format as printf parameters, shown on failure </td></tr>
   </table>
   </dd>
 </dl>
@@ -503,6 +737,32 @@ Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">NAME_OF_TEST</td><td>name of the test case </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a2c1985c5072a36a282f3ff903061e25f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2c1985c5072a36a282f3ff903061e25f">&#9670;&nbsp;</a></span>TEST_SECTION</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define TEST_SECTION</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">name</td><td>)</td>
+          <td>&#160;&#160;&#160;LASSERT_SUB_TEST_SECTION_(name, __COUNTER__, __LINE__)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>main block of test (many can be defined for one test program) </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">name</td><td>name of the test section </td></tr>
   </table>
   </dd>
 </dl>

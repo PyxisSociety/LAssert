@@ -324,6 +324,9 @@ LASSERT_EXTERN_ char * LASSERT_get_color_result_(double result);
 LASSERT_EXTERN_ void LASSERT_deactivate_output_(void);
 LASSERT_EXTERN_ void LASSERT_activate_output_(void);
 LASSERT_EXTERN_ void LASSERT_XML_PRINT_(const char * s, ...);
+/**
+ * @brief function to be called at the end of the main function when LASSERT_MANUAL_MAIN is defined
+ */
 LASSERT_EXTERN_ void LASSERT_PRINT_OUTPUT_(void);
 /**
  * @brief Set the epsilon value to be used by `EQ` macro
@@ -975,6 +978,9 @@ printf("%s", LASSERT_YELLOW_);\
  * @brief Macro to declare a simple random test case (integers) inside a test section
  * @param NAME_OF_TEST: name of the test case
  * @param var_name: array in which to store the random generated numbers
+ * @param nb_of_values: size of var_name
+ * @param nb_of_time: number of time the program should go through this test case with random values
+ * @param ...: an even number of integers which can be grouped by pairs to form ranges of the values. At least one range is needed and at most nb_of_values ranges. If there are less ranges than nb_of_values, the last one is used for all other numbers. A number goes through begin to end - 1.
  */
 #define RAND_CASE(NAME_OF_TEST,var_name,nb_of_values,nb_of_time,...)    \
     int var_name[nb_of_values] = {0};					\
@@ -1009,6 +1015,9 @@ printf("%s", LASSERT_YELLOW_);\
 /**
  * @brief Macro to declare a simple test case inside a test section
  * @param NAME_OF_TEST: name of the test case
+ * @param var_name: array in which to store the generated numbers
+ * @param nb_of_values: size of var_name
+ * @param ...: a number of integers that is a multiple of 3 which can be grouped to form ranges of the values (begin, end, step). At least one range is needed and at most nb_of_values ranges. If there are less ranges than nb_of_values, the last one is used for all other numbers. A number goes through begin to end - 1.
  */
 #define RANGE_CASE(NAME_OF_TEST,var_name,nb_of_values,...)              \
     int var_name[nb_of_values] = {0};					\
@@ -1091,10 +1100,25 @@ printf("%s", LASSERT_YELLOW_);\
 	}								\
     }
 
+/**
+ * @brief Macro used inside a test section or a test case. Stop the test case / section if bool is false.
+ * @param bool: condition of the REQUIRE
+ * @param ... (optional): same format as printf parameters, shown on failure
+ */
 #define REQUIRE(bool,...) LASSERT_INTERNAL_REQUIRE_(1, bool, ##__VA_ARGS__)
 
+/**
+ * @brief Macro used inside a test section or a test case. Does not stop the test case / section if bool is false but its case will still be considered as failed.
+ * @param bool: condition of the REQUIRE
+ * @param ... (optional): same format as printf parameters, shown on failure
+ */
 #define CHECK(bool, ...) LASSERT_INTERNAL_REQUIRE_(0, bool, ##__VA_ARGS__)
 
+/**
+ * @brief Macro used inside a test section or a test case. Stop the test case / section if ptr is NULL.
+ * @param ptr: pointer not to be NULL
+ * @param ... (optional): same format as printf parameters, shown on failure
+ */
 #define REQUIRE_NOT_NULL(ptr,...){					\
 	if(*_old_flag < __LINE__ && !*_has_to_quit){                    \
 	    if(!LASSERT_data_.nbRunInCase){                             \
@@ -1137,6 +1161,13 @@ printf("%s", LASSERT_YELLOW_);\
 	}								\
     }
 
+/**
+ * @brief Macro used inside a test section or a test case. Stop the test case / section if VAL1 != VAL2 (with a tolarated difference of EPS).
+ * @param VAL1: first value to be compared
+ * @param VAL2: second value to be compared
+ * @param EPS: tolarated difference between VAL1 and VAL2
+ * @param ... (optional): same format as printf parameters, shown on failure
+ */
 #define EQ_EPS(VAL1,VAL2, EPS,...)                              \
     if((VAL2) - (EPS) > (VAL1) || (VAL1) - (EPS) > (VAL2)){     \
         REQUIRE((VAL1) == (VAL2),__VA_ARGS__);                  \
@@ -1144,9 +1175,19 @@ printf("%s", LASSERT_YELLOW_);\
 	REQUIRE(1);                                             \
     }
 
+/**
+ * @brief Macro used inside a test section or a test case. Stop the test case / section if VAL1 != VAL2 (with a tolarated difference).
+ * @param VAL1: first value to be compared
+ * @param VAL2: second value to be compared
+ * @param ... (optional): same format as printf parameters, shown on failure
+ */
 #define EQ(VAL1,VAL2,...) EQ_EPS(VAL1, VAL2, LASSERT_data_.epsilon, ##__VA_ARGS__)
 
 #ifndef LASSERT_WINDOWS
+/**
+ * @brief test of performance. This block is considered as failed if it is executed in more time than timeout seconds. It MUST be leaved with the macro PERFO_EXIT. It is *NOT* a test case so no REQUIRE, CHECK, etc should be used inside (they will produce undefined behavior).
+ * @param timeout: maximum time the block has to be executed (in seconds)
+ */
 #  define PERFORMANCE(timeout)                                          \
     if(*_old_flag < __LINE__){						\
         fflush(stdout);                                                 \
@@ -1186,6 +1227,9 @@ printf("%s", LASSERT_YELLOW_);\
         }                                                               \
     }else if(_size_of_tab == 0 && ((LASSERT_data_.inPerfoBlock = 1, signal(SIGTERM, LASSERT_signal_capture_)) || 1))
 
+/**
+ * @brief MACRO used to leave the PERFORMANCE block
+ */
 #  define PERFO_EXIT exit(0)
 #endif
 
@@ -1219,11 +1263,19 @@ int main(){
 #  endif
 #else
 #  define LASSERT_AUTOCALL_HANDLER_(fname)
+/**
+ * @brief if LASSERT_MANUAL_MAIN is defined, it enables to run a section with a certain name
+ * @param name: name of the section
+ */
 #  define RUN_SECTION(name) _call_test_##name##_lassert()
 #endif
 
 
 
+/**
+ * @brief main block of test (many can be defined for one test program)
+ * @param name: name of the test section
+ */
 #define TEST_SECTION(name) LASSERT_SUB_TEST_SECTION_(name, __COUNTER__, __LINE__)
 #define LASSERT_SUB_TEST_SECTION_(name, number, line) LASSERT_TEST_SECTION_(name, number, line)
 #define LASSERT_TEST_SECTION_(name, number, line)                             \
@@ -1384,6 +1436,11 @@ static void LASSERT_PARAMETERS_SUB_INIT(void) LASSERT_AUTOCALL_HANDLER_(LASSERT_
 #    endif
 #  endif
 #else
+/**
+ * @brief parameters parser for LAssert, manual use is needed *ONLY* if LASSERT_MANUAL_MAIN is defined
+ * @param argc: same as argc main parameter
+ * @param argv: same as argv main parameter
+ */
 LASSERT_EXTERN_ void LASSERT_PARAMETERS_INIT(int argc, char ** argv);
 #endif
 #ifdef LASSERT_MAIN
