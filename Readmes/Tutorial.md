@@ -1,4 +1,4 @@
-# LAssert
+# Tutorial
 
 Unary test library in C, greatly inspired by [Catch2](https://github.com/catchorg/Catch2).
 

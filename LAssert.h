@@ -10,6 +10,11 @@
 #include <errno.h>
 #include <signal.h>
 
+/**
+ * @file LAssert.h
+ * @brief header only Unitary Test Tools in C
+ */
+
 /* -------------- WARNING REMOVAL --------------- */
 /* got here: https://stackoverflow.com/a/36175016 */
 #define LASSERT_DIAG_STR_(s) #s
