@@ -9,7 +9,7 @@ Unary test library in C, greatly inspired by [Catch2](https://github.com/catchor
 
 From this "read-me", you can either go to:
 * the [Tutorial](Readmes/Tutorial.md)
-* the [online documentation]()
+* the [online documentation](https://klevh.github.io/LAssert/index.html)
 
 ## About the author
 
