@@ -4,9 +4,6 @@
 [![windows tests](https://ci.appveyor.com/api/projects/status/kuje45ncj05adc5a/branch/master?svg=true)](https://ci.appveyor.com/project/Klevh/lassert/branch/master)
 
 Unary test library in C, greatly inspired by [Catch2](https://github.com/catchorg/Catch2).
-  
-To see this read me file with a better display, you can go to [this project's
-website](https://klevh.github.io/LAssert/).
 
 ## Useful links
 
