@@ -129,11 +129,11 @@ LASSERT_DISABLE_WARNING_(sign-compare, sign-compare, 244)
 
 #define LASSERT_LOG_MESSAGE_(ptr, ...)					\
     if(LASSERT_va_arg_not_empty_(#__VA_ARGS__)){			\
-	LASSERT_PRINT_("%s", LASSERT_YELLOW_);\
-	LASSERT_PUTS_("\tlog message :"); \
-	LASSERT_PRINT_("%s", LASSERT_NORMAL_);\
+	LASSERT_PRINT_("%s", LASSERT_YELLOW_);                          \
+	LASSERT_PUTS_("\tlog message :");                               \
+	LASSERT_PRINT_("%s", LASSERT_NORMAL_);                          \
 	LASSERT_log_message_(ptr, "" __VA_ARGS__);                      \
-	LASSERT_PUTS_(LASSERT_NORMAL_);\
+	LASSERT_PUTS_(LASSERT_NORMAL_);                                 \
     }
 #ifdef LASSERT_MAIN
 #  define LASSERT_EXTERN_
@@ -144,17 +144,17 @@ LASSERT_DISABLE_WARNING_(sign-compare, sign-compare, 244)
         unsigned long long i;                                           \
         for(i = 0; i < LASSERT_logs_.nbMsgs; ++i){                      \
             if(!LASSERT_logs_.msgs[i].inCase || (old_line) < LASSERT_logs_.msgs[i].line){ \
-LASSERT_PRINT_("%s", LASSERT_get_color_(LASSERT_logs_.msgs[i].color));\
+                LASSERT_PRINT_("%s", LASSERT_get_color_(LASSERT_logs_.msgs[i].color)); \
                 LASSERT_PUTS_(LASSERT_logs_.msgs[i].msg);               \
-LASSERT_PRINT_("%s", LASSERT_NORMAL_);\
-}\
+                LASSERT_PRINT_("%s", LASSERT_NORMAL_);                  \
+            }                                                           \
         }                                                               \
         for(i = 0; i < LASSERT_logs_.nbMsgsOnce; ++i){                  \
             if(!LASSERT_logs_.msgsOnce[i].inCase || (old_line) < LASSERT_logs_.msgsOnce[i].line){ \
-LASSERT_PRINT_("%s", LASSERT_get_color_(LASSERT_logs_.msgsOnce[i].color));\
+                LASSERT_PRINT_("%s", LASSERT_get_color_(LASSERT_logs_.msgsOnce[i].color)); \
                 LASSERT_PUTS_(LASSERT_logs_.msgsOnce[i].msg);           \
-LASSERT_PRINT_("%s", LASSERT_NORMAL_);\
-}\
+                LASSERT_PRINT_("%s", LASSERT_NORMAL_);                  \
+            }                                                           \
         }                                                               \
     }
 
@@ -228,6 +228,7 @@ typedef struct{
     int currentCaseFailed;
     int (*rand)(void);
     char * sectionName;
+    char * tags;
     unsigned long long succeededTestsInCurrentCase;
     unsigned long long nbRunInCase;
     unsigned long long failedCases;
@@ -249,6 +250,7 @@ LASSERT_EXTERN_ LASSERT_DATA_ LASSERT_data_
     0, // currentCaseFailed
     rand, // rand
     NULL, // sectionName
+    NULL, // tags
     0, // succeededTestsInCurrentCase
     0, // nbRunInCase
     0, // failedCases
@@ -366,10 +368,12 @@ LASSERT_EXTERN_ void LASSERT_on_case_end(void (*behavior)(const char * name));
  * @param behavior: behavior to be subscribed
  */
 LASSERT_EXTERN_ void LASSERT_on_assertion_failure(void (*behavior)(char isInCase, const char * name));
+LASSERT_EXTERN_ char LASSERT_is_valid_set_of_tag_(char * tags, char isCondition);
+LASSERT_EXTERN_ char LASSERT_test_should_be_run_(char * testTags, char * runTags);
 
 #ifdef LASSERT_MAIN
 char * LASSERT_get_color_(int i){
-#ifdef LASSERT_UNIX
+#  ifdef LASSERT_UNIX
     static char s[7][10] = {"\x1B[0m","\x1B[31m","\x1B[32m","\x1B[33m","\x1B[34m","\x1B[35m","\x1B[36m"};
     static int is_init = 0;
     unsigned j;
@@ -382,14 +386,14 @@ char * LASSERT_get_color_(int i){
     }
 
     return s[i];
-#else
+#  else
 	int colors[7] = {15, 12, 2, 14, 1, 13, 11};
 	if(LASSERT_parameters_.color != LASSERT_no_color && isatty(1)){
 		HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);
 		SetConsoleTextAttribute(h, colors[i]);
 	}
 	return (char*)"";
-#endif
+#  endif
 }
 void LASSERT_init_rand_(int force){
     static int not_init = 1;
@@ -611,15 +615,15 @@ char * LASSERT_get_color_result_(double result){
 void LASSERT_deactivate_output_(void){
     int i;
     size_t size = sizeof(LASSERT_TMP_NAME_);
-# ifdef LASSERT_WINDOWS
+#  ifdef LASSERT_WINDOWS
     static int num = 0;
     FILE * stdCopy[2] = {NULL, NULL};
-# else
+#  else
     int stdCopy[2];
-# endif
+#  endif
     
     for(i = 0; i < 2; ++i){
-# ifdef LASSERT_WINDOWS
+#  ifdef LASSERT_WINDOWS
         for(int j = 0; j < sizeof(LASSERT_TMP_NAME_); ++j){
             LASSERT_data_.tmpFileNames[i][j] = 0;
         }
@@ -630,11 +634,11 @@ void LASSERT_deactivate_output_(void){
         LASSERT_data_.fdTmpFile[i] = NULL;
         fopen_s(&(LASSERT_data_.fdTmpFile[i]), LASSERT_data_.tmpFileNames[i], "w");
         if(!LASSERT_data_.fdTmpFile[i])
-# else
+#  else
             LASSERT_STRCPY_(LASSERT_data_.tmpFileNames[i], size - 1, LASSERT_TMP_NAME_);
         LASSERT_data_.fdTmpFile[i] = mkstemp(LASSERT_data_.tmpFileNames[i]);
         if(LASSERT_data_.fdTmpFile[i] == -1)
-# endif
+#  endif
             return;
     }
 
@@ -653,11 +657,11 @@ void LASSERT_deactivate_output_(void){
 void LASSERT_activate_output_(void){
     int i;
     for(i = 0; i < 2; ++i){
-# ifdef LASSERT_WINDOWS
+#  ifdef LASSERT_WINDOWS
         if(!LASSERT_data_.fdTmpFile[i])
-# else
+#  else
             if(LASSERT_data_.fdTmpFile[i] == -1)
-# endif
+#  endif
                 return;
     }
     
@@ -740,6 +744,111 @@ void LASSERT_on_case_end(void (*behavior)(const char * name)){
 }
 void LASSERT_on_assertion_failure(void (*behavior)(char isInCase, const char * name)){
     LASSERT_events_.assertionFailure = behavior;
+}
+char LASSERT_is_valid_set_of_tag_(char * tags, char isCondition){
+    size_t i = 0;
+    size_t j;
+    char res = 1;
+    char error = 0;
+
+    if(!tags){
+        return 0;
+    }
+
+    while(tags[i] && !error){
+        // begin of tag
+        if(tags[i] != '['){
+            break;
+        }
+
+        // tag content
+        do{
+            ++i;
+        }while(tags[i] && tags[i] != ']' && tags[i] != '[');
+
+        // end of tag
+        if(tags[i] != ']'){
+            error = 1;
+            break;
+        }
+        ++i;
+        if(isCondition && tags[i] && tags[i] != '['){
+            if(tags[i] != ','){
+                break;
+            }
+            ++i;
+            if(tags[i] != '['){
+                error = 1;
+                break;
+            }
+        }
+    }
+
+    if(tags[i] || error){
+        LASSERT_PRINT_("%s\n", LASSERT_YELLOW_);
+        LASSERT_PRINT_("WARNING: invalid tag\n%s\n", tags);
+        for(j = 0; j < i; ++j){
+            LASSERT_PRINT_("%c", ' ');
+        }
+        LASSERT_PUTS_("^");
+        LASSERT_PRINT_("Tag is ignored");
+        LASSERT_PUTS_(LASSERT_YELLOW_);
+        return 0;
+    }
+    return 1;
+}
+char LASSERT_test_should_be_run_(char * testTags, char * runTags){
+    size_t i;
+    size_t j;
+    size_t k;
+    char res;
+    char found;
+
+    // parsing to know if selected
+    i = 0;
+    res = 0;
+    while(runTags[i] && !res){
+        res = 1;
+        
+        // see if testTags match group of tags in runTags
+        while(res && runTags[i] && runTags[i] != ','){
+            found = 0;
+            // searching corresponding tag
+            k = 0;
+            while(!found && testTags[k]){
+                j = i;
+                while(testTags[k] != ']' && runTags[j] != ']' && runTags[j] == testTags[k]){
+                    ++k;
+                    ++j;
+                }
+                if(testTags[k] == ']' && runTags[j] == ']'){
+                    found = 1;
+                }else{
+                    while(testTags[k] != '[' && testTags[k]){
+                        ++k;
+                    }
+                }
+            }
+            
+            if(!found){ // if not found, end
+                res = 0;
+            }else{ // if found, go to next
+                i = j + 1;
+            }
+        }
+
+        // If not match, go to next group of tags in runTags, if any
+        if(!res){
+            while(runTags[i] && runTags[i] != ','){
+                ++i;
+            }
+            if(runTags[i]){
+                ++i;
+            }
+        }
+    }
+
+    return res;
 }
 #endif
 
@@ -1267,15 +1376,18 @@ int main(){
 
 /**
  * @brief main block of test (many can be defined for one test program)
- * @param name: name of the test section
+ * @param ...: two parameters: name of the test section and a string containing the test section tags (optionnal)
  */
-#define TEST_SECTION(name) LASSERT_SUB_TEST_SECTION_(name, __COUNTER__, __LINE__)
-#define LASSERT_SUB_TEST_SECTION_(name, number, line) LASSERT_TEST_SECTION_(name, number, line)
-#define LASSERT_TEST_SECTION_(name, number, line)                             \
-    static void _test_##number##_##line##_lassert( char *,int *, int, int*, int*, int *); \
-    static int _call_test_##number##_##line##_lassert(void)                      \
-	LASSERT_AUTOCALL_HANDLER_(_call_test_##number##_##line##_lassert)        \
-        static int _call_test_##number##_##line##_lassert(void){                 \
+#define TEST_SECTION(...) LASSERT_CALL_SECTION_(__VA_ARGS__, LASSERT_TEST_SECTION_TAGS_, LASSERT_TEST_SECTION_NO_TAG_)(__VA_ARGS__)
+#define LASSERT_CALL_SECTION_(arg0, arg1, arg2, ...) arg2
+#define LASSERT_TEST_SECTION_TAGS_(name, tags) LASSERT_SUB_TEST_SECTION_(name, tags, __COUNTER__, __LINE__)
+#define LASSERT_TEST_SECTION_NO_TAG_(name) LASSERT_SUB_TEST_SECTION_(name, NULL, __COUNTER__, __LINE__)
+#define LASSERT_SUB_TEST_SECTION_(name, tags, number, line) LASSERT_TEST_SECTION_(name, tags, number, line)
+#define LASSERT_TEST_SECTION_(name, section_tags, number, line)         \
+    static void _test_##number##_##line##_lassert(char *,int *, int, int*, int*, int *); \
+    static int _call_test_##number##_##line##_lassert(void)             \
+	LASSERT_AUTOCALL_HANDLER_(_call_test_##number##_##line##_lassert) \
+    static int _call_test_##number##_##line##_lassert(void){            \
 	char s[512] = {0};						\
         char * name_of_section = (char*)#name;                          \
 	LASSERT_TIME_TYPE_ start = LASSERT_TIME_NULL_, end = LASSERT_TIME_NULL_; \
@@ -1286,10 +1398,15 @@ int main(){
         LASSERT_data_.sectionName = name_of_section;                    \
         LASSERT_logs_.nbMsgs = 0;                                       \
                                                                         \
-		LASSERT_PRINT_("%s\n", LASSERT_BLUE_);\
+        if(LASSERT_data_.tags                                           \
+           && (!LASSERT_is_valid_set_of_tag_(section_tags, 0)           \
+               || !LASSERT_test_should_be_run_(section_tags, LASSERT_data_.tags))) \
+            return 0;                                                   \
+                                                                        \
+        LASSERT_PRINT_("%s\n", LASSERT_BLUE_);                          \
 	LASSERT_PUTS_("------------------------------------------------------------\n" \
-                       "BEGIN OF SECTION " #name " "); \
-		LASSERT_PRINT_("%s\n", LASSERT_NORMAL_);\
+                      "BEGIN OF SECTION " #name " ");                   \
+        LASSERT_PRINT_("%s\n", LASSERT_NORMAL_);                        \
         if(LASSERT_events_.sectionBegin)                                \
             LASSERT_events_.sectionBegin(#name);                        \
                                                                         \
@@ -1303,7 +1420,7 @@ int main(){
 	    start = LASSERT_time_used_();                               \
 	while(i){							\
 	    i = 0;							\
-	    _test_##number##_##line##_lassert(s,&id,0,0,&i, &old);               \
+	    _test_##number##_##line##_lassert(s,&id,0,0,&i, &old);      \
             if(!id){                                                    \
                 ++LASSERT_data_.succeededCases;                         \
             }                                                           \
@@ -1325,47 +1442,47 @@ int main(){
             succeeded = LASSERT_data_.succeededCases;                   \
             if(failed + succeeded){                                     \
                 result = (double)succeeded / ((double)failed + succeeded) * 100; \
-				printf("%s", LASSERT_BLUE_);\
+                printf("%s", LASSERT_BLUE_);                            \
                 printf("Percentage of test cases succeeded in section " \
-                       #name ": %s", "");\
-				printf("%s", LASSERT_get_color_result_(result));\
-				printf("%f%%\n\n\n", result);                        \
-				printf("%s", LASSERT_NORMAL_);\
+                       #name ": %s", "");                               \
+                printf("%s", LASSERT_get_color_result_(result));        \
+                printf("%f%%\n\n\n", result);                           \
+                printf("%s", LASSERT_NORMAL_);                          \
             }else{                                                      \
-				printf("%s", LASSERT_BLUE_);\
-                puts("Section " #name " empty\n\n");\
-				printf("%s", LASSERT_NORMAL_);\
+                printf("%s", LASSERT_BLUE_);                            \
+                puts("Section " #name " empty\n\n");                    \
+                printf("%s", LASSERT_NORMAL_);                          \
             }                                                           \
         }                                                               \
                                                                         \
         if(LASSERT_events_.sectionEnd)                                  \
             LASSERT_events_.sectionEnd(#name);                          \
         LASSERT_data_.sectionName = NULL;                               \
-		LASSERT_PRINT_("%s", LASSERT_BLUE_);\
-        LASSERT_PUTS_("\nEND OF SECTION " #name " "); \
-        if (LASSERT_parameters_.timer == LASSERT_section_time){          \
-		LASSERT_PRINT_("%s", LASSERT_CYAN_);\
+        LASSERT_PRINT_("%s", LASSERT_BLUE_);                            \
+        LASSERT_PUTS_("\nEND OF SECTION " #name " ");                   \
+        if (LASSERT_parameters_.timer == LASSERT_section_time){         \
+            LASSERT_PRINT_("%s", LASSERT_CYAN_);                        \
             LASSERT_PRINT_("Executing section took : %fs\n", LASSERT_TIME_INTERVAL_(start, end)); \
-}\
-        if(LASSERT_data_.failedCases){                                   \
-		LASSERT_PRINT_("%s", LASSERT_RED_);\
+        }                                                               \
+        if(LASSERT_data_.failedCases){                                  \
+            LASSERT_PRINT_("%s", LASSERT_RED_);                         \
             LASSERT_PRINT_("Failed : %llu test_case(s)\n", LASSERT_data_.failedCases); \
-}\
-        if(LASSERT_data_.succeededCases){                                \
-		LASSERT_PRINT_("%s", LASSERT_GREEN_);\
+        }                                                               \
+        if(LASSERT_data_.succeededCases){                               \
+            LASSERT_PRINT_("%s", LASSERT_GREEN_);                       \
             LASSERT_PRINT_("Succeeded : %llu test_case(s)\n", LASSERT_data_.succeededCases); \
-}\
-        if(LASSERT_data_.notNullFailedCases){                            \
-		LASSERT_PRINT_("%s", LASSERT_YELLOW_);\
+        }                                                               \
+        if(LASSERT_data_.notNullFailedCases){                           \
+            LASSERT_PRINT_("%s", LASSERT_YELLOW_);                      \
             LASSERT_PRINT_("Stopped due to NULL pointer : %llu test_case(s)\n", LASSERT_data_.notNullFailedCases); \
-}\
+        }                                                               \
         if(!LASSERT_data_.succeededCases && !LASSERT_data_.failedCases){ \
-		LASSERT_PRINT_("%s", LASSERT_CYAN_);\
-            LASSERT_PUTS_("EMPTY TEST SECTION"); \
-}\
-		LASSERT_PRINT_("%s", LASSERT_BLUE_);\
-        LASSERT_PUTS_("------------------------------------------------------------\n");\
-		LASSERT_PRINT_("%s", LASSERT_NORMAL_);\
+            LASSERT_PRINT_("%s", LASSERT_CYAN_);                        \
+            LASSERT_PUTS_("EMPTY TEST SECTION");                        \
+        }                                                               \
+        LASSERT_PRINT_("%s", LASSERT_BLUE_);                            \
+        LASSERT_PUTS_("------------------------------------------------------------\n"); \
+        LASSERT_PRINT_("%s", LASSERT_NORMAL_);                          \
                                                                         \
         id = 0;                                                         \
         if(LASSERT_data_.failedCases)                                   \
@@ -1441,6 +1558,8 @@ void LASSERT_PARAMETERS_INIT(int argc, char ** argv){
     const size_t EPS_SIZE = sizeof(epsilonStr) - 1;
     const char seedStr[] = "-seed=";
     const size_t SEED_SIZE = sizeof(seedStr) - 1;
+    const char tagStr[] = "-tags=";
+    const size_t TAG_SIZE = sizeof(tagStr) - 1;
     long seed;
     double epsilon;
 
@@ -1457,6 +1576,11 @@ void LASSERT_PARAMETERS_INIT(int argc, char ** argv){
         }else if(!strcmp("-nc", argv[i])){
             // -nc
             LASSERT_parameters_.color = LASSERT_no_color;
+        }else if(strlen(argv[i]) >= TAG_SIZE && !strncmp(tagStr, argv[i], TAG_SIZE)){
+            // -tags=...
+            if(LASSERT_is_valid_set_of_tag_(argv[i] + TAG_SIZE, 1)){
+                LASSERT_data_.tags = argv[i] + TAG_SIZE;
+            }
         }else if(strlen(argv[i]) >= EPS_SIZE && !strncmp(epsilonStr, argv[i], EPS_SIZE)){
             // -epsilon=...
             epsilon = atof(argv[i] + EPS_SIZE);

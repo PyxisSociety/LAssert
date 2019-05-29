@@ -22,6 +22,7 @@ function test {
     error=$?
     if [ "${error}" == "0" ]; then
         ./a.out -nt > out.txt
+        ./a.out -nt -tags=[a][c],[d] >> out.txt
         diff -y ../ref.txt out.txt
         error=$?
     fi

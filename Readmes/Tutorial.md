@@ -14,10 +14,10 @@ Here is a small tutorial devided in few steps:
 * [Configuration of this tool](#markdown-header-Configuration) and some remarks
 * [Simple macros](#markdown-header-Simple-macros) you can use
 * [Advanced macros](#markdown-header-Advanced-macros) you can use
+* [Tag system](#markdown-header-Tag-system) not to run all tests at once
 * [Events](#markdown-header-events) that you can define
 * [Disabling allocation functions](#markdown-header-Disabling-allocation) to make them return `NULL` (not on Windows)
 * [Performance testing](#markdown-header-Performance) (not on Windows)
-
 
 
 ### <a id="markdown-header-Configuration"></a>Configuration and remarks
@@ -38,6 +38,7 @@ Some other functionalities can be (de)activated by macros _and_ parameters such 
   - **xml** or __LASSERT_XML_OUTPUT__: JUnit like XML is rendered in standard output
 * __-epsilon=[value]__, __LASSERT_EPSILON__ or `LASSERT_set_epsilon(yourValue)`: set the accepted difference on floating point number comparison (value must be a strictly positive floating point number)
 * __-seed=[value]__, __LASSERT_SEED__ or `LASSERT_init_seed(yourSeed)`: set the seed to initialize random number (the function re initialize the random generator), default value use the `time(NULL)` function.
+* __-tags=...__: define which tags to run (see [Tag system](#markdown-header-Tag-system) for more information)
   
 __NOTES:__
 * In auto main mode, the program will return the number of section on failure.
@@ -105,6 +106,8 @@ __NOTES:__
 * Sections and cases names can be either an identifier or a string
   
 _WARNING:_ On contrary to printf first argument, it has to be a string constant, not a variable (even variable constants are not allowed)
+
+
 
 ### <a id="markdown-header-Advanced-macros"></a>Advanced macros
 The code below show all the other macros you can use in LAssert :
@@ -229,6 +232,33 @@ Here is what each macro means in case you did not guess :
 __NOTES:__
 * You can set the random function using `LASSERT_set_rand_function`. The function needs to have the following prototype `int (*) (void)`.
 * **INFO**, **ERROR** and **WARNING** format the string on call, and not on assertion failure.
+
+
+
+### <a id="markdown-header-Tag-system"></a>Tag system
+
+A tag system can be used to run a subset of test sections. Bellow is an example of code with tags.
+
+```c
+#define LASSERT_MAIN
+#include "../../LAssert.h"
+
+TEST_SECTION("tag 1", "[a][b]"){
+}
+TEST_SECTION("tag 2", "[a][c]"){
+}
+TEST_SECTION("tag 3", "[b][d]"){
+}
+```
+
+The second parameter of `TEST_SECTION` is optionnal and define all tags of a section. Each tag needs to follow those rules:
+* it is contains inside brackets ("[...]")
+* it can not contain a bracket character inside it ("[" or "]")
+
+Moreover, you can't put any characters between two tags.
+
+Once your sections are written and compiled, you can use the "-tags=..." option. Its parameter is nearly the same as a set of tags with one difference, you can put ',' between two tags and it is equivalent to "OR". Here is an example:
+* [a][b],[c]: ([a] and [b] tags) or ([c] tag)
 
 
 

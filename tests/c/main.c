@@ -268,3 +268,9 @@ TEST_SECTION("no logs"){
     REQUIRE(0);
 }
 
+TEST_SECTION("tag 1", "[a][b]"){
+}
+TEST_SECTION("tag 2", "[a][c]"){
+}
+TEST_SECTION("tag 3", "[b][d]"){
+}
