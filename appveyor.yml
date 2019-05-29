@@ -46,6 +46,7 @@ before_test:
 
 test_script:
  - CLAssert.exe -nt > out.txt || type out.txt
+ - CLAssert.exe -nt -tags=[a][c],[d] >> out.txt
  - echo ++++++++++++++++++++++++++++++++++++++++
  - echo ++++++++++++++++++++++++++++++++++++++++
  - echo ++++++++++++++++++++++++++++++++++++++++
