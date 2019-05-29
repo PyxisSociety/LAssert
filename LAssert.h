@@ -1378,7 +1378,8 @@ int main(){
  * @brief main block of test (many can be defined for one test program)
  * @param ...: two parameters: name of the test section and a string containing the test section tags (optionnal)
  */
-#define TEST_SECTION(...) LASSERT_CALL_SECTION_(__VA_ARGS__, LASSERT_TEST_SECTION_TAGS_, LASSERT_TEST_SECTION_NO_TAG_)(__VA_ARGS__)
+#define LASSERT_SUB_EXPAND_(x) x
+#define TEST_SECTION(...) LASSERT_SUB_EXPAND_(LASSERT_CALL_SECTION_(__VA_ARGS__, LASSERT_TEST_SECTION_TAGS_, LASSERT_TEST_SECTION_NO_TAG_)(__VA_ARGS__))
 #define LASSERT_CALL_SECTION_(arg0, arg1, arg2, ...) arg2
 #define LASSERT_TEST_SECTION_TAGS_(name, tags) LASSERT_SUB_TEST_SECTION_(name, tags, __COUNTER__, __LINE__)
 #define LASSERT_TEST_SECTION_NO_TAG_(name) LASSERT_SUB_TEST_SECTION_(name, NULL, __COUNTER__, __LINE__)
