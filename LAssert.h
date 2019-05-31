@@ -71,6 +71,9 @@ LASSERT_DISABLE_WARNING_(sign-compare, sign-compare, 244)
 #ifndef LASSERT_MAX_INFO_LENGTH
 #  define LASSERT_MAX_INFO_LENGTH 4096
 #endif
+#if defined(LASSERT_MANUAL_MAIN) && !defined(LASSERT_MAX_SECTIONS)
+#  define LASSERT_MAX_SECTIONS 1024
+#endif
 
 #define LASSERT_NORMAL_ LASSERT_get_color_(0)
 #define LASSERT_RED_ LASSERT_get_color_(1)
@@ -305,9 +308,6 @@ LASSERT_EXTERN_ LASSERT_LOGS_ LASSERT_logs_
 ;
 
 #ifdef LASSERT_MANUAL_MAIN
-#  ifndef LASSERT_MAX_SECTIONS
-#    define LASSERT_MAX_SECTIONS 1024
-#  endif
 typedef struct{
     char name[256];
     int (*fun)(void);

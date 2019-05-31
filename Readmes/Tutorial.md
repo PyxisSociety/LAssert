@@ -21,8 +21,9 @@ Here is a small tutorial devided in few steps:
 
 
 ### <a id="markdown-header-Configuration"></a>Configuration and remarks
-Some functionalities can be (de)activated by macros only (that need to be put before including LAssert) such as:
+Some functionalities can be (de)activated and some data can be set by macros only (that need to be put before including LAssert) such as:
 * **LASSERT_CUSTOM_ALLOC**: enabling (de)activation of allocation functions (making them work normally or always return `NULL`)
+* **LASSERT_MAX_SECTIONS**: number of maximum section, default 1024.
   
 The resulting program can have predefined parameters described bellow. If you used **LASSERT_MANUAL_MAIN**, you can still have this behavior by calling `LASSERT_PARAMETERS_INIT(argc, argv)`. Using `-h` option will show you all available parameters but will prevent the program from running the tests.
   
@@ -112,6 +113,7 @@ _WARNING:_ On contrary to printf first argument, it has to be a string constant,
 ### <a id="markdown-header-Advanced-macros"></a>Advanced macros
 The code below show all the other macros you can use in LAssert :
 ```c
+#include LASSERT_MANUAL_MAIN
 #include LASSERT_MAIN
 #include "LAssert.h"
 
@@ -205,6 +207,11 @@ TEST_SECTION(logs){
 
     REQUIRE(0);
 }
+int main(){
+	RUN_SECTION(logs);
+
+	return 0;
+}
 ```
 Here is what each macro means in case you did not guess :
 * **RAND_CASE** : special test case which will be run with random numbers, its parameters are<br/>
@@ -228,6 +235,7 @@ Here is what each macro means in case you did not guess :
 * **INFO**, **WARNING** and **ERROR**: Add a message to be printed (as info, warning or error) each time a failure occure in the section / case. If those macros are called in a test case, they are effective only inside, else they are effective everywhere in the section. Two macros help configure this tool:
   * **LASSERT_MAX_INFOS**: maximum number of times those macros can be called in a section (called in a test case count as called in the section in this case, for optimization purposes)
   * **LASSERT_MAX_INFO_LENGTH**: maximum length of the message which can be put in those macros, once it has been formated.
+* **RUN_SECTION**: run a section (usable on manual main only). It returns 0 on success, 1 on failure, 2 on failure due to NULL pointer or -1 if the test section was not found.
 
 __NOTES:__
 * You can set the random function using `LASSERT_set_rand_function`. The function needs to have the following prototype `int (*) (void)`.
