@@ -120,11 +120,6 @@ LASSERT_DISABLE_WARNING_(sign-compare, sign-compare, 244)
 #  define STDOUT_FILENO stdout
 #  define STDERR_FILENO stderr
 #  define close fclose
-#  ifdef __cplusplus
-#    define COPY(type, var) type var = ::var
-#  else
-#    define COPY(type, var)
-#  endif
 #endif
 
 #define LASSERT_LOG_MESSAGE_(ptr, ...)					\
@@ -260,6 +255,19 @@ LASSERT_EXTERN_ LASSERT_DATA_ LASSERT_data_
 #endif
 ;
 
+#ifdef LASSERT_WINDOWS
+LASSERT_EXTERN_ char ** LASSERT_argv_
+#  ifdef LASSERT_MAIN
+= NULL
+#  endif
+;
+LASSERT_EXTERN_ int LASSERT_argc_
+#  ifdef LASSERT_MAIN
+= 0
+#  endif
+;
+#endif
+
 typedef struct{
     void (*sectionBegin)(const char *);
     void (*sectionEnd)(const char *);
@@ -277,7 +285,7 @@ typedef struct{
     char msg[LASSERT_MAX_INFO_LENGTH + 20];
     char inCase;
     unsigned long long line;
-	int color;
+    int color;
 } LASSERT_LOG_INFO_;
 typedef struct{
     LASSERT_LOG_INFO_ msgs[LASSERT_MAX_INFOS];
@@ -295,6 +303,26 @@ LASSERT_EXTERN_ LASSERT_LOGS_ LASSERT_logs_
 }
 #endif
 ;
+
+#ifdef LASSERT_MANUAL_MAIN
+#  ifndef LASSERT_MAX_SECTIONS
+#    define LASSERT_MAX_SECTIONS 1024
+#  endif
+typedef struct{
+    char name[256];
+    int (*fun)(void);
+} LASSERT_SECTION_FUNCTION_;
+LASSERT_EXTERN_ LASSERT_SECTION_FUNCTION_ LASSERT_section_functions_[LASSERT_MAX_SECTIONS]
+#  ifdef LASSERT_MAIN
+= {{{0}, NULL}}
+#  endif
+;
+LASSERT_EXTERN_ size_t LASSERT_section_id_
+#  ifdef LASSERT_MAIN
+= 0
+#  endif
+;
+#endif
 /*-------------------------------------------*/
 
 
@@ -706,6 +734,15 @@ void LASSERT_PRINT_OUTPUT_(void){
         LASSERT_XML_PRINT_("</testsuites>");
         LASSERT_activate_output_();
     }
+
+#ifdef LASSERT_WINDOWS
+	if(LASSERT_argv_){
+		for(int i = 0; i < LASSERT_argc_; ++i)
+			free(LASSERT_argv_[i]);
+		free(LASSERT_argv_);
+		LASSERT_argv_ = NULL;
+	}
+#endif
 }
 void LASSERT_set_epsilon(double epsilon){
     LASSERT_data_.epsilon = epsilon;
@@ -939,20 +976,19 @@ void LAssert_alloc(int disable){
 #define LASSERT_GENERIC_LOG_(COLOR, msgs, nbMsgs, message, ...)         \
     if(*_old_flag < __LINE__){                                          \
         if(LASSERT_logs_.nbMsgs < LASSERT_MAX_INFOS){                   \
-            char _tmp_msg_[LASSERT_MAX_INFO_LENGTH] = {0};              \
             LASSERT_STRCPY_(_tmp_msg_, LASSERT_MAX_INFO_LENGTH, message); \
             LASSERT_SPRINTF_(LASSERT_logs_.msgs[LASSERT_logs_.nbMsgs].msg, \
                              LASSERT_MAX_INFO_LENGTH, _tmp_msg_,        \
                              ##__VA_ARGS__);                            \
-			LASSERT_logs_.msgs[LASSERT_logs_.nbMsgs].color = COLOR;\
+            LASSERT_logs_.msgs[LASSERT_logs_.nbMsgs].color = COLOR;     \
             LASSERT_logs_.msgs[LASSERT_logs_.nbMsgs].inCase = LASSERT_data_.nbRunInCase; \
             LASSERT_logs_.msgs[LASSERT_logs_.nbMsgs].line = __LINE__;   \
             ++LASSERT_logs_.nbMsgs;                                     \
         }else{                                                          \
-printf("%s", LASSERT_YELLOW_);\
-            puts(" WARNING too many logs already registered, the "  \
-                   "following will be ignored:"); \
-                   printf("%s\t", LASSERT_NORMAL_);                                    \
+            printf("%s", LASSERT_YELLOW_);                              \
+            puts(" WARNING too many logs already registered, the "      \
+                 "following will be ignored:");                         \
+            printf("%s\t", LASSERT_NORMAL_);                            \
             printf(message, ##__VA_ARGS__);                             \
             putchar('\n');                                              \
         }                                                               \
@@ -962,14 +998,14 @@ printf("%s", LASSERT_YELLOW_);\
  * @brief Info to be shawn on test failure
  * @param message, ...: same parameters as fo a `printf` call
  */
-#define INFO(message, ...) \
+#define INFO(message, ...)                                              \
     LASSERT_GENERIC_LOG_(6, msgs, nbMsgs, "INFO " message, ##__VA_ARGS__)
 
 /**
  * @brief Warning to be shawn on test failure
  * @param message, ...: same parameters as fo a `printf` call
  */
-#define WARNING(message, ...) \
+#define WARNING(message, ...)                                           \
     LASSERT_GENERIC_LOG_(3, msgs, nbMsgs, "WARNING " message, ##__VA_ARGS__)
 
 #ifdef ERROR // visual studio warning
@@ -979,28 +1015,28 @@ printf("%s", LASSERT_YELLOW_);\
  * @brief Error to be shawn on test failure
  * @param message, ...: same parameters as fo a `printf` call
  */
-#define ERROR(message, ...) \
+#define ERROR(message, ...)                                             \
     LASSERT_GENERIC_LOG_(1, msgs, nbMsgs, "ERROR " message, ##__VA_ARGS__)
 
 /**
  * @brief Info to be shawn if the next `REQUIRE` like macro fails
  * @param message, ...: same parameters as fo a `printf` call
  */
-#define INFO_ONCE(message, ...) \
+#define INFO_ONCE(message, ...)                                         \
     LASSERT_GENERIC_LOG_(6, msgsOnce, nbMsgsOnce, "INFO " message, ##__VA_ARGS__)
 
 /**
  * @brief Warning to be shawn if the next `REQUIRE` like macro fails
  * @param message, ...: same parameters as fo a `printf` call
  */
-#define WARNING_ONCE(message, ...) \
+#define WARNING_ONCE(message, ...)                                      \
     LASSERT_GENERIC_LOG_(3, msgsOnce, nbMsgsOnce, "WARNING " message, ##__VA_ARGS__)
 
 /**
  * @brief Error to be shawn if the next `REQUIRE` like macro fails
  * @param message, ...: same parameters as fo a `printf` call
  */
-#define ERROR_ONCE(message, ...) \
+#define ERROR_ONCE(message, ...)                                        \
     LASSERT_GENERIC_LOG_(1, msgsOnce, nbMsgsOnce, "ERROR " message, ##__VA_ARGS__)
 
 /**
@@ -1010,8 +1046,8 @@ printf("%s", LASSERT_YELLOW_);\
  */
 #define COPY(type, var) LASSERT_SUB_COPY_(type, var, __COUNTER__)
 #define LASSERT_SUB_COPY_(type, var, n) LASSERT_COPY_(type, var, n)
-#define LASSERT_COPY_(type, var, n) \
-    type _LASSERT_tmp_##var##_##n##_ = var; \
+#define LASSERT_COPY_(type, var, n)             \
+    type _LASSERT_tmp_##var##_##n##_ = var;     \
     type var = _LASSERT_tmp_##var##_##n##_
 
 /**
@@ -1343,34 +1379,80 @@ printf("%s", LASSERT_YELLOW_);\
 
     
 //#ifndef LASSERT_MANUAL_MAIN
-#  ifdef LASSERT_MAIN
+#if defined(LASSERT_MAIN) && !defined(LASSERT_MANUAL_MAIN)
 int main(){
     LASSERT_PRINT_OUTPUT_();
     return LASSERT_data_.failed;
 }
-#  endif
-#  ifdef LASSERT_WINDOWS
-#    ifdef __cplusplus
-#      define LASSERT_AUTOCALL_HANDLER_(fname) ;                        \
+#endif
+#ifdef LASSERT_WINDOWS
+#  ifdef __cplusplus
+#    define LASSERT_AUTOCALL_HANDLER_(fname) ;                          \
     struct fname##_t_ { fname##_t_(void) { fname(); } }; static fname##_t_ fname##_;
-#    else
-#      pragma section(".CRT$XCU", read)
-#      define LASSERT_AUTOCALL_SUB_HANDLER_(fname, p) ;                 \
+#  else
+#    pragma section(".CRT$XCU", read)
+#    define LASSERT_AUTOCALL_SUB_HANDLER_(fname, p) ;                   \
     __declspec(allocate(".CRT$XCU")) void (*fname##_)(void) = fname;    \
     __pragma(comment(linker, "/include:" p #fname "_"))
-#      ifdef _WIN64
-#        define LASSERT_AUTOCALL_HANDLER_(fname) LASSERT_AUTOCALL_SUB_HANDLER_(fname, "")
-#      else
-#        define LASSERT_AUTOCALL_HANDLER_(fname) LASSERT_AUTOCALL_SUB_HANDLER_(fname, "_")
-#      endif
+#    ifdef _WIN64
+#      define LASSERT_AUTOCALL_HANDLER_(fname) LASSERT_AUTOCALL_SUB_HANDLER_(fname, "")
+#    else
+#      define LASSERT_AUTOCALL_HANDLER_(fname) LASSERT_AUTOCALL_SUB_HANDLER_(fname, "_")
 #    endif
-#  else
-#    define LASSERT_AUTOCALL_HANDLER_(fname) __attribute__((constructor));
 #  endif
-//#else
-//#  define LASSERT_AUTOCALL_HANDLER_(fname)
-//#  define RUN_SECTION(name) _call_test_##name##_lassert()
-//#endif
+#else
+#  define LASSERT_AUTOCALL_HANDLER_(fname) __attribute__((constructor));
+#endif
+#ifndef LASSERT_MANUAL_MAIN
+#  define LASSERT_AUTOCALL_(fname, sname) LASSERT_AUTOCALL_HANDLER_(fname)
+#else
+#  define LASSERT_AUTOCALL_(fname, sname) ;                             \
+    static void _lassert_init_##fname(void)                             \
+        LASSERT_AUTOCALL_HANDLER_(_lassert_init_##fname)                \
+    static void _lassert_init_##fname(void){                            \
+        if(LASSERT_section_id_ == LASSERT_MAX_SECTIONS){                \
+            printf("%s", LASSERT_YELLOW_);                              \
+            printf("WARNING too many sections in manual mode."          \
+                   " Redefined LASSERT_MAX_SECTIONS to "                \
+                   "enable more sections.\nSection " sname              \
+                   " could not be defined");                            \
+            puts(LASSERT_NORMAL_);                                      \
+            return;                                                     \
+        }                                                               \
+        LASSERT_SECTION_FUNCTION_ tmpFun = {                            \
+            sname,                                                      \
+            fname                                                       \
+        };                                                              \
+        LASSERT_section_functions_[LASSERT_section_id_] = tmpFun;       \
+        ++LASSERT_section_id_;                                          \
+    }
+LASSERT_EXTERN_ int LASSERT_run_section_(char * section_name)
+#  ifdef LASSERT_MAIN
+{
+    size_t i = 0, j;
+    char found = 0;
+
+    while(i < LASSERT_section_id_ && !found){
+        j = 0;
+        while(section_name[j] && LASSERT_section_functions_[i].name[j] && section_name[j] == LASSERT_section_functions_[i].name[j]){
+            ++j;
+        }
+        found = !section_name[j] && !LASSERT_section_functions_[i].name[j];
+        i += !found;
+    }
+
+    if(i < LASSERT_section_id_){
+        return LASSERT_section_functions_[i].fun();
+    }
+    return -1;
+}
+#  else
+;
+#  endif
+/**
+ */
+#define RUN_SECTION(name) LASSERT_run_section_(#name)
+#endif
 
 
 
@@ -1385,11 +1467,12 @@ int main(){
 #define LASSERT_TEST_SECTION_NO_TAG_(name) LASSERT_SUB_TEST_SECTION_(name, NULL, __COUNTER__, __LINE__)
 #define LASSERT_SUB_TEST_SECTION_(name, tags, number, line) LASSERT_TEST_SECTION_(name, tags, number, line)
 #define LASSERT_TEST_SECTION_(name, section_tags, number, line)         \
-    static void _test_##number##_##line##_lassert(char *,int *, int, int*, int*, int *); \
+    static void _test_##number##_##line##_lassert(char *,int *, int, int*, int*, int *, char[LASSERT_MAX_INFO_LENGTH]); \
     static int _call_test_##number##_##line##_lassert(void)             \
-	LASSERT_AUTOCALL_HANDLER_(_call_test_##number##_##line##_lassert) \
+	LASSERT_AUTOCALL_(_call_test_##number##_##line##_lassert, #name) \
     static int _call_test_##number##_##line##_lassert(void){            \
 	char s[512] = {0};						\
+        char _tmp_msg_[LASSERT_MAX_INFO_LENGTH] = {0};                  \
         char * name_of_section = (char*)#name;                          \
 	LASSERT_TIME_TYPE_ start = LASSERT_TIME_NULL_, end = LASSERT_TIME_NULL_; \
 	int id = -1, i = 1, old = 0;					\
@@ -1421,7 +1504,7 @@ int main(){
 	    start = LASSERT_time_used_();                               \
 	while(i){							\
 	    i = 0;							\
-	    _test_##number##_##line##_lassert(s,&id,0,0,&i, &old);      \
+	    _test_##number##_##line##_lassert(s,&id,0,0,&i, &old, _tmp_msg_); \
             if(!id){                                                    \
                 ++LASSERT_data_.succeededCases;                         \
             }                                                           \
@@ -1497,7 +1580,8 @@ int main(){
                                                                         \
         return id;                                                      \
     }									\
-    static void _test_##number##_##line##_lassert(char * LASSERT_name_of_test_, int * _id_flag, int _size_of_tab,int * _tab_lassert, int * _has_to_quit, int * _old_flag)
+    static void _test_##number##_##line##_lassert(char * LASSERT_name_of_test_, int * _id_flag, \
+int _size_of_tab,int * _tab_lassert, int * _has_to_quit, int * _old_flag, char _tmp_msg_[LASSERT_MAX_INFO_LENGTH])
 
 
 
@@ -1512,7 +1596,6 @@ static void LASSERT_PARAMETERS_SUB_INIT(void) LASSERT_AUTOCALL_HANDLER_(LASSERT_
     static void LASSERT_PARAMETERS_SUB_INIT(void) {
     int argc;
     LPWSTR * tmpArgv;
-    char ** argv = NULL;
     int i;
     size_t dummy;
     size_t size;
@@ -1520,29 +1603,21 @@ static void LASSERT_PARAMETERS_SUB_INIT(void) LASSERT_AUTOCALL_HANDLER_(LASSERT_
     LPWSTR commandLine = GetCommandLineW();
     tmpArgv = CommandLineToArgvW(commandLine, &argc);
 
-    argv = (char**)malloc((argc + 1) * sizeof(char *));
+    LASSERT_argv_ = (char**)malloc(((unsigned long long)argc + 1) * sizeof(char *));
+    LASSERT_argc_ = argc;
 
-    if(argv){
+    if(LASSERT_argv_){
         for(i = 0; i < argc; ++i){
             size = wcslen(tmpArgv[i]) + 1;
-            argv[i] = (char*)malloc(size * sizeof(char));
-            if(argv[i]){
-                wcstombs_s(&dummy, argv[i], size * sizeof(char), tmpArgv[i], (size - 1) * sizeof(char));
+            LASSERT_argv_[i] = (char*)malloc(size * sizeof(char));
+            if(LASSERT_argv_[i]){
+                wcstombs_s(&dummy, LASSERT_argv_[i], size * sizeof(char), tmpArgv[i], (size - 1) * sizeof(char));
             }
         }
-        argv[argc] = NULL;
+        LASSERT_argv_[argc] = NULL;
     }
 
-    LASSERT_PARAMETERS_INIT(argc, argv);
-
-    if(argv){
-        for(i = 0; i < argc; ++i){
-            if(argv[i]){
-                free(argv[i]);
-            }
-        }
-        free(argv);
-    }
+    LASSERT_PARAMETERS_INIT(argc, LASSERT_argv_);
 }
 #    endif
 #  endif
