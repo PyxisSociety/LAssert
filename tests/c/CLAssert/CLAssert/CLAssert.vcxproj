@@ -85,6 +85,9 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -120,6 +123,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\LAssert.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\README.md" />
+    <None Include="..\..\..\..\Readmes\Tutorial.md" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

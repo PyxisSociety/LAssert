@@ -1388,12 +1388,11 @@ int main(){
 #ifdef LASSERT_WINDOWS
 #  ifdef __cplusplus
 #    define LASSERT_AUTOCALL_HANDLER_(fname) ;                          \
-    struct fname##_t_ { fname##_t_(void) { fname(); } }; static fname##_t_ fname##_;
+    struct fname##_t_ { fname##_t_(void) { fname(); } }; static fname##_t_ fname##_
 #  else
 #    pragma section(".CRT$XCU", read)
 #    define LASSERT_AUTOCALL_SUB_HANDLER_(fname, p) ;                   \
-    __declspec(allocate(".CRT$XCU")) void (*fname##_)(void) = fname;    \
-    __pragma(comment(linker, "/include:" p #fname "_"))
+    __declspec(allocate(".CRT$XCU")) static void (*fname##_)(void) = fname
 #    ifdef _WIN64
 #      define LASSERT_AUTOCALL_HANDLER_(fname) LASSERT_AUTOCALL_SUB_HANDLER_(fname, "")
 #    else
@@ -1401,7 +1400,7 @@ int main(){
 #    endif
 #  endif
 #else
-#  define LASSERT_AUTOCALL_HANDLER_(fname) __attribute__((constructor));
+#  define LASSERT_AUTOCALL_HANDLER_(fname) __attribute__((constructor))
 #endif
 #ifndef LASSERT_MANUAL_MAIN
 #  define LASSERT_AUTOCALL_(fname, sname) LASSERT_AUTOCALL_HANDLER_(fname)
@@ -1469,7 +1468,7 @@ LASSERT_EXTERN_ int LASSERT_run_section_(char * section_name)
 #define LASSERT_TEST_SECTION_(name, section_tags, number, line)         \
     static void _test_##number##_##line##_lassert(char *,int *, int, int*, int*, int *, char[LASSERT_MAX_INFO_LENGTH]); \
     static int _call_test_##number##_##line##_lassert(void)             \
-	LASSERT_AUTOCALL_(_call_test_##number##_##line##_lassert, #name) \
+	LASSERT_AUTOCALL_(_call_test_##number##_##line##_lassert, #name); \
     static int _call_test_##number##_##line##_lassert(void){            \
 	char s[512] = {0};						\
         char _tmp_msg_[LASSERT_MAX_INFO_LENGTH] = {0};                  \
@@ -1592,7 +1591,7 @@ LASSERT_EXTERN_ void LASSERT_PARAMETERS_INIT(int argc, char** argv) __attribute_
 #  else
 LASSERT_EXTERN_ void LASSERT_PARAMETERS_INIT(int argc, char** argv);
 #    ifdef LASSERT_MAIN
-static void LASSERT_PARAMETERS_SUB_INIT(void) LASSERT_AUTOCALL_HANDLER_(LASSERT_PARAMETERS_SUB_INIT)
+static void LASSERT_PARAMETERS_SUB_INIT(void) LASSERT_AUTOCALL_HANDLER_(LASSERT_PARAMETERS_SUB_INIT);
     static void LASSERT_PARAMETERS_SUB_INIT(void) {
     int argc;
     LPWSTR * tmpArgv;

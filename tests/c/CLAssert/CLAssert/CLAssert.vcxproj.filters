@@ -27,4 +27,12 @@
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\README.md">
+      <Filter>Fichiers de ressources</Filter>
+    </None>
+    <None Include="..\..\..\..\Readmes\Tutorial.md">
+      <Filter>Fichiers de ressources</Filter>
+    </None>
+  </ItemGroup>
 </Project>
