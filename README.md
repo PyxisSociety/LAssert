@@ -13,5 +13,4 @@ From this "read-me", you can either go to:
 
 ## About the author
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;I am a French computer science engineer. I got my diploma at ISIMA, France. 
-I made this tool because I did not found a Catch like test tool in C. I hope you will enjoy using it, if you have any comment or advice, do not feel shy and tell me (by posting an issue [here](https://github.com/Klevh/LAssert/issues/new)) ! I will really appreciate it.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;I made this tool because I did not found a Catch like test tool in C. I hope you will enjoy using it, and if you have any comment or advice, do not feel shy and tell me (by posting an issue [here](https://github.com/Klevh/LAssert/issues/new)) ! I will really appreciate it.
